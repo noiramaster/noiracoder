@@ -179,20 +179,15 @@ func (m *sidebarCmp) modifiedFiles() string {
 		Bold(true).
 		Render("Modified Files:")
 
-	// If no modified files, show a placeholder message
+	// If no modified files, show minimal (like Claude — no clutter)
 	if m.modFiles == nil || len(m.modFiles) == 0 {
-		message := "No modified files"
-		remainingWidth := m.width - lipgloss.Width(message)
-		if remainingWidth > 0 {
-			message += strings.Repeat(" ", remainingWidth)
-		}
 		return baseStyle.
 			Width(m.width).
 			Render(
 				lipgloss.JoinVertical(
 					lipgloss.Top,
 					modifiedFiles,
-					baseStyle.Foreground(t.TextMuted()).Render(message),
+					baseStyle.Foreground(t.TextMuted()).Render("—"),
 				),
 			)
 	}

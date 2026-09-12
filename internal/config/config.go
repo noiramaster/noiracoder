@@ -98,9 +98,9 @@ type Config struct {
 
 // Application constants
 const (
-	defaultDataDirectory = ".opencode"
+	defaultDataDirectory = ".noiracoder"
 	defaultLogLevel      = "info"
-	appName              = "opencode"
+	appName              = "noiracoder"
 
 	MaxTokensFallbackDefault = 4096
 )
@@ -111,12 +111,12 @@ var defaultContextPaths = []string{
 	".cursor/rules/",
 	"CLAUDE.md",
 	"CLAUDE.local.md",
-	"opencode.md",
-	"opencode.local.md",
-	"OpenCode.md",
-	"OpenCode.local.md",
-	"OPENCODE.md",
-	"OPENCODE.local.md",
+	"noira.md",
+	"noira.local.md",
+	"Noira.md",
+	"Noira.local.md",
+	"NOIRA.md",
+	"NOIRA.local.md",
 }
 
 // Global configuration instance
@@ -230,7 +230,7 @@ func configureViper() {
 func setDefaults(debug bool) {
 	viper.SetDefault("data.directory", defaultDataDirectory)
 	viper.SetDefault("contextPaths", defaultContextPaths)
-	viper.SetDefault("tui.theme", "opencode")
+	viper.SetDefault("tui.theme", "noiraxplum")
 	viper.SetDefault("autoCompact", true)
 
 	// Set default shell from environment or fallback to /bin/bash

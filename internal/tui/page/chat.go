@@ -14,6 +14,7 @@ import (
 	"github.com/opencode-ai/opencode/internal/tui/components/chat"
 	"github.com/opencode-ai/opencode/internal/tui/components/dialog"
 	"github.com/opencode-ai/opencode/internal/tui/layout"
+	"github.com/opencode-ai/opencode/internal/tui/theme"
 	"github.com/opencode-ai/opencode/internal/tui/util"
 )
 
@@ -23,10 +24,13 @@ type chatPage struct {
 	app                  *app.App
 	editor               layout.Container
 	messages             layout.Container
-	layout               layout.SplitPaneLayout
+	mainLayout           layout.SplitPaneLayout
+	chatLayout           layout.SplitPaneLayout
+	sessionSidebar       chat.SessionSidebar
 	session              session.Session
 	completionDialog     dialog.CompletionDialog
 	showCompletionDialog bool
+	width, height        int
 }
 
 type ChatKeyMap struct {
@@ -52,8 +56,10 @@ var keyMap = ChatKeyMap{
 
 func (p *chatPage) Init() tea.Cmd {
 	cmds := []tea.Cmd{
-		p.layout.Init(),
+		p.mainLayout.Init(),
+		p.chatLayout.Init(),
 		p.completionDialog.Init(),
+		p.sessionSidebar.Init(),
 	}
 	return tea.Batch(cmds...)
 }
@@ -62,7 +68,21 @@ func (p *chatPage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmds []tea.Cmd
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
-		cmd := p.layout.SetSize(msg.Width, msg.Height)
+		p.width = msg.Width
+		p.height = msg.Height
+		// Session sidebar takes 25% of width, minimum 20, max 30
+		sidebarWidth := msg.Width / 4
+		if sidebarWidth < 20 {
+			sidebarWidth = 20
+		}
+		if sidebarWidth > 30 {
+			sidebarWidth = 30
+		}
+		chatWidth := msg.Width - sidebarWidth
+
+		cmd := p.mainLayout.SetSize(msg.Width, msg.Height)
+		cmds = append(cmds, cmd)
+		cmd = p.chatLayout.SetSize(chatWidth, msg.Height)
 		cmds = append(cmds, cmd)
 	case dialog.CompletionDialogCloseMsg:
 		p.showCompletionDialog = false
@@ -72,60 +92,70 @@ func (p *chatPage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return p, cmd
 		}
 	case dialog.CommandRunCustomMsg:
-		// Check if the agent is busy before executing custom commands
 		if p.app.CoderAgent.IsBusy() {
 			return p, util.ReportWarn("Agent is busy, please wait before executing a command...")
 		}
-		
-		// Process the command content with arguments if any
 		content := msg.Content
 		if msg.Args != nil {
-			// Replace all named arguments with their values
 			for name, value := range msg.Args {
 				placeholder := "$" + name
 				content = strings.ReplaceAll(content, placeholder, value)
 			}
 		}
-		
-		// Handle custom command execution
 		cmd := p.sendMessage(content, nil)
 		if cmd != nil {
 			return p, cmd
 		}
 	case chat.SessionSelectedMsg:
-		if p.session.ID == "" {
-			cmd := p.setSidebar()
-			if cmd != nil {
-				cmds = append(cmds, cmd)
-			}
-		}
 		p.session = msg
+		p.sessionSidebar.SetActiveSession(p.session.ID)
+		cmd := p.setFileSidebar()
+		if cmd != nil {
+			cmds = append(cmds, cmd)
+		}
+	case chat.SessionSidebarSelectedMsg:
+		p.session = msg.Session
+		p.sessionSidebar.SetActiveSession(p.session.ID)
+		cmd := p.setFileSidebar()
+		if cmd != nil {
+			cmds = append(cmds, cmd)
+		}
+		cmds = append(cmds, util.CmdHandler(chat.SessionSelectedMsg(p.session)))
+	case chat.SessionSidebarNewSessionMsg:
+		p.session = session.Session{}
+		cmds = append(cmds,
+			p.clearFileSidebar(),
+			util.CmdHandler(chat.SessionClearedMsg{}),
+		)
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, keyMap.ShowCompletionDialog):
 			p.showCompletionDialog = true
-			// Continue sending keys to layout->chat
 		case key.Matches(msg, keyMap.NewSession):
 			p.session = session.Session{}
 			return p, tea.Batch(
-				p.clearSidebar(),
+				p.clearFileSidebar(),
 				util.CmdHandler(chat.SessionClearedMsg{}),
 			)
 		case key.Matches(msg, keyMap.Cancel):
 			if p.session.ID != "" {
-				// Cancel the current session's generation process
-				// This allows users to interrupt long-running operations
 				p.app.CoderAgent.Cancel(p.session.ID)
 				return p, nil
 			}
 		}
 	}
+
+	// Update session sidebar
+	u, cmd := p.sessionSidebar.Update(msg)
+	p.sessionSidebar = u.(chat.SessionSidebar)
+	if cmd != nil {
+		cmds = append(cmds, cmd)
+	}
+
 	if p.showCompletionDialog {
 		context, contextCmd := p.completionDialog.Update(msg)
 		p.completionDialog = context.(dialog.CompletionDialog)
 		cmds = append(cmds, contextCmd)
-
-		// Doesn't forward event if enter key is pressed
 		if keyMsg, ok := msg.(tea.KeyMsg); ok {
 			if keyMsg.String() == "enter" {
 				return p, tea.Batch(cmds...)
@@ -133,39 +163,42 @@ func (p *chatPage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	}
 
-	u, cmd := p.layout.Update(msg)
+	u2, cmd := p.chatLayout.Update(msg)
 	cmds = append(cmds, cmd)
-	p.layout = u.(layout.SplitPaneLayout)
+	p.chatLayout = u2.(layout.SplitPaneLayout)
 
 	return p, tea.Batch(cmds...)
 }
 
-func (p *chatPage) setSidebar() tea.Cmd {
+func (p *chatPage) setFileSidebar() tea.Cmd {
 	sidebarContainer := layout.NewContainer(
 		chat.NewSidebarCmp(p.session, p.app.History),
 		layout.WithPadding(1, 1, 1, 1),
 	)
-	return tea.Batch(p.layout.SetRightPanel(sidebarContainer), sidebarContainer.Init())
+	return tea.Batch(p.chatLayout.SetRightPanel(sidebarContainer), sidebarContainer.Init())
 }
 
-func (p *chatPage) clearSidebar() tea.Cmd {
-	return p.layout.ClearRightPanel()
+func (p *chatPage) clearFileSidebar() tea.Cmd {
+	return p.chatLayout.ClearRightPanel()
 }
 
 func (p *chatPage) sendMessage(text string, attachments []message.Attachment) tea.Cmd {
 	var cmds []tea.Cmd
 	if p.session.ID == "" {
-		session, err := p.app.Sessions.Create(context.Background(), "New Session")
+		sess, err := p.app.Sessions.Create(context.Background(), "New Session")
 		if err != nil {
 			return util.ReportError(err)
 		}
-
-		p.session = session
-		cmd := p.setSidebar()
+		p.session = sess
+		p.sessionSidebar.SetActiveSession(sess.ID)
+		// Refresh sessions list
+		sessions, _ := p.app.Sessions.List(context.Background())
+		p.sessionSidebar.SetSessions(sessions)
+		cmd := p.setFileSidebar()
 		if cmd != nil {
 			cmds = append(cmds, cmd)
 		}
-		cmds = append(cmds, util.CmdHandler(chat.SessionSelectedMsg(session)))
+		cmds = append(cmds, util.CmdHandler(chat.SessionSelectedMsg(sess)))
 	}
 
 	_, err := p.app.CoderAgent.Run(context.Background(), p.session.ID, text, attachments...)
@@ -176,33 +209,60 @@ func (p *chatPage) sendMessage(text string, attachments []message.Attachment) te
 }
 
 func (p *chatPage) SetSize(width, height int) tea.Cmd {
-	return p.layout.SetSize(width, height)
+	p.width = width
+	p.height = height
+	sidebarWidth := width / 4
+	if sidebarWidth < 20 {
+		sidebarWidth = 20
+	}
+	if sidebarWidth > 30 {
+		sidebarWidth = 30
+	}
+	chatWidth := width - sidebarWidth
+
+	cmds := []tea.Cmd{
+		p.mainLayout.SetSize(width, height),
+		p.chatLayout.SetSize(chatWidth, height),
+	}
+	return tea.Batch(cmds...)
 }
 
 func (p *chatPage) GetSize() (int, int) {
-	return p.layout.GetSize()
+	return p.width, p.height
 }
 
 func (p *chatPage) View() string {
-	layoutView := p.layout.View()
+	t := theme.CurrentTheme()
+
+	// Session sidebar view
+	sidebarView := p.sessionSidebar.View()
+
+	// Chat layout view (messages + editor + optional file sidebar)
+	chatView := p.chatLayout.View()
+
+	// Join them horizontally
+	mainView := lipgloss.JoinHorizontal(lipgloss.Top, sidebarView, chatView)
 
 	if p.showCompletionDialog {
-		_, layoutHeight := p.layout.GetSize()
 		editorWidth, editorHeight := p.editor.GetSize()
-
 		p.completionDialog.SetWidth(editorWidth)
 		overlay := p.completionDialog.View()
-
-		layoutView = layout.PlaceOverlay(
-			0,
-			layoutHeight-editorHeight-lipgloss.Height(overlay),
+		mainView = layout.PlaceOverlay(
+			p.width/4,
+			p.height-editorHeight-lipgloss.Height(overlay),
 			overlay,
-			layoutView,
+			mainView,
 			false,
 		)
 	}
 
-	return layoutView
+	// Apply background
+	style := lipgloss.NewStyle().
+		Width(p.width).
+		Height(p.height).
+		Background(t.Background())
+
+	return style.Render(mainView)
 }
 
 func (p *chatPage) BindingKeys() []key.Binding {
@@ -224,14 +284,32 @@ func NewChatPage(app *app.App) tea.Model {
 		chat.NewEditorCmp(app),
 		layout.WithBorder(true, false, false, false),
 	)
+
+	sessionSidebar := chat.NewSessionSidebarCmp(app.Sessions)
+
+	// Load existing sessions
+	sessions, _ := app.Sessions.List(context.Background())
+	sessionSidebar.SetSessions(sessions)
+
+	// Chat layout: left=messages, bottom=editor, right=file sidebar (toggleable)
+	chatLayout := layout.NewSplitPane(
+		layout.WithLeftPanel(messagesContainer),
+		layout.WithBottomPanel(editorContainer),
+	)
+
+	// Main layout: left=session sidebar, right=chat layout
+	mainLayout := layout.NewSplitPane(
+		layout.WithLeftPanel(layout.NewContainer(sessionSidebar)),
+		layout.WithRightPanel(layout.NewContainer(chatLayout)),
+	)
+
 	return &chatPage{
 		app:              app,
 		editor:           editorContainer,
 		messages:         messagesContainer,
+		sessionSidebar:   sessionSidebar,
+		chatLayout:       chatLayout,
+		mainLayout:       mainLayout,
 		completionDialog: completionDialog,
-		layout: layout.NewSplitPane(
-			layout.WithLeftPanel(messagesContainer),
-			layout.WithBottomPanel(editorContainer),
-		),
 	}
 }

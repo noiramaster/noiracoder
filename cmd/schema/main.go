@@ -38,8 +38,8 @@ func main() {
 func generateSchema() map[string]any {
 	schema := map[string]any{
 		"$schema":     "http://json-schema.org/draft-07/schema#",
-		"title":       "OpenCode Configuration",
-		"description": "Configuration schema for the OpenCode application",
+		"title":       "NoiraCoder Configuration",
+		"description": "Configuration schema for the NoiraCoder application",
 		"type":        "object",
 		"properties":  map[string]any{},
 	}
@@ -89,12 +89,12 @@ func generateSchema() map[string]any {
 			".cursor/rules/",
 			"CLAUDE.md",
 			"CLAUDE.local.md",
-			"opencode.md",
-			"opencode.local.md",
-			"OpenCode.md",
-			"OpenCode.local.md",
-			"OPENCODE.md",
-			"OPENCODE.local.md",
+			"noira.md",
+			"noira.local.md",
+			"Noira.md",
+			"Noira.local.md",
+			"NOIRA.md",
+			"NOIRA.local.md",
 		},
 	}
 
