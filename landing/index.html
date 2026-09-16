@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NoiraCoder — agente de código con memoria | NOIRACODER</title>
+<meta name="description" content="NoiraCoder es un agente de programación en tu terminal: memoria de 3 niveles, rotación inteligente entre modelos gratuitos y claves cifradas en tu máquina.">
+<link rel="canonical" href="https://noiracoder.pages.dev/">
+<link rel="alternate" hreflang="x-default" href="https://noiracoder.pages.dev/">
+<link rel="alternate" hreflang="en" href="https://noiracoder.pages.dev/">
+<link rel="alternate" hreflang="es" href="https://noiracoder.pages.dev/?lang=es">
+<link rel="alternate" hreflang="pt" href="https://noiracoder.pages.dev/?lang=pt">
+<link rel="alternate" hreflang="fr" href="https://noiracoder.pages.dev/?lang=fr">
+<link rel="alternate" hreflang="de" href="https://noiracoder.pages.dev/?lang=de">
+<link rel="alternate" hreflang="it" href="https://noiracoder.pages.dev/?lang=it">
+<link rel="alternate" hreflang="ar" href="https://noiracoder.pages.dev/?lang=ar">
+<meta property="og:title" content="NOIRACODER">
+<meta property="og:description" content="Agente de código en terminal: memoria de 3 niveles, rotación entre modelos gratuitos, privacidad local.">
+<meta property="og:site_name" content="NOIRACODER">
+<meta property="og:url" content="https://noiracoder.pages.dev/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_ES">
+<meta name="twitter:card" content="summary">
+<meta name="robots" content="index, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='black'/><text x='2' y='13' fill='%23FBBF24' font-family='monospace' font-size='12'>&gt;</text></svg>">
+<script src="/i18n.js" defer></script>
+</head>
+<body>
+<header class="site-header"><div class="wrap-head">
+  <a href="/" class="logo">&gt; NOIRACODER</a>
+  <nav class="main-nav">
+    <a class="navlink" href="/docs/skills.html" data-i18n="nav.skills">Skills</a>
+    <a class="navlink" href="/docs/tutoriales.html" data-i18n="nav.tutorials">Tutoriales</a>
+    <a class="navlink" href="/blog/" data-i18n="nav.blog">Blog</a>
+    <a class="navlink" href="/contacto.html" data-i18n="nav.contact">Contacto</a>
+    <a class="navlink" href="/docs/tutoriales.html" data-i18n="nav.login">Entrar</a>
+    <a class="btn-signup" href="/#instalar" data-i18n="nav.signup">Empezar</a>
+    <div class="langswitch"><button aria-label="language">[<span class="cur">EN</span> ▾]</button><div class="menu">
+      <button data-lang="en">EN</button><button data-lang="es">ES</button><button data-lang="pt">PT</button><button data-lang="fr">FR</button><button data-lang="de">DE</button><button data-lang="it">IT</button><button data-lang="ar">AR</button>
+    </div></div>
+  </nav>
+  <div class="mobile-only">
+    <div class="langswitch"><button aria-label="language">[<span class="cur">EN</span> ▾]</button><div class="menu">
+      <button data-lang="en">EN</button><button data-lang="es">ES</button><button data-lang="pt">PT</button><button data-lang="fr">FR</button><button data-lang="de">DE</button><button data-lang="it">IT</button><button data-lang="ar">AR</button>
+    </div></div>
+    <button class="menu-btn" data-menu-btn>[=]</button>
+  </div>
+</div>
+<div class="mobile-menu" data-mobile-menu>
+  <a href="/docs/skills.html" data-i18n="nav.skills">Skills</a>
+  <a href="/docs/tutoriales.html" data-i18n="nav.tutorials">Tutoriales</a>
+  <a href="/blog/" data-i18n="nav.blog">Blog</a>
+  <a href="/contacto.html" data-i18n="nav.contact">Contacto</a>
+  <a href="/docs/tutoriales.html" data-i18n="nav.login">Entrar</a>
+  <a href="/#instalar" data-i18n="nav.signup">Empezar</a>
+</div></header>
+
+<main class="wrap-hero">
+  <div class="hero section">
+    <h1>&gt; <span data-i18n="hero.title">NOIRACODER</span></h1>
+    <p class="tagline" data-i18n="hero.tagline">Un agente de código con memoria.</p>
+    <p class="desc" data-i18n="hero.desc">NoiraCoder vive en tu terminal…</p>
+    <div class="typing-line"><span id="typing"></span><span class="cursor animate-blink">_</span></div>
+    <div class="terminal-block" id="termblock"><span class="cursor animate-blink">_</span></div>
+    <div style="margin-top:1.5rem;display:flex;gap:1rem;flex-wrap:wrap">
+      <a class="btn-outline" href="/#instalar" data-i18n="hero.ctaStart">Empezar en 1 min</a>
+      <a class="link-accent" style="align-self:center" href="/docs/tutoriales.html" data-i18n="hero.ctaKeys">Conectar 3 claves free</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>&gt; <span data-i18n="diff.title">Diferencias</span></h2>
+    <p class="sub" data-i18n="diff.sub">Lo que cambia el día a día…</p>
+    <div class="grid-cards c3">
+      <div class="card"><h3 data-i18n="diff.c1t">01 · Memoria de 3 niveles</h3><p data-i18n="diff.c1d">…</p></div>
+      <div class="card"><h3 data-i18n="diff.c2t">02 · Rotación free inteligente</h3><p data-i18n="diff.c2d">…</p></div>
+      <div class="card"><h3 data-i18n="diff.c3t">03 · Privacidad local</h3><p data-i18n="diff.c3d">…</p></div>
+    </div>
+  </div>
+
+  <div class="section" id="instalar">
+    <h2>&gt; <span data-i18n="install.title">Instalar</span></h2>
+    <p class="sub" data-i18n="install.sub">Necesitas Node 20+…</p>
+    <div class="step"><h3>Windows (PowerShell)</h3><pre><span class="c"># instala Node 20+ desde nodejs.org, luego:</span>
+npm install -g noiracoder
+noira login</pre></div>
+    <div class="step"><h3>macOS / Linux</h3><pre><span class="c"># con Node 20+ ya instalado:</span>
+npm install -g noiracoder
+noira login</pre></div>
+    <div class="step"><h3 data-i18n="install.s3">Conecta gratis (1 min por clave)</h3><pre>noira connect   <span class="c"># guía: OpenRouter → Groq → Zen</span>
+noira "crea un hola mundo en mi proyecto"</pre></div>
+  </div>
+
+  <div class="section">
+    <h2>&gt; <span data-i18n="skills.title">Skills</span></h2>
+    <p class="sub"><span data-i18n="skills.sub">10 especialistas…</span> <a class="link-accent" href="/docs/skills.html" data-i18n="skills.all">Documentación completa</a> →</p>
+    <div class="grid-cards c3">
+      <div class="card"><h3>› code-review</h3><p data-i18n="teasers.review">…</p></div>
+      <div class="card"><h3>› security</h3><p data-i18n="teasers.security">…</p></div>
+      <div class="card"><h3>› debug</h3><p data-i18n="teasers.debug">…</p></div>
+      <div class="card"><h3>› testing</h3><p data-i18n="teasers.testing">…</p></div>
+      <div class="card"><h3>› refactor</h3><p data-i18n="teasers.refactor">…</p></div>
+      <div class="card"><h3>› perf</h3><p data-i18n="teasers.perf">…</p></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>&gt; <span data-i18n="cmds.title">Uso diario</span></h2>
+    <p class="sub" data-i18n="cmds.kicker">Cinco comandos y a trabajar</p>
+    <table class="cmds">
+      <tr><td>noira</td><td data-i18n="cmds.r1">…</td></tr>
+      <tr><td>noira "tarea"</td><td data-i18n="cmds.r2">…</td></tr>
+      <tr><td>noira login</td><td data-i18n="cmds.r3">…</td></tr>
+      <tr><td>noira connect</td><td data-i18n="cmds.r4">…</td></tr>
+      <tr><td>noira serve</td><td data-i18n="cmds.r5">…</td></tr>
+    </table>
+    <p class="sub" style="margin-top:1rem"><span data-i18n="cmds.more">Dentro de la sesión:</span> <code class="inline">/agents</code> · <code class="inline">/parallel</code> · <code class="inline">/deploy</code> · <code class="inline">/logout</code></p>
+  </div>
+
+  <div class="section">
+    <h2>&gt; <span data-i18n="nav.contact">Contacto</span></h2>
+    <p class="sub" data-i18n="contact.intro">¿Preguntas…?</p>
+    <a class="btn-outline" href="mailto:noiramaster@gmail.com" data-i18n="contactCta">Contactar con Noira</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="cols">
+    <div><h4 class="brand">&gt; NOIRACODER</h4><p class="brandp" data-i18n="footer.brand">…</p></div>
+    <div><h4 data-i18n="footer.products">Ecosistema</h4><ul>
+      <li><a href="https://noiramaster.pages.dev/" target="_blank" rel="noopener">Noiramaster</a></li>
+    </ul></div>
+    <div><h4 data-i18n="footer.resources">Recursos</h4><ul>
+      <li><a href="/blog/" data-i18n="nav.blog">Blog</a></li>
+      <li><a href="/sobre.html" data-i18n="nav.about">Sobre NoiraCoder</a></li>
+      <li><a href="/legal.html" data-i18n="nav.legal">Legal</a></li>
+      <li><a href="/terminos.html" data-i18n="nav.terms">Términos</a></li>
+      <li><a href="/privacidad.html" data-i18n="nav.privacy">Privacidad</a></li>
+    </ul></div>
+    <div><h4 data-i18n="footer.community">Comunidad</h4><div class="social">
+      <a href="https://x.com/noiramaster" target="_blank" rel="noopener" aria-label="X"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+      <a href="https://www.instagram.com/noiramaster/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
+      <a href="https://www.reddit.com/user/AddendumIll3987/" target="_blank" rel="noopener" aria-label="Reddit"><svg viewBox="0 0 24 24"><path d="M12 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 01-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 01.042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 014.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 01.14-.197.35.35 0 01.238-.042l2.906.617a1.214 1.214 0 011.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 00-.231.094.33.33 0 000 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 000-.463.33.33 0 00-.463 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 00-.232-.095z"/></svg></a>
+    </div></div>
+    <div><h4 data-i18n="footer.languages">Idiomas</h4><div class="langrow">
+      <button data-lang="es">ES</button><button data-lang="en">EN</button><button data-lang="pt">PT</button><button data-lang="fr">FR</button><button data-lang="de">DE</button><button data-lang="it">IT</button><button data-lang="ar">AR</button>
+    </div></div>
+  </div>
+  <div class="bottombar"><p>&gt; Noira © <span id="year">2026</span> · <span data-i18n="footer.copyright">Todos los derechos reservados.</span></p></div>
+</footer>
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+(function () {
+  var typingEl = document.getElementById('typing');
+  var block = document.getElementById('termblock');
+  function typeInto(el, text, speed, done) {
+    var i = 0;
+    var iv = setInterval(function () {
+      if (i <= text.length) { el.textContent = text.slice(0, i); i++; }
+      else { clearInterval(iv); if (done) done(); }
+    }, speed);
+  }
+  function renderBlock(lines) {
+    block.innerHTML = '';
+    lines.forEach(function (ln, i) {
+      var s = document.createElement('span');
+      s.innerHTML = '<span class="p">&gt;</span> ' + ln.replace(/^&gt;\s*/, '');
+      block.appendChild(s);
+      if (i < lines.length - 1) block.appendChild(document.createElement('br'));
+    });
+    var c = document.createElement('span');
+    c.className = 'cursor animate-blink'; c.textContent = '_';
+    block.appendChild(c);
+  }
+  function start() {
+    var lang = (typeof noiraGetLang === 'function') ? noiraGetLang() : 'en';
+    var t1 = (typeof noiraT === 'function') ? noiraT('hero.typing', lang) : '> npm install -g noiracoder';
+    typeInto(typingEl, t1, 30);
+    var l1 = (typeof noiraT === 'function') ? noiraT('hero.term1', lang).replace(/^>\s*/, '') : 'Systems online',
+        l2 = (typeof noiraT === 'function') ? noiraT('hero.term2', lang).replace(/^>\s*/, '') : 'All systems available';
+    var shown = [];
+    var all = [l1, l2];
+    var li = 0;
+    var iv = setInterval(function () {
+      if (li < all.length) { shown.push(all[li]); renderBlock(shown); li++; }
+      else clearInterval(iv);
+    }, 800);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
+  document.addEventListener('noira-lang', start);
+})();
+</script>
+</body>
+</html>

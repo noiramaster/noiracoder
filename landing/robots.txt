@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://noiracoder.pages.dev/sitemap.xml
