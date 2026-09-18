@@ -1,5 +1,15 @@
 [
   {
+    "slug": "privacidad-local-claves-cifradas-dpapi",
+    "file": "2026-09-18-privacidad-local-claves-cifradas-dpapi.html",
+    "date": "2026-09-18",
+    "category": "noiracoder",
+    "title_es": "NoiraCoder y la privacidad local: claves cifradas con DPAPI",
+    "title_en": "NoiraCoder and Local Privacy: Encrypted Keys with DPAPI",
+    "excerpt_es": "NoiraCoder protege tus claves usando DPAPI para que nunca abandonen tu máquina.",
+    "excerpt_en": "NoiraCoder safeguards your keys with DPAPI so they never leave your machine."
+  },
+  {
     "slug": "rotacion-modelos-gratis-sin-quedarte-sin-cuota",
     "file": "2026-09-17-rotacion-modelos-gratis-sin-quedarte-sin-cuota.html",
     "date": "2026-09-17",
