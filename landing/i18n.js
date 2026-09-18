@@ -439,6 +439,15 @@ var NOIRA_AR = {
 
 var NOIRA_STRINGS = { en: NOIRA_EN, es: NOIRA_ES, pt: NOIRA_PT, fr: NOIRA_FR, de: NOIRA_DE, it: NOIRA_IT, ar: NOIRA_AR };
 
+/* Copy-buttons: etiqueta + confirmación + toast en los 7 idiomas */
+NOIRA_EN.copy = { btn: 'Copy', copied: '✓ Copied', toast: 'Copied to clipboard' };
+NOIRA_ES.copy = { btn: 'Copiar', copied: '✓ Copiado', toast: 'Copiado al portapapeles' };
+NOIRA_PT.copy = { btn: 'Copiar', copied: '✓ Copiado', toast: 'Copiado para a área de transferência' };
+NOIRA_FR.copy = { btn: 'Copier', copied: '✓ Copié', toast: 'Copié dans le presse-papiers' };
+NOIRA_DE.copy = { btn: 'Kopieren', copied: '✓ Kopiert', toast: 'In Zwischenablage kopiert' };
+NOIRA_IT.copy = { btn: 'Copia', copied: '✓ Copiato', toast: 'Copiato negli appunti' };
+NOIRA_AR.copy = { btn: 'نسخ', copied: '✓ تم النسخ', toast: 'تم النسخ إلى الحافظة' };
+
 function noiraGetNested(obj, path) {
   var cur = obj;
   var keys = path.split('.');

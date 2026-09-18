@@ -80,6 +80,7 @@ const html = `<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
 <script src="/i18n.js" defer></script>
+<script src="/copy.js" defer></script>
 <script>var NOIRA_POST = ${JSON.stringify({ title_es: titleEs, title_en: titleEn, excerpt_es: excerptEs, excerpt_en: excerptEn, body_es: bodyEs, body_en: bodyEn, date: today })};</script>
 </head>
 <body>

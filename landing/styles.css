@@ -135,3 +135,13 @@ article.post-body pre { font-family: var(--font-mono); font-size: .8rem; backgro
 .langrow button:hover, .langrow button.active { color: var(--accent); }
 .bottombar { border-top: 1px solid var(--border); padding: .75rem 1rem; text-align: center; }
 .bottombar p { font-size: .75rem; color: var(--muted); font-family: var(--font-mono); }
+/* Copy-buttons Noira: dorado de marca sobre plum, RTL-safe vía inset-inline-end */
+.codewrap { position: relative; }
+.codewrap pre { padding-top: 2.1rem; }
+.copy-btn { position: absolute; top: .5rem; inset-inline-end: .5rem; font-family: var(--font-mono); font-size: .7rem; line-height: 1; color: var(--accent); background: rgba(251,191,36,.08); border: 1px solid var(--accent); border-radius: var(--radius); padding: .3rem .6rem; cursor: pointer; opacity: .85; transition: background .15s, color .15s, opacity .15s; }
+.copy-btn:hover { background: var(--accent); color: #000; opacity: 1; }
+.copy-btn.ok { background: var(--accent); color: #000; opacity: 1; }
+.copy-btn.mini { position: static; font-size: .62rem; padding: .15rem .4rem; opacity: .55; }
+td:hover .copy-btn.mini { opacity: 1; }
+#noira-toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(10px); background: var(--panel); border: 1px solid var(--accent); color: var(--accent); font-family: var(--font-mono); font-size: .8rem; padding: .55rem 1.1rem; border-radius: var(--radius); opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; z-index: 99; }
+#noira-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
