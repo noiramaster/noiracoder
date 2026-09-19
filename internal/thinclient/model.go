@@ -239,6 +239,14 @@ func (m *Model) onEvent(ev Event) {
 		m.addLine(fmt.Sprintf("[confirm] %s", str(ev, "motivo")))
 	case "memory.event":
 		m.addLine(fmt.Sprintf("[memoria:%s] %s", str(ev, "nivel"), str(ev, "resumen")))
+	case "turn.tool_start":
+		m.addLine(fmt.Sprintf("[tool] %s %s", str(ev, "nombre"), str(ev, "detalle")))
+	case "turn.tool_end":
+		code := ""
+		if v, ok := ev.Data["exitCode"]; ok && v == float64(1) {
+			code = " (falló)"
+		}
+		m.addLine(fmt.Sprintf("[tool] %s fin%s", str(ev, "nombre"), code))
 	case "session.updated":
 		if n := str(ev, "nombre"); n != "" {
 			m.sessName = n
