@@ -21,16 +21,16 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
       SIEMPRE (en PROTOCOL.md §5).
 - Puerta 0 APROBADA (v3, modo autónomo 2026-09-19). Sigue Hito 1.
 
-## Hito 1 — ESQUELETO ANDANTE (en curso, 2026-09-19)
-- [x] Hooks motor (f516610): `signal`, `onModelSwitch`, `model?` en
-      orchestrator/agentLoop. Typecheck OK, E2E 48/48 (sin cambio).
-- [x] Servidor thin SSE (266f9ec): `src/server/thin.ts` + `serve --thin`.
-      Verificado ejecutando (docs/evidence/h1-thin-server.md): health/401/426,
-      sesiones, modelos, turno real con streaming (turn.text→end done),
-      undo revirtió artefacto del propio turno. Sin huérfanos.
-- [ ] Go cliente fino (rama noira-rebrand, eliminar motor heredado).
-- [ ] Wrapper ciclo de vida (puerto/token/env, fallback Ink).
-- [ ] Pruebas pty + 401/409/426 (evidencia en docs/evidence/).
+## Hito 1 — ESQUELETO ANDANTE (COMPLETO 2026-09-19, commits f516610, 266f9ec, 2d98aeb)
+- [x] Hooks motor: `signal`, `onModelSwitch`, `model?` (E2E 48/48 sin cambio).
+- [x] Servidor thin SSE + `serve --thin` (evidencia docs/evidence/h1-thin-server.md).
+- [x] Go cliente fino (rama noira-rebrand 7776194): `internal/thinclient` +
+      `cmd/noira-thin`; `go list -deps` sin rastro de llm/permission/session/db/config.
+- [x] Wrapper ciclo de vida: puerto libre, token 32B por env, /health, matar
+      motor al salir, parent-watchdog anti-huérfanos, fallback Ink.
+- [x] Pruebas pty 9/9 (docs/evidence/h1-pty.md): boot, streaming, fin de turno,
+      matar motor → error visible, matar pty → sin huérfanos, 409, 401/426 por HTTP.
+- Siguiente: HITO 2 (confirmaciones/tools, memoria visible, saneo+adversaria).
 
 ## Pendientes (no bloquean Hito 1)
 - `README.md:16` apunta a `https://noiracoder.noira.sh/install` (dominio externo,
