@@ -20,15 +20,6 @@ permissions:
 
 jobs:
   build:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { goos: windows, goarch: amd64, ext: ".exe", name: "noira-thin-Windows-x86_64.exe" }
-          - { goos: linux, goarch: amd64, ext: "", name: "noira-thin-Linux-x86_64" }
-          - { goos: linux, goarch: arm64, ext: "", name: "noira-thin-Linux-arm64" }
-          - { goos: darwin, goarch: amd64, ext: "", name: "noira-thin-Darwin-x86_64" }
-          - { goos: darwin, goarch: arm64, ext: "", name: "noira-thin-Darwin-arm64" }
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -37,27 +28,29 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version: "1.24.0"
+          go-version: ">=1.23.2"
           cache: true
           cache-dependency-path: go.sum
 
       - run: go mod download
 
-      - name: Build noira-thin
-        env:
-          CGO_ENABLED: "0"
-          GOOS: ${{ matrix.goos }}
-          GOARCH: ${{ matrix.goarch }}
+      - name: Build noira-thin (5 targets)
         run: |
-          go build -trimpath -ldflags "-s -w" -o dist-go/${{ matrix.name }} ./cmd/noira-thin
+          mkdir -p dist-go
+          export CGO_ENABLED=0
+          GOOS=windows GOARCH=amd64 go build -trimpath -ldflags "-s -w" -o dist-go/noira-thin-Windows-x86_64.exe ./cmd/noira-thin
+          GOOS=linux GOARCH=amd64 go build -trimpath -ldflags "-s -w" -o dist-go/noira-thin-Linux-x86_64 ./cmd/noira-thin
+          GOOS=linux GOARCH=arm64 go build -trimpath -ldflags "-s -w" -o dist-go/noira-thin-Linux-arm64 ./cmd/noira-thin
+          GOOS=darwin GOARCH=amd64 go build -trimpath -ldflags "-s -w" -o dist-go/noira-thin-Darwin-x86_64 ./cmd/noira-thin
+          GOOS=darwin GOARCH=arm64 go build -trimpath -ldflags "-s -w" -o dist-go/noira-thin-Darwin-arm64 ./cmd/noira-thin
           cp NOTICE dist-go/NOTICE.txt
           ls -la dist-go/
 
-      - name: Upload artifact (siempre: lo usa el job de sumas)
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.name }}
-          path: dist-go/${{ matrix.name }}
+          name: noira-thin-all
+          path: dist-go/
           if-no-files-found: error
 
   sums:
@@ -70,12 +63,11 @@ jobs:
           fetch-depth: 0
       - uses: actions/download-artifact@v4
         with:
+          name: noira-thin-all
           path: dist-go
-          merge-multiple: true
       - env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cp NOTICE dist-go/NOTICE.txt
           (cd dist-go && sha256sum noira-thin-* NOTICE.txt > SHA256SUMS)
           cat dist-go/SHA256SUMS
           gh release view "${{ github.ref_name }}" >/dev/null 2>&1 || \
