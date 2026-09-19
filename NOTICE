@@ -1,0 +1,10 @@
+NOTICE — NoiraCoder pantalla Go (noira-thin)
+
+Este binario deriva de OpenCode (https://github.com/opencode-ai/opencode),
+copyright (c) 2025 Kujtim Hoxha, bajo licencia MIT. La licencia MIT completa
+viaja en LICENSE en este mismo release. El cliente fino `thinclient`
+(pinta + teclas, sin motor heredado) es obra del ecosistema Noira.
+
+MIT License — Copyright (c) 2025 Kujtim Hoxha. Se permite usar, copiar,
+modificar y distribuir este software conservando este aviso y la licencia.
+El software se ofrece "TAL CUAL", sin garantías.
