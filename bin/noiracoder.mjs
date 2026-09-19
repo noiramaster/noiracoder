@@ -15,6 +15,12 @@ const goBin = existsSync(join(here, "noira-go.exe"))
 
 const args = process.argv.slice(2);
 const isCliFlag = args.some((a) => ["--help","-h","--version","-v","serve","login","--lang"].includes(a) || a === "-l" || a === "--level");
+// HITO 0 (puerta de seguridad): por defecto SIEMPRE motor Node.
+// La pantalla Go solo con --go explícito + aviso, y NUNCA vía `nc`.
+// Motivo: la Go aún ejecuta herramientas propias sin el sandbox del motor;
+// en el Hito 1/2 pasará a ser cliente fino del motor (docs/PROTOCOL.md).
+const wantGo = args.includes("--go");
+const isNc = invokedAs === "nc" || invokedAs === "nc.cmd" || invokedAs === "nc.ps1";
 // Escape hatch: fuerza el camino Node (sin TUI Go) aunque haya terminal.
 const forceNode = args.includes("--no-tui") || args.includes("--repl") || process.env.NOIRA_NO_TUI === "1";
 // La TUI Go necesita un terminal interactivo REAL para leer teclas: sin stdin
@@ -22,27 +28,21 @@ const forceNode = args.includes("--no-tui") || args.includes("--repl") || proces
 // teclas eternamente sin responder. En ese caso se usa siempre el camino
 // Node (runRepl), que completa por EOF y sale con código 0.
 const interactiveTTY = !!process.stdin.isTTY && !!process.stdout.isTTY;
-// Clon OpenCode: si no hay flag de CLI y hay terminal real, lanza Go TUI pulido.
-if (!isCliFlag && !forceNode && interactiveTTY && existsSync(goBin)) {
-  try {
-    const home = process.env.NOIRARC_HOME || process.env.USERPROFILE || process.env.HOME || "";
-    const p = join(home, ".noirarc", "keys.json");
-    const raw = existsSync(p) ? readFileSync(p, "utf8") : "";
-    if (raw) {
-      const j = JSON.parse(raw);
-      if (j.openrouter && !process.env.OPENROUTER_API_KEY) process.env.OPENROUTER_API_KEY = j.openrouter;
-      if (j.groq && !process.env.GROQ_API_KEY) process.env.GROQ_API_KEY = j.groq;
-    }
-  } catch {}
-  const r = spawnSync(goBin, args, { stdio: "inherit", env: process.env });
+if (wantGo && !isNc && !forceNode && interactiveTTY && existsSync(goBin)) {
+  console.error("> AVISO: la pantalla Go (--go) es experimental: ejecuta herramientas propias SIN el sandbox del motor.");
+  console.error("> Úsala solo para pruebas visuales. En el Hito 2 será cliente fino del motor con sandbox completo.");
+  const r = spawnSync(goBin, args.filter((a) => a !== "--go"), { stdio: "inherit", env: process.env });
   process.exit(r.status ?? 0);
 }
-if (!isCliFlag && !interactiveTTY && existsSync(goBin) && !forceNode) {
-  console.error("> Sin terminal interactivo: se usa el modo Node (la TUI Go necesita teclas reales).");
+if (wantGo && !isNc && !interactiveTTY) {
+  console.error("> --go necesita terminal interactivo: se usa el motor Node.");
+}
+if (wantGo && isNc) {
+  console.error("> `nc` es siempre el respaldo Ink/Node: --go se ignora.");
 }
 
 import(pathToFileURL(distEntry).href)
-  .then(({ cliMain }) => cliMain(process.argv.slice(2), { invokedAs }))
+  .then(({ cliMain }) => cliMain(args.filter((a) => a !== "--go"), { invokedAs }))
   .then((code) => { process.exitCode = code ?? 0; })
   .catch((err) => {
     console.error(`[error] no se pudo arrancar NoiraCoder: ${err instanceof Error ? err.message : err}`);
