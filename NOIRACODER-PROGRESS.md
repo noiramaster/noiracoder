@@ -56,6 +56,21 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
       docs/evidence/h2-adversarial.md. Campo de pruebas limpiado.
 - [x] 2.6 Residual env-token documentado en THREAT-MODEL.md.
 - HITO 2 COMPLETO. Siguiente: HITO 3 (experiencia).
+
+## Hito 3 — EXPERIENCIA (COMPLETO 2026-09-19)
+- [x] 3.1 Diff OpenCode vs thin (docs/evidence/h3-diff.md + frame legacy por pty).
+      Decisión: comandos texto en vez de pickers; no se clona init/dialogs.
+- [x] 3.2/3.3 Pantalla completa + responsive (entrada compacta si <18 filas) +
+      hints + sin marca antigua en el cliente (docs/evidence/h3-pty pendiente).
+- [x] 3.4 TTFB medido en vivo: 3729 ms (POST→primer delta, modelo real).
+      Pensando con nombre, rotación visible, watchdog 60s/10min, Ctrl+C cancela.
+- [x] 3.5 Historial ↑↓ (pty 5/5), /help con atajos, /model, /quit.
+- [x] 3.6 UI en 7 idiomas (lang.go + lang_test.go: tabla completa, sin
+      idénticas al inglés salvo cognados, detectLang por prefs.json).
+      Verificado pty en EN y AR (placeholder/hints/help, sin mojibake).
+      Pendiente (servidor): cadenas de error/detalle del motor en español.
+- [x] 3.7 docs/PRUEBA-VISUAL.md (6 checks) → PENDIENTE DEL USUARIO.
+- Siguiente: HITO 4 (Kilo + OpenRouter).
 - [ ] 2.5 Batería adversaria T1–T5 + 48 E2E.
 - [ ] 2.6 Riesgo residual env-token.
 
