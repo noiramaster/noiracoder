@@ -7,10 +7,10 @@
  */
 
 import type { Level, ChatMessage, ModelInfo } from "../types.js";
-import { resolveApiKey, loadAllKeys } from "../auth/keys.js";
+import { resolveApiKey, loadAllKeys, configDir } from "../auth/keys.js";
 import { OpenRouterClient } from "../models/provider.js";
 import { loadCatalog, QuotaTracker } from "../models/catalog.js";
-import { buildProviderPool, fetchAllModels, fetchMergedCatalog, isChatModel, type ProviderClient, type ProviderId } from "../models/providers/index.js";
+import { buildProviderPool, fetchAllModels, fetchMergedCatalog, isChatModel, classifyProviderModels, type ProviderClient, type ProviderId } from "../models/providers/index.js";
 import { OPENROUTER_FREE_ACCOUNT_ID, loadNoiraConfig, openRouterSharedLimit } from "../models/accountQuota.js";
 import { buildRolePolicy, buildRouter, shouldAutoCrossCheck } from "../models/router.js";
 import { AdaptiveRanker } from "../models/adaptive.js";
@@ -67,18 +67,26 @@ export async function orchestrate(
   }
 
   // ── Keys + pool multi-provider REAL ──
-  const apiKey = opts.apiKey ?? (await resolveApiKey({ allowInteractive: opts.allowInteractiveAuth }));
+  // HITO 4.4: arranque SIN claves (Kilo anónimo). El pool siempre trae Kilo,
+  // así que la key de OpenRouter pasa a ser opcional. Sin claves no se pide login.
+  let apiKey = opts.apiKey;
+  if (!apiKey) {
+    try {
+      apiKey = await resolveApiKey({ allowInteractive: opts.allowInteractiveAuth });
+    } catch {
+      apiKey = undefined;
+    }
+  }
   const allKeys = await loadAllKeys();
   // Asegura que la key resuelta está en el pool
   if (apiKey && !allKeys.openrouter) allKeys.openrouter = apiKey;
   const pool = buildProviderPool(allKeys);
-  const primaryClient = new OpenRouterClient({ apiKey });
   // Client per provider: chat MUST go through the owner of the model id.
   // (Sending a groq/* id to OpenRouter would 404.)
   const clientsByProvider = new Map<string, ProviderClient>();
   for (const p of pool) if (!clientsByProvider.has(p.id)) clientsByProvider.set(p.id, p);
-  if (!clientsByProvider.has("openrouter")) {
-    const c = primaryClient;
+  if (apiKey && !clientsByProvider.has("openrouter")) {
+    const c = new OpenRouterClient({ apiKey });
     clientsByProvider.set("openrouter", {
       id: "openrouter", label: "OpenRouter",
       complete: (o) => c.complete(o),
@@ -87,11 +95,14 @@ export async function orchestrate(
     });
   }
   const clientFor = (provider: string | undefined): ProviderClient =>
-    (provider && clientsByProvider.get(provider)) || clientsByProvider.get("openrouter")!;
+    (provider && clientsByProvider.get(provider)) || clientsByProvider.get("openrouter") || pool[0];
 
   // Catálogo: si hay pool con 2+ providers, agrega modelos de todos; si no, solo OpenRouter
   // providersById recuerda qué providers sirven cada id (mismo modelo en varios).
+  // HITO 4: caché por configDir (respeta NOIRARC_HOME): sin mezclar catálogos
+  // de distintos estados de claves (un caché rancio escondía a Kilo).
   const catalog = await loadCatalog({
+    cacheDir: configDir(),
     fetch: async () => {
       if (pool.length > 1) {
         const merged = await fetchMergedCatalog(pool);
@@ -103,7 +114,15 @@ export async function orchestrate(
           };
         }
       }
-      return primaryClient.listModels();
+      // HITO 4: un solo provider (p. ej. Kilo anónimo): etiquetar provider
+      // para que el router y el flip multi-provider funcionen igual.
+      const solo = await pool[0].listModels();
+      const tagged = classifyProviderModels(pool[0].id, solo);
+      return {
+        models: tagged,
+        providersById: Object.fromEntries(tagged.map((m) => [m.id, [pool[0].id]])),
+        freeByProvider: Object.fromEntries(tagged.map((m) => [m.id, { [pool[0].id]: m.free }])),
+      };
     },
   });
   const modelsById = new Map(catalog.models.map((m) => [m.id, m]));
@@ -180,7 +199,10 @@ export async function orchestrate(
   const taskBlock = cacheAwareTask(prompt);
 
   // Providers con clave muerta (401): se descartan de la sesión y se rota a otro.
+  // HITO 4.5: un provider con 3+ fallos de RED seguidos también se aparta
+  // (Kilo caído no debe atascar el turno ciclando sus 20 modelos).
   const deadProviders = new Set<string>();
+  const netFails = new Map<string, number>();
   const providerOf = (model: string): string | undefined => modelsById.get(model)?.provider;
   const markDead = (model: string): void => {
     const p = providerOf(model);
@@ -239,9 +261,26 @@ export async function orchestrate(
   };
   const onErr = (role: "orchestrator" | "code" | "research" | "review" | "security" | "cheap") =>
     (m: string, kind: "transient" | "quota" | "auth") => {
-      if (kind === "auth") markDead(m);
+      if (kind === "auth") {
+        markDead(m);
+        netFails.delete(providerOf(m) ?? "");
+      } else {
+        // Transitorio (incluye red): 3 seguidos del mismo provider -> se aparta.
+        const p = providerOf(m) ?? "";
+        const n = (netFails.get(p) ?? 0) + 1;
+        netFails.set(p, n);
+        if (n >= 3 && p && !deadProviders.has(p)) {
+          deadProviders.add(p);
+          opts.log.warn(`${p}: no responde tras ${n} intentos. Se sigue con otro proveedor.`);
+        }
+      }
       router.recordModelError(m, kind === "auth" ? "transient" : kind);
       opts.onModelErrorExt?.(m, kind);
+    };
+  const noteSuccess = (role: "orchestrator" | "code" | "research" | "review" | "security" | "cheap") =>
+    (m: string) => {
+      router.recordSuccess(role, m);
+      netFails.delete(providerOf(m) ?? "");
     };
 
   // ── Ejecuta orquestador primero ──
@@ -252,7 +291,14 @@ export async function orchestrate(
   ];
 
   opts.onAgentStart?.("orchestrator");
-  const orchBaseModel = preferredModel ?? orchDecision.model ?? "openrouter/auto";
+  // HITO 4.5: si el router no decide nada (""), se busca el primer vivo
+  // en vez de intentar una llamada con modelo vacío.
+  let orchBaseModel = preferredModel || orchDecision.model || "";
+  if (!orchBaseModel) {
+    const fb = nextAlive("orchestrator", "");
+    if (fb) orchBaseModel = fb.model;
+  }
+  if (!orchBaseModel) throw new Error("sin modelos disponibles (revisa claves y cuotas)");
   const orch = await runAgentLoop({
     client: clientFor(preferredModel ? providerOf(preferredModel) : orchDecision.provider),
     registry,
@@ -261,13 +307,13 @@ export async function orchestrate(
     seed: [taskBlock.detail],
     model: orchBaseModel,
     free: orchDecision.free,
-    apiKey,
+    apiKey: apiKey ?? "",
     tools,
     onToken: opts.onToken,
     signal: opts.signal,
     onModelSwitch: opts.onModelSwitch,
     nextModel: () => nextAlive("orchestrator", orchBaseModel),
-    onModelSuccess: (m) => router.recordSuccess("orchestrator", m),
+    onModelSuccess: noteSuccess("orchestrator"),
     onModelError: onErr("orchestrator"),
   });
 
@@ -276,7 +322,7 @@ export async function orchestrate(
   if (isTrivial || pipeline.length === 1) {
     let output = orch.content;
     if (shouldAutoCrossCheck(opts.level, sensitive) && output.trim()) {
-      output = await runCrossCheck(output, prompt, system, clientFor, apiKey, router, opts);
+      output = await runCrossCheck(output, prompt, system, clientFor, apiKey ?? "", router, opts);
     }
     await rememberAll(prompt, opts, memory);
     return { output, steps: orch.steps, level: opts.level, agentsRun: ["orchestrator"] };
@@ -298,7 +344,8 @@ export async function orchestrate(
   interface AgentOutcome { role: AgentRole; content: string; steps: number; }
   const runOne = async (role: AgentRole): Promise<AgentOutcome> => {
     const decision = router.decide(role);
-    const model = preferredModel ?? decision.model ?? orchDecision.model ?? "openrouter/auto";
+    const model = preferredModel || decision.model || orchDecision.model || "";
+    if (!model) throw new Error("sin modelos disponibles (revisa claves y cuotas)");
     const spec = AGENTS[role];
     if (!spec) return { role, content: "", steps: 0 };
 
@@ -317,13 +364,13 @@ export async function orchestrate(
       seed: [...historyForAgents, { role: "user", content: roleInstruction }],
       model,
       free: decision.free,
-      apiKey,
+      apiKey: apiKey ?? "",
       tools: filterToolsForRole(tools, spec.allowedTools),
       onToken: opts.onToken,
       signal: opts.signal,
       onModelSwitch: opts.onModelSwitch,
       nextModel: () => nextAlive(role, model),
-      onModelSuccess: (m) => router.recordSuccess(role, m),
+      onModelSuccess: noteSuccess(role),
       onModelError: onErr(role),
     });
     return { role, content: result.content, steps: result.steps };
@@ -382,7 +429,7 @@ export async function orchestrate(
 
   // Cross-check final si aplica y no lo hizo ya security
   if (shouldAutoCrossCheck(opts.level, sensitive) && !agentsRun.includes("security") && output.trim()) {
-    output = await runCrossCheck(output, prompt, system, clientFor, apiKey, router, opts);
+    output = await runCrossCheck(output, prompt, system, clientFor, apiKey ?? "", router, opts);
   }
 
   await rememberAll(prompt, opts, memory);

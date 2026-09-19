@@ -4,7 +4,7 @@
  */
 
 import { readFileSync } from "node:fs";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import {
@@ -23,6 +23,25 @@ export function T(key: keyof Messages, lang: string): string {
   const enVal = en?.[key];
   if (typeof enVal === "string" && enVal.length > 0) return enVal;
   return key;
+}
+
+/**
+ * HITO 4.7: aviso de primer uso (una sola vez por equipo): los modelos
+ * gratuitos pueden registrar lo enviado. Marca en ~/.noirarc/.freewarn-shown.
+ */
+export async function freeWarningOnce(log: { warn: (m: string) => void }, lang: string): Promise<boolean> {
+  const dir = defaultConfigDir();
+  const flag = join(dir, ".freewarn-shown");
+  try {
+    await readFile(flag, "utf8");
+    return false;
+  } catch { /* primera vez */ }
+  log.warn(T("freeWarning", lang));
+  try {
+    await mkdir(dir, { recursive: true });
+    await writeFile(flag, "1", "utf8");
+  } catch { /* aviso mostrado igualmente */ }
+  return true;
 }
 
 interface Prefs {

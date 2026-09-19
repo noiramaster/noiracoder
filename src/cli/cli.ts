@@ -111,7 +111,7 @@ export function printHelp(): void {
     `${appInfo.title} — tu senior 24/7, gratis.\n\n` +
       `  noira              Abre el chat (como claude / opencode)\n` +
       `  noira login        Conecta (1 clic)\n` +
-      `  noira connect      Estado de las 3 claves gratis + guía\n` +
+      `  noira connect      Kilo anónimo + estado de claves opcionales\n` +
       `  noira --no-tui     Fuerza modo texto Node (si la TUI no responde)\n` +
       `  noira --help       Más opciones\n`
   );
@@ -212,16 +212,17 @@ export async function cliMain(argv: string[], meta?: { invokedAs?: string }): Pr
       const keys = await loadAllKeys();
       const pool = buildProviderPool(keys);
       log.raw("");
-      log.raw(color.gold("> NOIRA · 3 claves gratuitas = presupuesto amplio"));
-      log.raw(color.dim("> Con UNA ya funciona. Cada clave tarda ~1 min y se guarda así:\n"));
+      log.raw(color.gold("> NOIRA — funciona SIN claves (Kilo anónimo, 200 req/hora)"));
+      log.raw(color.dim("> Cada clave opcional amplía tu cuota. Tardan ~1 min y se guardan cifradas.\n"));
       const steps: { id: string; name: string; url: string; note: string }[] = [
-        { id: "openrouter", name: "1) OpenRouter", url: "https://openrouter.ai/keys", note: `La base. 25+ modelos free, UNA clave para todos. Cupo: ${OPENROUTER_FREE_DAILY.noCredits}/día. Guárdala con: noira login` },
-        { id: "groq", name: "2) Groq", url: "https://console.groq.com/keys", note: "Muy rápida. Límite por modelo (~1000 req/día). Guarda con: noira login --groq <key>" },
+        { id: "kilo", name: "0) Kilo", url: "sin registro", note: "Ya activo: 20 modelos :free, sin hacer nada." },
+        { id: "openrouter", name: "1) OpenRouter", url: "https://openrouter.ai/keys", note: `Amplía la cuota: 25+ modelos free, ${OPENROUTER_FREE_DAILY.noCredits}/día (1000/día con 10 $ cargados). Guárdala con: noira login` },
+        { id: "groq", name: "2) Groq", url: "https://console.groq.com/keys", note: "Muy rápida. Límite por modelo. Guarda con: noira login --groq <key>" },
         { id: "zen", name: "3) Zen", url: "https://opencode.ai/zen", note: "Modelos free promocionales (rotan). Guarda con: noira login --zen <key>" },
       ];
       for (const s of steps) {
-        const has = !!(keys as Record<string, string | undefined>)[s.id];
-        log.raw(`${has ? color.ok("[ok]") : color.dim("[ ]")} ${color.dim(s.url)}`);
+        const has = s.id === "kilo" ? true : !!(keys as Record<string, string | undefined>)[s.id];
+        log.raw(`${has ? color.ok("[ok]") : color.dim("[ ]")} ${s.name} — ${color.dim(s.url)}`);
         log.raw(`    ${s.note}`);
       }
       if (pool.length) {
@@ -284,6 +285,8 @@ export async function cliMain(argv: string[], meta?: { invokedAs?: string }): Pr
         return 1;
       }
       log.info(`Noira · ${args.level}`);
+      const { freeWarningOnce } = await import("../i18n/index.js");
+      await freeWarningOnce(log, lang);
       const { connectMcp } = await import("../mcp/connect.js");
       const mcp = await connectMcp(process.cwd());
       if (mcp) log.ok("[mcp] Servidores MCP conectados.");

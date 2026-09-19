@@ -71,6 +71,23 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
       Pendiente (servidor): cadenas de error/detalle del motor en español.
 - [x] 3.7 docs/PRUEBA-VISUAL.md (6 checks) → PENDIENTE DEL USUARIO.
 - Siguiente: HITO 4 (Kilo + OpenRouter).
+
+## Hito 4 — PROVEEDORES (COMPLETO 2026-09-19)
+- [x] 4.1 Kilo verificado (docs + anónimo 200 + 20 :free/18 con tools).
+- [x] 4.2 Router (KiloClient, classify, isNetworkError, dead-tras-3).
+- [x] 4.3 Cuotas (OR existente + Kilo doc + avisos vivos).
+- [x] 4.4 Sin claves (env limpio: kilo-20 + turno done) + connect reescrito.
+- [x] 4.5 Kilo caído → aviso + failover (antes: error sin rotar).
+- [x] 4.6 OpenRouter muerta → warn + flip + sigue (en vivo).
+- [x] 4.7 freeWarning 7 idiomas, una vez (run + thin).
+- Fixes: caché (v5, por-hogar, nunca vacío), tags provider, modelo "" .
+- E2E 48/48 + adversarial 36/36 + sanitize tras todo.
+- Siguiente: HITO 5 (mensaje, traducciones, landing, blog).
+
+## PENDIENTES DEL USUARIO
+- Regenerar clave OpenRouter (`noira login`) — la actual da 401.
+- PRUEBA-VISUAL.md (Hito 3.7) en su terminal real.
+- Crear formulario Formspree de NoiraCoder (Hito 5.5).
 - [ ] 2.5 Batería adversaria T1–T5 + 48 E2E.
 - [ ] 2.6 Riesgo residual env-token.
 

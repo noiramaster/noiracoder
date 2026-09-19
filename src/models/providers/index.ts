@@ -3,6 +3,8 @@
  * Todos OpenAI-compatibles salvo donde se anota. Si un provider falla, el resto sigue.
  * Investigación: Groq, Cerebras, Mistral, GitHub Models, NVIDIA NIM, Cloudflare, Cohere,
  * OpenRouter y Zen/OpenCode Zen. Zen endpoint no estándar → graceful fallback.
+ * HITO 4: Kilo Gateway (https://api.kilo.ai/api/gateway) — primero del pool,
+ * anónimo con modelos `:free` (200 req/h por IP), con clave catálogo completo.
  */
 
 import type { ModelInfo } from "../../types.js";
@@ -11,6 +13,7 @@ import { OpenRouterClient, type ChatOptions, type ChatCompletion } from "../prov
 export type ProviderId =
   | "openrouter"
   | "groq"
+  | "kilo"
   | "cerebras"
   | "mistral"
   | "github"
@@ -72,9 +75,27 @@ export function createOpenRouterClient(apiKey: string): ProviderClient {
   };
 }
 
-/** Pool: solo providers con key. Cada uno se valida al listar; si falla, se ignora sin romper. */
+/** HITO 4 — Kilo Gateway (https://api.kilo.ai/api/gateway, OpenAI-compatible).
+ * Sin clave: solo modelos `:free` (200 req/hora por IP, verificado). Con clave:
+ * catálogo completo. Sin clave nunca se listan modelos de pago (si no, el
+ * primer 401 marcaría muerto el provider entero y perderíamos los free). */
+class KiloClient extends GenericOpenAIClient {
+  private readonly anonymous: boolean;
+  constructor(apiKey: string | undefined, baseURL?: string) {
+    super("kilo", "Kilo", { apiKey: apiKey ?? "", baseURL: baseURL ?? "https://api.kilo.ai/api/gateway" });
+    this.anonymous = !apiKey;
+  }
+  override async listModels(): Promise<ModelInfo[]> {
+    const all = await super.listModels();
+    if (!this.anonymous) return all;
+    return all.filter((m) => /:free$/i.test(m.id));
+  }
+}
+
+/** Pool: Kilo primero (defecto sin claves), luego el resto con key. */
 export function buildProviderPool(keys: Record<string, string | undefined>): ProviderClient[] {
   const pool: ProviderClient[] = [];
+  pool.push(new KiloClient(keys.kilo, keys.kiloBaseUrl));
   if (keys.openrouter) pool.push(createOpenRouterClient(keys.openrouter));
   if (keys.groq) pool.push(new GenericOpenAIClient("groq", "Groq", { apiKey: keys.groq, baseURL: "https://api.groq.com/openai/v1" }));
   if (keys.cerebras) pool.push(new GenericOpenAIClient("cerebras", "Cerebras", { apiKey: keys.cerebras, baseURL: "https://api.cerebras.ai/v1" }));
@@ -139,6 +160,11 @@ export function classifyProviderModels(providerId: ProviderId, models: ModelInfo
   }
   if (providerId === "zen") {
     return models.map((m) => normalize(m, /free/i.test(m.id) || KNOWN_ZEN_FREE.has(m.id)));
+  }
+  if (providerId === "kilo") {
+    // Gratis = sufijo :free (kilo-auto/free incluido). Con clave hay modelos
+    // de pago, pero en freeOnly se ignoran igual que el resto.
+    return models.map((m) => normalize(m, /:free$/i.test(m.id)));
   }
   return models.map((m) => normalize(m, m.free ?? false));
 }

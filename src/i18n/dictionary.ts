@@ -30,6 +30,8 @@ export interface Messages {
   noApiKey: string;
   quotaWarning: string;
   quotaExhausted: string;
+  /** HITO 4.7 (opcional: resto de locales caen al inglés vía T()). */
+  freeWarning?: string;
   routerLevelPrefix: string;
 }
 
@@ -59,6 +61,7 @@ export const MESSAGES: Record<string, Messages> = {
     noApiKey: "No API key configured. Set one, or run 'noiracoder auth'.",
     quotaWarning: "Warning: approaching the free request quota for this model.",
     quotaExhausted: "Free quota exhausted for this model. Try another model or provider.",
+    freeWarning: "Heads up: free models may log what you send. Don't use confidential code with them.",
     routerLevelPrefix: "Noira ·",
   },
   es: {
@@ -84,6 +87,7 @@ export const MESSAGES: Record<string, Messages> = {
     noApiKey: "No hay clave de API configurada. Configúrala o ejecuta 'noiracoder auth'.",
     quotaWarning: "Aviso: cerca del límite de solicitudes gratis de este modelo.",
     quotaExhausted: "Cuota gratis agotada para este modelo. Prueba otro modelo o proveedor.",
+    freeWarning: "Aviso: los modelos gratuitos pueden registrar lo que les envías. No uses código confidencial con ellos.",
     routerLevelPrefix: "Noira ·",
   },
   pt: {
@@ -109,6 +113,7 @@ export const MESSAGES: Record<string, Messages> = {
     noApiKey: "Nenhuma chave de API configurada. Defina uma ou execute 'noiracoder auth'.",
     quotaWarning: "Aviso: perto do limite de solicitações gratuitas deste modelo.",
     quotaExhausted: "Cota gratuita esgotada para este modelo. Tente outro modelo ou provedor.",
+    freeWarning: "Aviso: os modelos gratuitos podem registar o que lhes envias. Não uses código confidencial com eles.",
     routerLevelPrefix: "Noira ·",
   },
   fr: {
@@ -134,6 +139,7 @@ export const MESSAGES: Record<string, Messages> = {
     noApiKey: "Aucune clé API configurée. Définissez-en une ou exécutez 'noiracoder auth'.",
     quotaWarning: "Avertissement : proche de la limite de requêtes gratuites pour ce modèle.",
     quotaExhausted: "Quota gratuit épuisé pour ce modèle. Essayez un autre modèle ou fournisseur.",
+    freeWarning: "Attention : les modèles gratuits peuvent enregistrer ce que tu envoies. N'utilise pas de code confidentiel avec eux.",
     routerLevelPrefix: "Noira ·",
   },
   de: {
@@ -159,6 +165,7 @@ export const MESSAGES: Record<string, Messages> = {
     noApiKey: "Kein API-Schlüssel konfiguriert. Legen Sie einen fest oder führen Sie 'noiracoder auth' aus.",
     quotaWarning: "Warnung: kostenloses Anforderungskontingent dieses Modells fast ausgeschöpft.",
     quotaExhausted: "Kostenloses Kontingent für dieses Modell ausgeschöpft. Versuchen Sie ein anderes Modell oder einen anderen Anbieter.",
+    freeWarning: "Hinweis: Kostenlose Modelle protokollieren ggf. deine Eingaben. Kein vertraulicher Code damit.",
     routerLevelPrefix: "Noira ·",
   },
   it: {
@@ -184,6 +191,7 @@ export const MESSAGES: Record<string, Messages> = {
     noApiKey: "Nessuna chiave API configurata. Impostane una o esegui 'noiracoder auth'.",
     quotaWarning: "Attenzione: vicino al limite di richieste gratuite per questo modello.",
     quotaExhausted: "Quota gratuita esaurita per questo modello. Prova un altro modello o provider.",
+    freeWarning: "Avviso: i modelli gratuiti potrebbero registrare ciò che invii. Non usare codice riservato con loro.",
     routerLevelPrefix: "Noira ·",
   },
   ru: {
@@ -234,6 +242,7 @@ export const MESSAGES: Record<string, Messages> = {
     noApiKey: "لا يوجد مفتاح API مهيأ. عيّنه أو نفّذ 'noiracoder auth'.",
     quotaWarning: "تحذير: اقتربت من حد الطلبات المجانية لهذا النموذج.",
     quotaExhausted: "نفدت الحصة المجانية لهذا النموذج. جرّب نموذجًا أو مزودًا آخر.",
+    freeWarning: "تنبيه: قد تسجل النماذج المجانية ما ترسله. لا تستخدم شيفرة سرية معها.",
     routerLevelPrefix: "Noira ·",
   },
   hi: {

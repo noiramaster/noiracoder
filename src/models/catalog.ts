@@ -51,7 +51,8 @@ export async function loadCatalog(opts: {
 }): Promise<CatalogResult> {
   const cacheDir = opts.cacheDir ?? join(os.homedir(), ".noirarc");
   // v4: catalog also carries providersById + freeByProvider (multi-provider flip).
-  const cacheFile = join(cacheDir, "catalog.v4.json");
+  // v5: provider etiquetado siempre (Kilo anónimo) + nunca vacío (Hito 4).
+  const cacheFile = join(cacheDir, "catalog.v5.json");
 
   if (!opts.forceFresh) {
     try {
@@ -72,8 +73,40 @@ export async function loadCatalog(opts: {
     }
   }
 
-  const fetched = await opts.fetch();
+  // HITO 4.5: si la red falla o un provider devuelve vacío, se prefiere el
+  // caché rancio a romper (o envenenar con vacío). Nunca se cachea vacío.
+  const readStale = async (): Promise<CatalogResult | null> => {
+    try {
+      const raw = await readFile(cacheFile, "utf8");
+      const cached = JSON.parse(raw) as { models: ModelInfo[]; fetchedAt: number; providersById?: Record<string, string[]>; freeByProvider?: Record<string, Record<string, boolean>> };
+      if (!cached.models || cached.models.length === 0) return null;
+      const models = cached.models.map(classify);
+      return {
+        models,
+        free: models.filter((m) => m.free),
+        fetchedAt: cached.fetchedAt,
+        providersById: new Map(Object.entries(cached.providersById ?? {})),
+        freeByProvider: new Map(Object.entries(cached.freeByProvider ?? {})),
+      };
+    } catch {
+      return null;
+    }
+  };
+
+  let fetched: ModelInfo[] | { models: ModelInfo[]; providersById?: Record<string, string[]>; freeByProvider?: Record<string, Record<string, boolean>> };
+  try {
+    fetched = await opts.fetch();
+  } catch {
+    const stale = await readStale();
+    if (stale) return stale;
+    throw new Error("sin catálogo: red caída y sin caché");
+  }
   const rawModels = Array.isArray(fetched) ? fetched : fetched.models;
+  if (rawModels.length === 0) {
+    const stale = await readStale();
+    if (stale) return stale;
+    throw new Error("sin modelos en el catálogo (red o provider vacíos)");
+  }
   const providersById = new Map(Object.entries(Array.isArray(fetched) ? {} : (fetched.providersById ?? {})));
   const freeByProvider = new Map(Object.entries(Array.isArray(fetched) ? {} : (fetched.freeByProvider ?? {})));
   const models = rawModels.map(classify);

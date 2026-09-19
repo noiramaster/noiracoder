@@ -165,7 +165,7 @@ export async function runAgentLoop(opts: AgentLoopOptions): Promise<LoopResult> 
           if (next.client) client = next.client;
           continue;
         }
-      } else if (err?.retryable) {
+      } else if (err?.retryable || isNetworkError(err)) {
         opts.onModelError?.(model, "transient");
         const next = opts.nextModel?.();
         if (next) {
@@ -248,9 +248,20 @@ export function isRoutingError(err: unknown): boolean {
  * "invalid api key", "incorrect api key"...). Retryable ONLY by switching to
  * a model from a DIFFERENT provider with a valid key.
  */
-export function isAuthError(err: unknown): boolean {
-  const e = err as { status?: number; message?: string };
+export function isAuthError(err: unknown): boolean {  const e = err as { status?: number; message?: string };
   if (e?.status === 401 || e?.status === 403) return true;
   const msg = err instanceof Error ? err.message : String(err);
   return /user not found|invalid api key|incorrect api key|unauthorized|invalid_api_key|authentication/i.test(msg);
+}
+
+/**
+ * HITO 4.5: fallos de red (gateway caído, DNS, timeout) rotan al siguiente
+ * provider con mensaje claro, en vez de tumbar el turno.
+ */
+export function isNetworkError(err: unknown): boolean {
+  const e = err as { code?: string; cause?: { code?: string } };
+  const code = e?.code ?? e?.cause?.code ?? "";
+  if (/^(ECONNREFUSED|ECONNRESET|ETIMEDOUT|ENOTFOUND|EAI_AGAIN|EPIPE|UND_ERR_CONNECT_TIMEOUT)$/.test(code)) return true;
+  const msg = err instanceof Error ? err.message : String(err);
+  return /fetch failed|network timeout|socket hang up|connection refused|getaddrinfo|TLS|certificate/i.test(msg);
 }

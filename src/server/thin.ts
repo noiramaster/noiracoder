@@ -121,6 +121,11 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
   const runTurn = async (turnId: string, sessionId: string, message: string, mode: string) => {
     const abort = new AbortController();
     activeTurn = { id: turnId, sessionId, abort, lastEventAt: Date.now(), lastToolStartAt: 0 };
+    // HITO 4.7: aviso de primer uso (una vez por equipo, 7 idiomas).
+    try {
+      const { freeWarningOnce } = await import("../i18n/index.js");
+      await freeWarningOnce(opts.log, opts.lang);
+    } catch { /* nunca bloquea un turno */ }
     const touch = () => {
       if (activeTurn?.id === turnId) activeTurn.lastEventAt = Date.now();
     };
@@ -315,11 +320,14 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
     if (req.method === "GET" && url.pathname === "/v1/models") {
       try {
         const { loadAllKeys } = await import("../auth/keys.js");
+        const { configDir } = await import("../auth/keys.js");
+        const { classifyProviderModels } = await import("../models/providers/index.js");
         const { buildProviderPool, fetchMergedCatalog } = await import("../models/providers/index.js");
         const { loadCatalog } = await import("../models/catalog.js");
         const keys = await loadAllKeys();
         const pool = buildProviderPool(keys);
         const catalog = await loadCatalog({
+          cacheDir: configDir(),
           fetch: async () => {
             if (pool.length > 1) {
               try {
@@ -333,12 +341,19 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
                     ),
                   };
                 }
-              } catch { /* cae al catálogo local */ }
+              } catch { /* cae al primer provider */ }
             }
-            return { models: [] };
+            const soloRaw = await pool[0].listModels();
+            const solo = classifyProviderModels(pool[0].id, soloRaw);
+            return {
+              models: solo,
+              providersById: Object.fromEntries(solo.map((m) => [m.id, [pool[0].id]])),
+              freeByProvider: Object.fromEntries(solo.map((m) => [m.id, { [pool[0].id]: m.free }])),
+            };
           },
         });
-        const have = (p?: string) => (p ? Boolean((keys as Record<string, unknown>)[p]) : false);
+        // Kilo anónimo no tiene clave pero sí está disponible (modelos :free).
+        const have = (p?: string) => (p ? Boolean((keys as Record<string, unknown>)[p]) || p === "kilo" : false);
         json(res, 200, {
           modelos: catalog.models.map((m) => ({
             id: m.id,

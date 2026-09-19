@@ -11,7 +11,7 @@ import { interactiveSignIn } from "./oauth.js";
 import { encryptSecrets, decryptSecrets, looksPlainJson } from "./crypto.js";
 
 export type ProviderKeyId =
-  | "openrouter" | "groq" | "cerebras" | "mistral" | "github" | "nvidia" | "cohere" | "cloudflare" | "huggingface" | "zen" | "vercel";
+  | "openrouter" | "groq" | "cerebras" | "mistral" | "github" | "nvidia" | "cohere" | "cloudflare" | "huggingface" | "zen" | "vercel" | "kilo";
 
 export function configDir(): string {
   return process.env.NOIRARC_HOME ?? join(os.homedir(), ".noirarc");
@@ -50,6 +50,8 @@ export async function loadAllKeys(): Promise<Record<string, string | undefined>>
     zen: data.zen || process.env.ZEN_API_KEY || undefined,
     zenBaseUrl: data.zenBaseUrl || process.env.ZEN_BASE_URL || undefined,
     vercel: data.vercel || process.env.VERCEL_TOKEN || undefined,
+    kilo: data.kilo || process.env.KILO_API_KEY || undefined,
+    kiloBaseUrl: data.kiloBaseUrl || process.env.KILO_BASE_URL || undefined,
   };
 }
 
