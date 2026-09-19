@@ -1,6 +1,6 @@
 // Package thinclient — pantalla Go como CLIENTE FINO del motor TS.
 // Solo pinta y recoge teclas. No importa (ni enlaza) herramientas,
-// permisos, proveedores ni sesiones heredados de opencode.
+// permisos, proveedores ni sesiones del motor antiguo.
 package thinclient
 
 import (
