@@ -97,7 +97,9 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
 - [x] 5.4 Tutoriales reescritos (Kilo primero, pantalla Go) + barrido estándar.
 - [x] 5.6 Blog en 7 idiomas (7 llamadas con pausa + render con fallback):
       verificado en vivo 7/7 con títulos y cuerpos propios.
-- [ ] 5.7 Deploy + 10 frases/idioma en producción.
+- [x] 5.7 Deploy CI (35474773266) + verificación en producción: 10 claves ×
+      7 idiomas idénticas local==prod (h5prod, runtime-vs-runtime).
+- HITO 5 COMPLETO. Siguiente: HITO 6 (distribución).
 
 ## PENDIENTES DEL USUARIO
 - Regenerar clave OpenRouter (`noira login`) — la actual da 401.
