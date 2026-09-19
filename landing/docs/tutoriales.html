@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tutoriales | NOIRACODER</title>
-<meta name="description" content="Tutoriales de NoiraCoder: conecta 3 claves gratuitas (OpenRouter, Groq, Zen) y tu primera sesión en la TUI.">
+<meta name="description" content="Tutoriales de NoiraCoder: empieza sin claves (Kilo anónimo), amplía cuota y tu primera sesión en la pantalla Go.">
 <link rel="canonical" href="https://noiracoder.pages.dev/docs/tutoriales.html">
 <meta property="og:title" content="Tutoriales — NOIRACODER">
 <meta property="og:site_name" content="NOIRACODER">
@@ -50,25 +50,31 @@
 <main class="wrap-page">
   <h1 class="mono" style="font-size:1.875rem;font-weight:700;margin-bottom:1rem"><span style="color:var(--accent)">&gt;</span> <span data-i18n="nav.tutorials">Tutoriales</span></h1>
   <div class="section">
-    <h2>&gt; 3 claves gratuitas, 5 minutos</h2>
-    <p class="sub">Con UNA ya funciona. Con las tres, casi nunca te quedas sin cuota.</p>
-    <div class="step"><h3>1 · OpenRouter — la base</h3><pre>noira login   <span class="c"># se abre el navegador, 1 clic (OAuth)</span>
-<span class="c"># o manual: https://openrouter.ai/keys</span></pre></div>
-    <div class="step"><h3>2 · Groq — velocidad</h3><pre><span class="c"># https://console.groq.com/keys (gratis, 1 min)</span>
-noira login --groq &lt;tu-key&gt;</pre></div>
-    <div class="step"><h3>3 · Zen — promocionales que rotan</h3><pre><span class="c"># https://opencode.ai/zen (gratis, 1 min)</span>
-noira login --zen &lt;tu-key&gt;</pre></div>
-    <div class="step"><h3>✓ Verifica que responden</h3><pre>noira connect   <span class="c"># valida cada provider con red real</span></pre></div>
+    <h2>&gt; <span data-i18n="tuto.s1t">Empieza sin claves</span></h2>
+    <p class="sub" data-i18n="tuto.s1sub">Kilo anónimo funciona nada más instalar. Sin registro, sin tarjeta.</p>
+    <div class="step"><h3 data-i18n="tuto.a1t">1 · Abre la pantalla en tu proyecto</h3><pre data-i18n="tuto.a1pre">cd mi-proyecto
+noira --go</pre></div>
+    <div class="step"><h3 data-i18n="tuto.a2t">2 · Pide tu primera tarea</h3><pre data-i18n="tuto.a2pre">Escribe y pulsa Enter   # el motor elige modelo y rota solo si falla</pre></div>
   </div>
   <div class="section">
-    <h2>&gt; Tu primera sesión</h2>
-    <div class="step"><h3>1 · Abre la TUI en tu proyecto</h3><pre>cd mi-proyecto
-noira</pre></div>
-    <div class="step"><h3>2 · Streaming + confirmaciones</h3><pre><span class="c"># la respuesta llega token a token; borrar, deploy o push piden [y/N]</span></pre></div>
-    <div class="step"><h3>3 · Comandos de sesión</h3><pre>/agents    <span class="c"># equipo activo</span>
-/parallel  <span class="c"># checks en paralelo</span>
-/deploy     <span class="c"># publicar (confirma)</span>
-/logout     <span class="c"># borrar claves</span></pre></div>
+    <h2>&gt; <span data-i18n="tuto.s2t">Amplía tu cuota (opcional)</span></h2>
+    <p class="sub" data-i18n="tuto.s2sub">Conecta claves solo si quieres más cuota. Cada una tarda ~1 min.</p>
+    <div class="step"><h3 data-i18n="tuto.b1t">1 · OpenRouter</h3><pre data-i18n="tuto.b1pre">noira login   # se abre el navegador, 1 clic (OAuth)
+# o manual: https://openrouter.ai/keys</pre></div>
+    <div class="step"><h3 data-i18n="tuto.b2t">2 · Groq</h3><pre data-i18n="tuto.b2pre"># https://console.groq.com/keys (gratis, 1 min)
+noira login --groq &lt;tu-key&gt;</pre></div>
+    <div class="step"><h3 data-i18n="tuto.b3t">3 · Zen</h3><pre data-i18n="tuto.b3pre"># https://opencode.ai/zen (gratis, 1 min)
+noira login --zen &lt;tu-key&gt;</pre></div>
+    <div class="step"><h3 data-i18n="tuto.vt">✓ Verifica</h3><pre data-i18n="tuto.vpre">noira connect   # valida cada provider con red real</pre></div>
+  </div>
+  <div class="section">
+    <h2>&gt; <span data-i18n="tuto.s3t">Tu primera sesión</span></h2>
+    <div class="step"><h3 data-i18n="tuto.c1t">1 · Streaming + confirmaciones</h3><pre data-i18n="tuto.c1pre"># la respuesta llega token a token; lo peligroso pide [y/n]</pre></div>
+    <div class="step"><h3 data-i18n="tuto.c2t">2 · Sesiones y modos</h3><pre data-i18n="tuto.c2pre">/sessions   # listar
+/resume 1   # continuar
+/plan · /build   # solo lectura / ejecución</pre></div>
+    <div class="step"><h3 data-i18n="tuto.c3t">3 · Modelo y salida</h3><pre data-i18n="tuto.c3pre">/model &lt;id&gt;   # cambiar modelo
+Ctrl+C   # cancelar turno (otra vez para salir)</pre></div>
   </div>
 </main>
 

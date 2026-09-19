@@ -84,6 +84,21 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
 - E2E 48/48 + adversarial 36/36 + sanitize tras todo.
 - Siguiente: HITO 5 (mensaje, traducciones, landing, blog).
 
+## Hito 5 — MENSAJE + TRADUCCIONES + LANDING + BLOG (en curso, 2026-09-19)
+- [x] 5.1 Sin "privacidad local": mensaje nuevo (memoria+rotación+sin registro)
+      en i18n.js ×7, metas, sobre, que-es. CLI ya limpio. Quedan: claves
+      cifradas + servidor con token (permitido).
+- [x] 5.2 Frase por frase: causa raíz del EN-en-ES (clave `cmds` duplicada en
+      NOIRA_ES → fallback EN), AR (basura + chino + dup), IT day-by-day.
+      Pres traducidos (index 3, tuto 11, skills 1). Skills cards reutilizan
+      teasers (+4 nuevas ×7).
+- [x] 5.3 `npm run test:i18n` en verde (paridad 162, sin-traducción, dups,
+      texto-sin-clave, resolución ×7, pres con clave).
+- [x] 5.4 Tutoriales reescritos (Kilo primero, pantalla Go) + barrido estándar.
+- [x] 5.6 Blog en 7 idiomas (7 llamadas con pausa + render con fallback):
+      verificado en vivo 7/7 con títulos y cuerpos propios.
+- [ ] 5.7 Deploy + 10 frases/idioma en producción.
+
 ## PENDIENTES DEL USUARIO
 - Regenerar clave OpenRouter (`noira login`) — la actual da 401.
 - PRUEBA-VISUAL.md (Hito 3.7) en su terminal real.

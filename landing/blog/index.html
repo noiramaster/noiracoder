@@ -82,14 +82,17 @@
 <script>
 document.querySelectorAll('.year').forEach(function (e) { e.textContent = new Date().getFullYear(); });
 /* Patrón noirax blog: títulos por idioma con fallback EN (title?.[lang] || title?.en) */
+function noiraPick(o, base, lang) {
+  if (!o) return '';
+  return o[base + '_' + lang] || o[base + '_en'] || o[base + '_es'] || '';
+}
 function noiraRenderPosts(posts) {
   var lang = (typeof noiraGetLang === 'function') ? noiraGetLang() : 'en';
   var box = document.getElementById('posts');
   box.innerHTML = '';
   posts.slice(0, 30).forEach(function (p) {
-    var useEn = lang !== 'es';
-    var title = useEn ? (p.title_en || p.title_es) : (p.title_es || p.title_en);
-    var excerpt = useEn ? (p.excerpt_en || p.excerpt_es) : (p.excerpt_es || p.excerpt_en);
+    var title = noiraPick(p, 'title', lang);
+    var excerpt = noiraPick(p, 'excerpt', lang);
     var rm = (typeof noiraT === 'function') ? noiraT('blog.readMore', lang) : 'Read more';
     var a = document.createElement('a');
     a.className = 'post-card'; a.href = '/blog/' + p.file;
