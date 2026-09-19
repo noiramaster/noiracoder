@@ -137,7 +137,7 @@ export async function orchestrate(
     opts.log.warn(`[modelo] '${opts.model}' no está en el catálogo; se ignora y decide el router.`);
   }
 
-  const quota = new QuotaTracker();
+  const quota = new QuotaTracker(configDir());
   await quota.load();
   const ranker = new AdaptiveRanker();
   await ranker.load();

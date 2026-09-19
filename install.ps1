@@ -6,7 +6,8 @@ if (-not (Get-Command node -ErrorAction SilentlyContinue)) { Write-Host "[error]
 if (-not (Get-Command npm -ErrorAction SilentlyContinue)) { Write-Host "[error] npm requerido" -ForegroundColor Red; exit 1 }
 npm i -g noiracoder 2>&1 | Out-Null
 if ($LASTEXITCODE -ne 0) { Write-Host "[error] fallo npm install -g noiracoder" -ForegroundColor Red; exit 1 }
-# HITO 0: no se descarga ningún binario Go. El motor Node es el único camino
-# por defecto; la TUI Go llegará como cliente fino en el Hito 2 (con hash).
-Write-Host "[ok] instalado — ejecuta: noira" -ForegroundColor Green
-Write-Host "     luego: noira login" -ForegroundColor Gray
+# HITO 6: la pantalla Go se descarga con hash ejecutando el fetch explícito
+# (los lifecycle scripts requieren aprobación aparte):
+node "$(npm root -g)/noiracoder/scripts/fetch-go-binary.mjs" 2>&1 | Out-Null
+Write-Host "[ok] instalado — ejecuta: noira --go   (pantalla completa)" -ForegroundColor Green
+Write-Host "     o        : noira          (motor Node)" -ForegroundColor Gray

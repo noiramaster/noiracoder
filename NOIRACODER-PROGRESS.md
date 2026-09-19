@@ -101,6 +101,16 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
       7 idiomas idénticas local==prod (h5prod, runtime-vs-runtime).
 - HITO 5 COMPLETO. Siguiente: HITO 6 (distribución).
 
+## Hito 6 — DISTRIBUCIÓN (COMPLETO en Windows 2026-09-19, sin publicar por 0.6)
+- [x] 6.1 CI release.yml (5 targets + NOTICE + SHA256SUMS; tags noira-go-v*).
+      Dispatch 35475389513 OK; 5 binarios verificados (cabeceras+boot Win).
+- [x] 6.2 fetch-go-binary (hash + override + fallback) en `files`+postinstall.
+- [x] 6.3 install.sh/ps1 con fetch explícito (approve global no existe).
+- [x] 6.4 Windows aislado 3/3 (boot, Kilo sin claves, sessions, uninstall).
+      macOS/Linux: SOLO POR CÓDIGO + artefactos CI.
+- QuotaTracker ahora respeta NOIRARC_HOME (antes, homedir fijo).
+- Siguiente: HITO 7 (verificación final; publicar SOLO si todo pasa).
+
 ## PENDIENTES DEL USUARIO
 - Regenerar clave OpenRouter (`noira login`) — la actual da 401.
 - PRUEBA-VISUAL.md (Hito 3.7) en su terminal real.
