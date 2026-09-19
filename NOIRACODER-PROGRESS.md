@@ -36,6 +36,10 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
 - [x] 2.1 Herramientas vía motor: `onTool` en registry→orchestrator→thin
       (`turn.tool_start/end`), deploy ya exigía confirm, plan mode deniega todo.
       Watchdog con margen de herramienta (10 min). Evidencia docs/evidence/h2-tools.md.
+- [x] 2.2 Memoria/rotación/cuotas visibles: `onMemoryEvent` (proyecto+global),
+      `onQuota` en router + `quotaState`, `model.switch` ya fluía. Verificado en
+      vivo: `model.quota usadoPct 6→8`, `memory.event` proyecto+global, `turn.end done`.
+      E2E 48/48 tras los cambios.
 - [ ] 2.2 Memoria/rotación/cuotas visibles en la Go.
 - [ ] 2.3 Sesiones UI (listar/buscar/reanudar, Plan/Build, historial).
 - [ ] 2.4 Saneo + corpus malicioso.

@@ -130,6 +130,8 @@ export function buildRouter(opts: {
   freeOnly: boolean;
   limits?: Record<string, number | null>;
   warn: (msg: string) => void;
+  /** HITO 2.2: la pantalla ve la cuota (estructurado, no solo texto). */
+  onQuota?: (q: { usadoPct: number; restante: number; total: number }) => void;
   /** Optional adaptive ranker; when present its learned scores and cooldowns are
    *  folded into every decision and it is notified of success/failure. */
   adaptive?: AdaptiveRanker;
@@ -166,7 +168,7 @@ export function buildRouter(opts: {
   }
 
   /** Warn when combined free quota across known-limit models is nearly gone. */
-  function checkCombinedQuota(): void {
+  function checkCombinedQuota(): { usado: number; total: number } {
     const limitMap = new Map<string, number | null>();
     for (const id of [...opts.rolePolicy.orchestrator, ...opts.rolePolicy.code, ...opts.rolePolicy.cheap]) {
       limitMap.set(id, limits[id] ?? null);
@@ -180,17 +182,27 @@ export function buildRouter(opts: {
     if (total > 0) {
       const remaining = total - used;
       const pct = (remaining / total) * 100;
+      opts.onQuota?.({ usadoPct: Math.round(((total - remaining) / total) * 100), restante: remaining, total });
       if (pct <= 15 && remaining > 0) {
         opts.warn(`Cuota gratuita combinada al ${Math.round(pct)}% restante (${remaining}/${total} requests).`);
       } else if (remaining <= 0) {
         opts.warn("Cuota gratuita combinada agotada. Cambia a un modelo de pago o espera al reset diario.");
       }
     }
+    return { usado: used, total };
+  }
+
+  /** Foto actual de cuota para la pantalla (null si no hay límites conocidos). */
+  function quotaState(): { usado: number; total: number } | null {
+    const r = checkCombinedQuota();
+    if (!r || r.total <= 0) return null;
+    return r;
   }
 
   return {
     decide,
     checkCombinedQuota,
+    quotaState,
     limits: () => limits,
     usedCandidates,
     /** Tell the adaptive ranker a model succeeded for a role. No-op if no ranker. */

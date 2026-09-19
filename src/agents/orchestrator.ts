@@ -44,6 +44,9 @@ export interface OrchestratorOptions {
   onModelSwitch?: (from: string, to: string, reason: "auth" | "quota" | "routing" | "transient") => void;
   /** HITO 2.1: la pantalla ve herramientas (inicio/fin). */
   onToolEvent?: (ev: { phase: "start" | "end"; name: string; preview: string; ms?: number; error?: boolean }) => void;
+  /** HITO 2.2: memoria guardada + cuota visibles en la pantalla. */
+  onMemoryEvent?: (ev: { nivel: "sesion" | "proyecto" | "global"; resumen: string }) => void;
+  onQuotaEvent?: (q: { usadoPct: number; restante: number; total: number }) => void;
   onModelErrorExt?: (model: string, kind: "transient" | "quota" | "auth") => void;
   signal?: AbortSignal;
 }
@@ -135,6 +138,7 @@ export async function orchestrate(
     quota,
     freeOnly: opts.freeOnly ?? true,
     warn: (msg) => opts.log.warn(msg),
+    onQuota: opts.onQuotaEvent,
     adaptive: ranker,
     sharedQuota,
   });
@@ -452,6 +456,7 @@ async function rememberAll(prompt: string, opts: OrchestratorOptions, memory: Pr
   const sensitive = isSensitivePrompt(prompt, opts.policy ?? (await loadProjectPolicy(opts.cwd)));
   if (!shouldRememberProject(prompt, opts.level, sensitive)) return;
   await memory.remember(`Tarea: ${prompt.slice(0, 120)}. Nivel ${opts.level}.`);
+  opts.onMemoryEvent?.({ nivel: "proyecto", resumen: `nota de proyecto guardada (${dirKey(opts.cwd)})` });
   const tags = [
     `project:${dirKey(opts.cwd)}`,
     ...prompt
@@ -467,6 +472,7 @@ async function rememberAll(prompt: string, opts: OrchestratorOptions, memory: Pr
       title: prompt.slice(0, 60),
       body: `Completada a nivel ${opts.level}.`,
     });
+    opts.onMemoryEvent?.({ nivel: "global", resumen: `decisión archivada (${tags.slice(0, 3).join(", ")})` });
   }
 }
 

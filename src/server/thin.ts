@@ -212,6 +212,19 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
           touch();
           opts.log.warn(`[thin] modelo ${m} falló (${kind}), rotando…`);
         },
+        onMemoryEvent: (ev) => {
+          touch();
+          send("memory.event", { turnId, nivel: ev.nivel, resumen: ev.resumen });
+        },
+        onQuotaEvent: (q) => {
+          touch();
+          send("model.quota", {
+            turnId,
+            proveedor: "gratis-combinada",
+            usadoPct: q.usadoPct,
+            aviso: q.usadoPct >= 85 ? "cuota casi agotada" : null,
+          });
+        },
       });
       await store.append(meta, "assistant", result.output || "(sin salida)");
       send("session.updated", { id: meta.id, nombre: meta.title });
