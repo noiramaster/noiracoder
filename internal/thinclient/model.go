@@ -28,6 +28,7 @@ type Model struct {
 	status    string
 	modelName string
 	mode      string
+	quotaPct  int
 	sessionID string
 	sessName  string
 	turnID    string
@@ -91,6 +92,9 @@ func (m *Model) setStatus() {
 		"modelo: " + m.modelName,
 		"modo: " + m.mode,
 		"sesión: " + or(m.sessName, "—"),
+	}
+	if m.quotaPct > 0 {
+		parts = append(parts, fmt.Sprintf("cuota: %d%%", m.quotaPct))
 	}
 	if m.thinking {
 		parts = append(parts, "pensando… ("+m.modelName+")")
@@ -235,6 +239,14 @@ func (m *Model) onEvent(ev Event) {
 		m.setStatus()
 	case "confirm.request":
 		m.confirm = &confirmState{id: str(ev, "confirmId"), detail: str(ev, "detalle")}
+	case "model.quota":
+		if v, ok := ev.Data["usadoPct"].(float64); ok {
+			m.quotaPct = int(v)
+		}
+		if a := str(ev, "aviso"); a != "" {
+			m.addLine("[cuota] " + a)
+		}
+		m.setStatus()
 	case "confirm.result":
 		m.addLine(fmt.Sprintf("[confirm] %s", str(ev, "motivo")))
 	case "memory.event":
