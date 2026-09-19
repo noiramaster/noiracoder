@@ -400,6 +400,24 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
       return;
     }
 
+    // HITO 2.3: historial para reanudar (GET /v1/sessions/:id).
+    if (req.method === "GET" && url.pathname.startsWith("/v1/sessions/")) {
+      const id = url.pathname.slice("/v1/sessions/".length).split("/")[0];
+      const metas = await store.list();
+      const meta = metas.find((m) => m.id === id);
+      if (!meta) {
+        json(res, 404, { error: "sesión no encontrada" });
+        return;
+      }
+      json(res, 200, {
+        id: meta.id,
+        nombre: meta.title,
+        updatedAt: meta.updatedAt,
+        turnos: meta.turns.map((t) => ({ role: t.role, content: t.content.slice(0, 4000), ts: t.ts })),
+      });
+      return;
+    }
+
     // ── Turno ──
     if (req.method === "POST" && url.pathname === "/v1/turn") {
       if (activeTurn) {

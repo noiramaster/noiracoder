@@ -40,6 +40,9 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
       `onQuota` en router + `quotaState`, `model.switch` ya fluía. Verificado en
       vivo: `model.quota usadoPct 6→8`, `memory.event` proyecto+global, `turn.end done`.
       E2E 48/48 tras los cambios.
+- [x] 2.3 Sesiones UI: `GET /v1/sessions/:id` + comandos Go (/sessions con filtro,
+      /resume n|id con historial, /new, /plan, /build, /model, /help, /quit).
+      Verificado pty 6/6 (9 sesiones persistidas listadas, reanudación con turnos).
 - [ ] 2.2 Memoria/rotación/cuotas visibles en la Go.
 - [ ] 2.3 Sesiones UI (listar/buscar/reanudar, Plan/Build, historial).
 - [ ] 2.4 Saneo + corpus malicioso.
