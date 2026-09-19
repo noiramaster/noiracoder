@@ -111,6 +111,22 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
 - QuotaTracker ahora respeta NOIRARC_HOME (antes, homedir fijo).
 - Siguiente: HITO 7 (verificación final; publicar SOLO si todo pasa).
 
+## Hito 7 — VERIFICACIÓN FINAL (listo para publicar, 2026-09-20)
+- [x] 7.1 Suites en verde (ver arriba) + Go tests + vet.
+- [x] 7.2 pty 9/9 con binario CI (docs/evidence/h7-final.md).
+- [ ] 7.3 Publicar (runbook):
+      1. `npm version minor` (0.1.0 → 0.2.0) + push.
+      2. `git tag noira-go-v0.2.0` + push → CI adjunta 5 binarios + SHA256SUMS.
+      3. Usuario: `npm publish --access public` (pide su security key) + output.
+      4. Yo: install limpio global en temp (verifica hash+boot) y constancia.
+- Para retomar: este archivo desde "Hito 0"; evidencia en docs/evidence/.
+- [x] 6.2 fetch-go-binary (hash + override + fallback) en `files`+postinstall.
+- [x] 6.3 install.sh/ps1 con fetch explícito (approve global no existe).
+- [x] 6.4 Windows aislado 3/3 (boot, Kilo sin claves, sessions, uninstall).
+      macOS/Linux: SOLO POR CÓDIGO + artefactos CI.
+- QuotaTracker ahora respeta NOIRARC_HOME (antes, homedir fijo).
+- Siguiente: HITO 7 (verificación final; publicar SOLO si todo pasa).
+
 ## PENDIENTES DEL USUARIO
 - Regenerar clave OpenRouter (`noira login`) — la actual da 401.
 - PRUEBA-VISUAL.md (Hito 3.7) en su terminal real.

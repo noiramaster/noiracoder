@@ -251,19 +251,37 @@ export async function cliMain(argv: string[], meta?: { invokedAs?: string }): Pr
         const svc = await startThinServer({ port: args.port, log, level: args.level, lang, authToken, mcp: mcp ?? undefined });
         log.raw(`[thin] token: ${authToken.slice(0, 8)}… (completo en NOIRA_SERVE_TOKEN si se fijó)`);
         // HITO 1.3: si el wrapper muere de golpe (cierre de ventana), el motor
-        // se suicida para no dejar huérfanos. EPERM = sigue vivo; otro error = muerto.
+        // se suicida para no dejar huérfanos.
+        // HITO 7: además se verifica que el PID reutilizado sea de verdad el
+        // wrapper (node + noiracoder); si no, también se cierra.
         const ppid = process.ppid;
-        const watch = setInterval(() => {
+        const parentIsWrapper = async (): Promise<boolean> => {
+          if (process.platform === "win32") {
+            try {
+              const { execFileSync } = await import("node:child_process");
+              const out = execFileSync(
+                "powershell",
+                ["-NoProfile", "-Command", `(Get-CimInstance Win32_Process -Filter "ProcessId=${ppid}").CommandLine`],
+                { timeout: 8000, stdio: ["ignore", "pipe", "ignore"] },
+              ).toString();
+              return /node/i.test(out) && /noiracoder/i.test(out);
+            } catch { /* cae al chequeo simple */ }
+          }
           try {
             process.kill(ppid, 0);
+            return true;
           } catch (e) {
-            const code = (e as NodeJS.ErrnoException)?.code;
-            if (code !== "EPERM") {
+            return (e as NodeJS.ErrnoException)?.code === "EPERM";
+          }
+        };
+        const watch = setInterval(() => {
+          void parentIsWrapper().then((alive) => {
+            if (!alive) {
               log.warn("[thin] el wrapper murió; cerrando el motor (sin huérfanos).");
               void svc.close().finally(() => process.exit(0));
             }
-          }
-        }, 5000);
+          });
+        }, 15000);
         (watch as unknown as { unref?: () => void }).unref?.();
         // Mantiene el proceso vivo hasta Ctrl+C.
         await new Promise(() => {});
