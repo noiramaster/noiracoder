@@ -42,3 +42,9 @@ jobs:
           git add -f landing/blog/ landing/sitemap.xml
           git diff --quiet && git diff --staged --quiet || git commit -m "chore: post diario del blog [skip ci]"
           git push origin main || echo "No changes to push"
+
+      - name: Deploy landing/ to Pages
+        run: npx -y wrangler@4 pages deploy landing --project-name=noiracoder --branch=main --commit-hash=${{ github.sha }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
