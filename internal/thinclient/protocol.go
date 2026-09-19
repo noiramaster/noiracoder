@@ -142,6 +142,68 @@ func (c *Client) Cancel(turnID string) error {
 	return err
 }
 
+// Session resume de /v1/sessions.
+type Session struct {
+	ID     string `json:"id"`
+	Nombre string `json:"nombre"`
+	Turnos int    `json:"turnos"`
+}
+
+// Turn es un intercambio guardado.
+type Turn struct {
+	Role    string `json:"role"`
+	Content string `json:"content"`
+}
+
+// Sessions lista sesiones persistidas (sobreviven a reinicios).
+func (c *Client) Sessions() ([]Session, error) {
+	st, b, err := c.req("GET", "/v1/sessions", nil)
+	if err != nil {
+		return nil, err
+	}
+	if st != 200 {
+		return nil, fmt.Errorf("sesiones %d", st)
+	}
+	var v struct {
+		Sesiones []Session `json:"sesiones"`
+	}
+	if err := json.Unmarshal(b, &v); err != nil {
+		return nil, err
+	}
+	return v.Sesiones, nil
+}
+
+// History trae los turnos de una sesión para reanudarla.
+func (c *Client) History(id string) ([]Turn, string, error) {
+	st, b, err := c.req("GET", "/v1/sessions/"+id, nil)
+	if err != nil {
+		return nil, "", err
+	}
+	if st != 200 {
+		return nil, "", fmt.Errorf("sesión %d", st)
+	}
+	var v struct {
+		Nombre string `json:"nombre"`
+		Turnos []Turn  `json:"turnos"`
+	}
+	if err := json.Unmarshal(b, &v); err != nil {
+		return nil, "", err
+	}
+	return v.Turnos, v.Nombre, nil
+}
+// Llama onEvent por cada evento; heartbeat (:) se ignora.
+// SetModel fija el modelo preferido en el motor (POST /v1/model).
+func (c *Client) SetModel(id string) error {
+	st, b, err := c.req("POST", "/v1/model", map[string]any{"id": id})
+	if err != nil {
+		return err
+	}
+	if st != 200 {
+		return fmt.Errorf("modelo %d: %s", st, strings.TrimSpace(string(b)))
+	}
+	return nil
+}
+
 // Stream abre el SSE único y emite eventos hasta que se cierre o ctx cancele.
 // Llama onEvent por cada evento; heartbeat (:) se ignora.
 func (c *Client) Stream(onEvent func(Event), onError func(error)) {

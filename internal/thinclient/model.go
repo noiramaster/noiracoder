@@ -178,6 +178,12 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, nil
 			}
 			m.input.Reset()
+			if m.handleCommand(text) {
+				if text == "/quit" {
+					return m, tea.Quit
+				}
+				return m, nil
+			}
 			m.addLine("> " + text)
 			m.thinking = true
 			m.setStatus()
@@ -196,8 +202,117 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m *Model) sendTurn(text string) {
-	turnID, sessID, err := m.client.Turn(m.sessionID, text, m.mode)
+// handleCommand ejecuta comandos con / (Hito 2.3). Devuelve true si era comando.
+func (m *Model) handleCommand(text string) bool {
+	if !strings.HasPrefix(text, "/") {
+		return false
+	}
+	parts := strings.Fields(text)
+	switch parts[0] {
+	case "/help":
+		m.addLine("Comandos: /sessions [filtro] · /resume <n|id> · /new · /plan · /build · /model <id> · /quit")
+		return true
+	case "/sessions":
+		filter := ""
+		if len(parts) > 1 {
+			filter = strings.ToLower(strings.Join(parts[1:], " "))
+		}
+		list, err := m.client.Sessions()
+		if err != nil {
+			m.addLine("[error] sesiones: " + err.Error())
+			return true
+		}
+		if len(list) == 0 {
+			m.addLine("(sin sesiones guardadas)")
+			return true
+		}
+		for i, s := range list {
+			if filter != "" && !strings.Contains(strings.ToLower(s.Nombre), filter) &&
+				!strings.Contains(strings.ToLower(s.ID), filter) {
+				continue
+			}
+			mark := " "
+			if s.ID == m.sessionID {
+				mark = "*"
+			}
+			m.addLine(fmt.Sprintf("%s%d · %s (%d turnos)", mark, i+1, s.Nombre, s.Turnos))
+		}
+		m.addLine("usa /resume <n> para continuar una sesión")
+		return true
+	case "/resume":
+		if len(parts) < 2 {
+			m.addLine("uso: /resume <n|id>  (mira /sessions)")
+			return true
+		}
+		list, err := m.client.Sessions()
+		if err != nil {
+			m.addLine("[error] sesiones: " + err.Error())
+			return true
+		}
+		target := parts[1]
+		for i, s := range list {
+			if fmt.Sprint(i+1) == target || s.ID == target || strings.HasPrefix(s.ID, target) {
+				target = s.ID
+				break
+			}
+		}
+		turns, name, err := m.client.History(target)
+		if err != nil {
+			m.addLine("[error] reanudar: " + err.Error())
+			return true
+		}
+		m.sessionID = target
+		m.sessName = name
+		m.messages = nil
+		for _, t := range turns {
+			if t.Role == "user" {
+				m.addLine("> " + t.Content)
+			} else {
+				m.addLine(t.Content)
+			}
+		}
+		m.addLine(fmt.Sprintf("(sesión reanudada: %s, %d turnos)", name, len(turns)/2))
+		m.setStatus()
+		return true
+	case "/new":
+		m.sessionID = ""
+		m.sessName = ""
+		m.messages = nil
+		m.viewport.SetContent("")
+		m.addLine("(nueva sesión)")
+		m.setStatus()
+		return true
+	case "/plan":
+		m.mode = "plan"
+		m.addLine("(modo Plan: solo lectura, todo se deniega)")
+		m.setStatus()
+		return true
+	case "/build":
+		m.mode = "build"
+		m.addLine("(modo Build: ejecución con confirmaciones)")
+		m.setStatus()
+		return true
+	case "/quit":
+		return true
+	case "/model":
+		if len(parts) < 2 {
+			m.addLine("uso: /model <id>  (modelo actual: " + m.modelName + ")")
+			return true
+		}
+		if err := m.client.SetModel(parts[1]); err != nil {
+			m.addLine("[error] modelo: " + err.Error())
+			return true
+		}
+		m.modelName = parts[1]
+		m.addLine("(modelo preferido: " + parts[1] + ")")
+		m.setStatus()
+		return true
+	}
+	m.addLine("(comando desconocido, prueba /help)")
+	return true
+}
+
+func (m *Model) sendTurn(text string) {	turnID, sessID, err := m.client.Turn(m.sessionID, text, m.mode)
 	if err != nil || m.program == nil {
 		if m.program != nil {
 			m.program.Send(evErr{fmt.Errorf("turno: %v", err)})
