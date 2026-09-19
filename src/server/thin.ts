@@ -15,6 +15,7 @@ import { orchestrate } from "../agents/orchestrator.js";
 import type { McpRegistry } from "../mcp/registry.js";
 import { SessionStore } from "../memory/sessions.js";
 import { doUndo, doRedo } from "../tools/undoSnapshot.js";
+import { sanitizeThinOut } from "./sanitize.js";
 import { DEFAULT_POLICY } from "../sandbox/policies.js";
 
 export const THIN_PROTOCOL = 1;
@@ -100,14 +101,8 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
     return words.slice(0, 60) || "nueva sesión";
   };
 
-  // HITO 2.1: saneo mínimo en el motor (la Go vuelve a sanear al pintar).
-  // Corpus completo + pruebas en Hito 2.4.
-  const sanitizeOut = (s: string): string =>
-    String(s)
-      .replace(/\][^\x07\\]*(?:\x07|\\)/g, "")
-      .replace(/\[[0-9;?]*[a-zA-Z]/g, "")
-      .replace(/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g, "")
-      .slice(0, 2000);
+  // HITO 2.4: saneo compartido (la Go vuelve a sanear al pintar).
+  const sanitizeOut = sanitizeThinOut;
 
   const resolveConfirm = (id: string, approved: boolean, why: string) => {
     const p = pendingConfirms.get(id);

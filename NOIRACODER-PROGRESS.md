@@ -45,7 +45,11 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
       Verificado pty 6/6 (9 sesiones persistidas listadas, reanudación con turnos).
 - [ ] 2.2 Memoria/rotación/cuotas visibles en la Go.
 - [ ] 2.3 Sesiones UI (listar/buscar/reanudar, Plan/Build, historial).
-- [ ] 2.4 Saneo + corpus malicioso.
+- [x] 2.4 Saneo + corpus: `src/server/sanitize.ts` + `test/sanitize.mjs`
+      (10/10, `npm run test:sanitize`) y Go byte-oriented + `sanitize_test.go`
+      (12/12). Cubre ANSI/OSC/APC/C1/C0/DEL/bidi-spoof/truncado. Hallazgo: los
+      bytes C1 sueltos no son UTF-8 válido (U+FFFD) — por eso el saneo Go es
+      a nivel de byte.
 - [ ] 2.5 Batería adversaria T1–T5 + 48 E2E.
 - [ ] 2.6 Riesgo residual env-token.
 
