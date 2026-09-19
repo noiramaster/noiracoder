@@ -19,7 +19,15 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
 - [x] 0.3 `docs/THREAT-MODEL.md` escrito (T1–T5 + no-cubierto).
 - [x] 0.4 Decisión: confirmar = DENEGAR por defecto; prohibidos denegados
       SIEMPRE (en PROTOCOL.md §5).
-- Puerta 0 entregada — EN ESPERA DE AUTORIZACIÓN para Hito 1.
+- Puerta 0 APROBADA (v3, modo autónomo 2026-09-19). Sigue Hito 1.
+
+## Hito 1 — ESQUELETO ANDANTE (en curso, 2026-09-19)
+- [x] Hooks motor (f516610): `signal`, `onModelSwitch`, `model?` en
+      orchestrator/agentLoop. Typecheck OK, E2E 48/48 (sin cambio).
+- [ ] Servidor thin SSE (`src/server/thin.ts` + `serve --thin`).
+- [ ] Go cliente fino (rama noira-rebrand, eliminar motor heredado).
+- [ ] Wrapper ciclo de vida (puerto/token/env, fallback Ink).
+- [ ] Pruebas pty + 401/409/426 (evidencia en docs/evidence/).
 
 ## Pendientes (no bloquean Hito 1)
 - `README.md:16` apunta a `https://noiracoder.noira.sh/install` (dominio externo,

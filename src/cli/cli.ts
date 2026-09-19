@@ -29,6 +29,7 @@ export interface CliArgs {
   lang: string | null;
   port: number;
   token?: string;
+  thin: boolean;
 }
 
 export function parseArgs(argv: string[]): CliArgs {
@@ -36,6 +37,7 @@ export function parseArgs(argv: string[]): CliArgs {
   let lang: string | null = null;
   let port = 3000;
   let token: string | undefined;
+  let thin = false;
   let command: CliArgs["command"] = "run";
   const positional: string[] = [];
 
@@ -57,6 +59,9 @@ export function parseArgs(argv: string[]): CliArgs {
       case "--token":
         token = argv[++i] ?? undefined;
         break;
+      case "--thin":
+        thin = true;
+        break;
       case "--groq":
       case "--cerebras":
       case "--mistral":
@@ -72,7 +77,7 @@ export function parseArgs(argv: string[]): CliArgs {
         break;
       case "--version":
       case "-v":
-        return { command: "version", prompt: "", level, lang, port, token };
+        return { command: "version", prompt: "", level, lang, port, token, thin };
       case "login":
         // Captura todo lo que sigue a login como positional (para --groq etc)
         positional.push(a);
@@ -96,9 +101,9 @@ export function parseArgs(argv: string[]): CliArgs {
     }
   }
 
-  if (command === "login") return { command, prompt: positional.join(" "), level, lang, port, token };
-  if (lang) return { command: "lang", prompt: "", level, lang, port, token };
-  return { command, prompt: positional.join(" "), level, lang, port, token };
+  if (command === "login") return { command, prompt: positional.join(" "), level, lang, port, token, thin };
+  if (lang) return { command: "lang", prompt: "", level, lang, port, token, thin };
+  return { command, prompt: positional.join(" "), level, lang, port, token, thin };
 }
 
 export function printHelp(): void {
@@ -234,14 +239,24 @@ export async function cliMain(argv: string[], meta?: { invokedAs?: string }): Pr
     }
     case "serve": {
       const { randomBytes } = await import("node:crypto");
-      const { startServer } = await import("../server/server.js");
       const { connectMcp } = await import("../mcp/connect.js");
-      const authToken = args.token ?? process.env.NOIRA_SERVE_TOKEN ?? randomBytes(16).toString("hex");
+      const authToken = args.token ?? process.env.NOIRA_SERVE_TOKEN ?? randomBytes(32).toString("hex");
       args.token = authToken;
       const mcp = await connectMcp(process.cwd());
       if (mcp) log.ok("[mcp] Servidores MCP conectados.");
+      if (args.thin) {
+        // HITO 1: servidor delgado para la pantalla Go (PROTOCOL.md v1).
+        const { startThinServer } = await import("../server/thin.js");
+        const svc = await startThinServer({ port: args.port, log, level: args.level, lang, authToken, mcp: mcp ?? undefined });
+        log.raw(`[thin] token: ${authToken.slice(0, 8)}… (completo en NOIRA_SERVE_TOKEN si se fijó)`);
+        // Mantiene el proceso vivo hasta Ctrl+C.
+        await new Promise(() => {});
+        await svc.close();
+        return 0;
+      }
       // Servidor headless: JAMÁS bloquear en stdin. Las acciones destructivas
       // se niegan con mensaje claro (el operador no está delante).
+      const { startServer } = await import("../server/server.js");
       const serverConfirm = async (m: string): Promise<boolean> => {
         log.warn(`[serve] confirmación denegada (modo headless, sin terminal): ${m.split("\n")[0]}`);
         return false;
