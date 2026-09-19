@@ -38,6 +38,12 @@ export interface OrchestratorOptions {
   onToken?: (delta: string) => void;
   /** Para TUI: notifica cambio de sub-agente. */
   onAgentStart?: (role: AgentRole) => void;
+  /** HITO 1: override manual de modelo (POST /v1/model). Debe existir en el catálogo. */
+  model?: string;
+  /** HITO 1: rotación visible + cancelación cooperativa. */
+  onModelSwitch?: (from: string, to: string, reason: "auth" | "quota" | "routing" | "transient") => void;
+  onModelErrorExt?: (model: string, kind: "transient" | "quota" | "auth") => void;
+  signal?: AbortSignal;
 }
 
 export interface RunResult {
@@ -98,6 +104,14 @@ export async function orchestrate(
   const modelsById = new Map(catalog.models.map((m) => [m.id, m]));
   const providersById = catalog.providersById;
   const freeByProvider = catalog.freeByProvider;
+
+  // HITO 1: override manual de modelo (POST /v1/model), validado contra catálogo.
+  let preferredModel: string | undefined;
+  if (opts.model && modelsById.has(opts.model)) {
+    preferredModel = opts.model;
+  } else if (opts.model) {
+    opts.log.warn(`[modelo] '${opts.model}' no está en el catálogo; se ignora y decide el router.`);
+  }
 
   const quota = new QuotaTracker();
   await quota.load();
@@ -218,6 +232,7 @@ export async function orchestrate(
     (m: string, kind: "transient" | "quota" | "auth") => {
       if (kind === "auth") markDead(m);
       router.recordModelError(m, kind === "auth" ? "transient" : kind);
+      opts.onModelErrorExt?.(m, kind);
     };
 
   // ── Ejecuta orquestador primero ──
@@ -228,18 +243,21 @@ export async function orchestrate(
   ];
 
   opts.onAgentStart?.("orchestrator");
+  const orchBaseModel = preferredModel ?? orchDecision.model ?? "openrouter/auto";
   const orch = await runAgentLoop({
-    client: clientFor(orchDecision.provider),
+    client: clientFor(preferredModel ? providerOf(preferredModel) : orchDecision.provider),
     registry,
     toolCtx,
     system: orchSystem,
     seed: [taskBlock.detail],
-    model: orchDecision.model || "openrouter/auto",
+    model: orchBaseModel,
     free: orchDecision.free,
     apiKey,
     tools,
     onToken: opts.onToken,
-    nextModel: () => nextAlive("orchestrator", orchDecision.model || "openrouter/auto"),
+    signal: opts.signal,
+    onModelSwitch: opts.onModelSwitch,
+    nextModel: () => nextAlive("orchestrator", orchBaseModel),
     onModelSuccess: (m) => router.recordSuccess("orchestrator", m),
     onModelError: onErr("orchestrator"),
   });
@@ -271,7 +289,7 @@ export async function orchestrate(
   interface AgentOutcome { role: AgentRole; content: string; steps: number; }
   const runOne = async (role: AgentRole): Promise<AgentOutcome> => {
     const decision = router.decide(role);
-    const model = decision.model || orchDecision.model || "openrouter/auto";
+    const model = preferredModel ?? decision.model ?? orchDecision.model ?? "openrouter/auto";
     const spec = AGENTS[role];
     if (!spec) return { role, content: "", steps: 0 };
 
@@ -293,6 +311,8 @@ export async function orchestrate(
       apiKey,
       tools: filterToolsForRole(tools, spec.allowedTools),
       onToken: opts.onToken,
+      signal: opts.signal,
+      onModelSwitch: opts.onModelSwitch,
       nextModel: () => nextAlive(role, model),
       onModelSuccess: (m) => router.recordSuccess(role, m),
       onModelError: onErr(role),

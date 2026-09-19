@@ -59,6 +59,10 @@ export interface AgentLoopOptions {
   onModelSuccess?: (model: string) => void;
   /** Called when a model fails retryably (before switching). */
   onModelError?: (model: string, kind: "transient" | "quota" | "auth") => void;
+  /** HITO 1 (cliente fino): aviso de rotación visible en la pantalla. */
+  onModelSwitch?: (from: string, to: string, reason: "auth" | "quota" | "routing" | "transient") => void;
+  /** HITO 1: cancelación cooperativa del turno (POST /v1/cancel). */
+  signal?: AbortSignal;
 }
 
 export async function runAgentLoop(opts: AgentLoopOptions): Promise<LoopResult> {
@@ -73,6 +77,7 @@ export async function runAgentLoop(opts: AgentLoopOptions): Promise<LoopResult> 
   let client: ChatClient = opts.client;
 
   const complete = async (m: string): Promise<ReturnType<OpenRouterClient["complete"]>> => {
+    if (opts.signal?.aborted) throw new Error("turno cancelado por el usuario");
     // Si hay onToken, usa streaming para UX tipo OpenCode
     if (opts.onToken) {
       return client.completeStreamed({
@@ -83,6 +88,7 @@ export async function runAgentLoop(opts: AgentLoopOptions): Promise<LoopResult> 
         tool_choice: "auto",
         tools: opts.tools,
         onToken: opts.onToken,
+        signal: opts.signal,
       });
     }
     return client.complete({
@@ -92,6 +98,7 @@ export async function runAgentLoop(opts: AgentLoopOptions): Promise<LoopResult> 
       temperature: 0.2,
       tool_choice: "auto",
       tools: opts.tools,
+      signal: opts.signal,
     });
   };
 
@@ -100,7 +107,11 @@ export async function runAgentLoop(opts: AgentLoopOptions): Promise<LoopResult> 
     // Cortafuegos: si rotamos demasiados modelos sin un solo step, aborta con
     // el último error en vez de ciclar eternamente.
     let switches = 0;
+  const switched = (from: string, to: string, reason: "auth" | "quota" | "routing" | "transient") => {
+    if (from !== to) opts.onModelSwitch?.(from, to, reason);
+  };
   for (;;) {
+    if (opts.signal?.aborted) throw new Error("turno cancelado por el usuario");
     // Compaction before each call (keeps system prefix stable).
     const c = maybeCompact(messages, opts.system, maxHistoryTokens);
     if (c.compacted) messages.splice(0, messages.length, ...c.messages);
@@ -129,6 +140,7 @@ export async function runAgentLoop(opts: AgentLoopOptions): Promise<LoopResult> 
         opts.onModelError?.(model, "auth");
         const next = opts.nextModel?.();
         if (next) {
+          switched(model, next.model, "auth");
           model = next.model;
           if (next.client) client = next.client;
           continue;
@@ -137,6 +149,7 @@ export async function runAgentLoop(opts: AgentLoopOptions): Promise<LoopResult> 
         opts.onModelError?.(model, "quota");
         const next = opts.nextModel?.();
         if (next) {
+          switched(model, next.model, "quota");
           model = next.model;
           if (next.client) client = next.client;
           continue;
@@ -147,6 +160,7 @@ export async function runAgentLoop(opts: AgentLoopOptions): Promise<LoopResult> 
         opts.onModelError?.(model, "transient");
         const next = opts.nextModel?.();
         if (next) {
+          switched(model, next.model, "routing");
           model = next.model;
           if (next.client) client = next.client;
           continue;
@@ -155,6 +169,7 @@ export async function runAgentLoop(opts: AgentLoopOptions): Promise<LoopResult> 
         opts.onModelError?.(model, "transient");
         const next = opts.nextModel?.();
         if (next) {
+          switched(model, next.model, "transient");
           model = next.model;
           if (next.client) client = next.client;
           continue;
