@@ -29,9 +29,20 @@ export interface ToolCallCtx {
   log: import("../core/logger.js").Logger;
 }
 
+export interface ToolEvent {
+  phase: "start" | "end";
+  name: string;
+  /** Vista previa de args (recortada, sin secretos: el llamador ya filtra). */
+  preview: string;
+  ms?: number;
+  error?: boolean;
+}
+
 export function buildToolRegistry(opts: {
   mcp?: McpRegistry;
   stableSystem?: { confirm: (msg: string) => Promise<boolean>; isSensitive: (p: string) => boolean; cwd: string };
+  /** HITO 2.1: la pantalla ve qué herramienta corre y cómo termina. */
+  onTool?: (ev: ToolEvent) => void;
 }): ToolRegistry {
   const builtins = [...fileTools(), bashTool(), gitTool(), diagnosticsTool(), planTool(), undoTool(), webFetchTool(), deployTool()];
 
@@ -63,26 +74,39 @@ export function buildToolRegistry(opts: {
       } catch {
         return `[error] JSON de argumentos invalido para ${name}: ${argsJson.slice(0, 200)}`;
       }
+      const preview = (argsJson || "{}").replace(/\s+/g, " ").slice(0, 300);
+      const t0 = Date.now();
+      opts.onTool?.({ phase: "start", name, preview });
+      const finish = (out: string) => {
+        opts.onTool?.({
+          phase: "end",
+          name,
+          preview: out.replace(/\s+/g, " ").slice(0, 500),
+          ms: Date.now() - t0,
+          error: out.startsWith("[error]") || out.startsWith("[denied]") || out.startsWith("[cancel]"),
+        });
+        return out;
+      };
       if (byName.has(name)) {
         try {
-          return await byName.get(name)!.handler(args, ctx);
+          return finish(await byName.get(name)!.handler(args, ctx));
         } catch (e) {
           const m = e instanceof Error ? e.message : String(e);
           ctx.log.error(`Herramienta ${name}: ${m}`);
-          return `[error] ${name}: ${m}`;
+          return finish(`[error] ${name}: ${m}`);
         }
       }
       if (name.startsWith("mcp__") && opts.mcp) {
         try {
           const r = await opts.mcp.invoke(name, (args ?? {}) as Record<string, unknown>);
-          return r.result;
+          return finish(r.result);
         } catch (e) {
           const m = e instanceof Error ? e.message : String(e);
           ctx.log.error(`Herramienta MCP ${name}: ${m}`);
-          return `[error] ${name}: ${m}`;
+          return finish(`[error] ${name}: ${m}`);
         }
       }
-      return `[error] Herramienta desconocida: ${name}`;
+      return finish(`[error] Herramienta desconocida: ${name}`);
     },
   };
 }

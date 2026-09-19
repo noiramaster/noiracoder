@@ -32,6 +32,16 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
       matar motor → error visible, matar pty → sin huérfanos, 409, 401/426 por HTTP.
 - Siguiente: HITO 2 (confirmaciones/tools, memoria visible, saneo+adversaria).
 
+## Hito 2 — FUNCIONALIDAD + ADVERSARIA (en curso, 2026-09-19)
+- [x] 2.1 Herramientas vía motor: `onTool` en registry→orchestrator→thin
+      (`turn.tool_start/end`), deploy ya exigía confirm, plan mode deniega todo.
+      Watchdog con margen de herramienta (10 min). Evidencia docs/evidence/h2-tools.md.
+- [ ] 2.2 Memoria/rotación/cuotas visibles en la Go.
+- [ ] 2.3 Sesiones UI (listar/buscar/reanudar, Plan/Build, historial).
+- [ ] 2.4 Saneo + corpus malicioso.
+- [ ] 2.5 Batería adversaria T1–T5 + 48 E2E.
+- [ ] 2.6 Riesgo residual env-token.
+
 ## Pendientes (no bloquean Hito 1)
 - `README.md:16` apunta a `https://noiracoder.noira.sh/install` (dominio externo,
   fuera del repo): revisar en Hito 5.

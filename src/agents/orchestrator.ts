@@ -42,6 +42,8 @@ export interface OrchestratorOptions {
   model?: string;
   /** HITO 1: rotación visible + cancelación cooperativa. */
   onModelSwitch?: (from: string, to: string, reason: "auth" | "quota" | "routing" | "transient") => void;
+  /** HITO 2.1: la pantalla ve herramientas (inicio/fin). */
+  onToolEvent?: (ev: { phase: "start" | "end"; name: string; preview: string; ms?: number; error?: boolean }) => void;
   onModelErrorExt?: (model: string, kind: "transient" | "quota" | "auth") => void;
   signal?: AbortSignal;
 }
@@ -153,7 +155,10 @@ export async function orchestrate(
   const sensitive = isSensitivePrompt(prompt, policy) || opts.level === "max" || opts.level === "high";
   const system = buildSystemPrefix({ agentsMd, global: compiled.global, noteLines: compiled.noteLines, skills: skillBodies });
 
-  const registry = buildToolRegistry({ mcp: opts.mcp });
+  const registry = buildToolRegistry({
+    mcp: opts.mcp,
+    onTool: opts.onToolEvent,
+  });
   const toolCtx: ToolCallCtx = {
     cwd: opts.cwd,
     confirmDestructive: true,

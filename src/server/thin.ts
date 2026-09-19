@@ -43,6 +43,9 @@ interface ActiveTurn {
   sessionId: string;
   abort: AbortController;
   lastEventAt: number;
+  /** Una herramienta en curso puede tardar (bash hasta 10 min): el watchdog
+     le da margen desde su inicio, no desde el último token. */
+  lastToolStartAt: number;
 }
 
 export async function startThinServer(opts: ThinServerOptions): Promise<{ close: () => Promise<void> }> {
@@ -97,6 +100,15 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
     return words.slice(0, 60) || "nueva sesión";
   };
 
+  // HITO 2.1: saneo mínimo en el motor (la Go vuelve a sanear al pintar).
+  // Corpus completo + pruebas en Hito 2.4.
+  const sanitizeOut = (s: string): string =>
+    String(s)
+      .replace(/\][^\x07\\]*(?:\x07|\\)/g, "")
+      .replace(/\[[0-9;?]*[a-zA-Z]/g, "")
+      .replace(/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g, "")
+      .slice(0, 2000);
+
   const resolveConfirm = (id: string, approved: boolean, why: string) => {
     const p = pendingConfirms.get(id);
     if (!p || p.settled) {
@@ -113,7 +125,7 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
 
   const runTurn = async (turnId: string, sessionId: string, message: string, mode: string) => {
     const abort = new AbortController();
-    activeTurn = { id: turnId, sessionId, abort, lastEventAt: Date.now() };
+    activeTurn = { id: turnId, sessionId, abort, lastEventAt: Date.now(), lastToolStartAt: 0 };
     const touch = () => {
       if (activeTurn?.id === turnId) activeTurn.lastEventAt = Date.now();
     };
@@ -181,6 +193,21 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
           touch();
           send("model.switch", { turnId, de: from, a: to, motivo: reason });
         },
+        onToolEvent: (ev) => {
+          touch();
+          if (ev.phase === "start") {
+            if (activeTurn?.id === turnId) activeTurn.lastToolStartAt = Date.now();
+            send("turn.tool_start", { turnId, nombre: ev.name, detalle: ev.preview });
+          } else {
+            send("turn.tool_end", {
+              turnId,
+              nombre: ev.name,
+              exitCode: ev.error ? 1 : 0,
+              salida: sanitizeOut(ev.preview),
+              ms: ev.ms ?? null,
+            });
+          }
+        },
         onModelErrorExt: (m, kind) => {
           touch();
           opts.log.warn(`[thin] modelo ${m} falló (${kind}), rotando…`);
@@ -203,14 +230,18 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
   };
 
   // Vigilante: turno sin eventos > 60 s → error + libera (nunca silencio).
+  // Si hay herramienta en curso, margen hasta 10 min desde su inicio.
   const watchdog = setInterval(() => {
-    if (activeTurn && Date.now() - activeTurn.lastEventAt > TURN_NO_EVENT_TIMEOUT_MS) {
+    if (!activeTurn) return;
+    const idleMs = Date.now() - activeTurn.lastEventAt;
+    const toolMs = Date.now() - (activeTurn.lastToolStartAt || activeTurn.lastEventAt);
+    if (idleMs <= TURN_NO_EVENT_TIMEOUT_MS) return;
+    if (activeTurn.lastToolStartAt > 0 && toolMs <= 600000) return;
       const id = activeTurn.id;
       activeTurn.abort.abort();
       send("turn.error", { turnId: id, mensaje: "timeout: 60 s sin eventos del motor" });
       send("turn.end", { turnId: id, motivo: "error" });
       activeTurn = null;
-    }
   }, 5000);
   (watchdog as unknown as { unref?: () => void }).unref?.();
 
