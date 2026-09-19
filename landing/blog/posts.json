@@ -1,5 +1,15 @@
 [
   {
+    "slug": "sandbox-whitelist-seguridad-real",
+    "file": "2026-09-19-sandbox-whitelist-seguridad-real.html",
+    "date": "2026-09-19",
+    "category": "noiracoder",
+    "title_es": "NoiraCoder: Sandbox, Whitelist y Seguridad Real en la Terminal",
+    "title_en": "NoiraCoder: Sandbox, Whitelist, and Real Security in the Terminal",
+    "excerpt_es": "Descubre cómo NoiraCoder combina sandboxing y listas blancas para ofrecer una seguridad real en entornos de desarrollo.",
+    "excerpt_en": "Learn how NoiraCoder blends sandboxing and whitelisting to deliver real security in development environments."
+  },
+  {
     "slug": "privacidad-local-claves-cifradas-dpapi",
     "file": "2026-09-18-privacidad-local-claves-cifradas-dpapi.html",
     "date": "2026-09-18",
