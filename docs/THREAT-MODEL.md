@@ -76,3 +76,26 @@ Aquí solo lo NUEVO que introduce la arquitectura dividida.
 - Un atacante con acceso total a la cuenta del usuario (puede pulsar "sí").
 - Modelos gratuitos que registran lo enviado (aviso de primer uso, Hito 5).
 - Seguridad del propio proveedor (Kilo/OpenRouter/Groq/Zen).
+
+## Hito 2.6 — Riesgo residual: token visible para procesos del mismo usuario
+
+- **Hecho**: el token viaja por entorno (`NOIRA_TOKEN` en la Go, `NOIRA_SERVE_TOKEN`
+  en el motor). Otro proceso con el MISMO usuario y privilegios puede leer el
+  entorno ajeno (p. ej. Process Explorer o `/proc/<pid>/environ`).
+- **Alcance real**: quien puede leer tu entorno ya puede leer tus ficheros
+  (`~/.noirarc/keys.json` cifrado aparte, sesiones, proyectos). El token no abre
+  nada que esos ficheros no abran. No eleva privilegios.
+- **Mitigación aplicada**: token aleatorio por arranque (32 bytes), vida corta
+  (muere con el wrapper), loopback + un solo cliente + 401/409.
+- **Mitigación futura (no implementada)**: paso del token por pipe anónimo
+  heredado en vez de entorno. Registrado como mejora, no como bloqueo.
+
+## Endurecimientos del Hito 2.5 (ya en el motor)
+
+- `powershell|pwsh|cmd` + `-e|-enc|iex|invoke-expression` → DENY siempre.
+- `FromBase64String` → DENY (límite extendido `:.␣[(`).
+- Variantes de espaciado (`/s /q` vs `/s/q`) normalizadas: no degradan deny→ask.
+- `python -c`, `python3 -c`, `node -e` → ASK (código en línea no auditable).
+- Lectura: rechazo >10MB con guía + tope 100k caracteres por defecto.
+- Residual conocido: `powershell -noprofile -e` intercalando flags raros pasa
+  el filtro corto pero cae en ASK (no en allow); documentado, no silencioso.

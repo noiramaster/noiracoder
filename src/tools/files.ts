@@ -58,7 +58,11 @@ export function readTool(): ToolDefinition<ReadArgs> {
       const limit = Math.min(args.limit ?? lines.length, 2000);
       const slice = lines.slice(offset - 1, offset - 1 + limit);
       let out = slice.map((l, i) => `${offset + i}: ${l}`).join("\n");
-      if (args.maxChars && out.length > args.maxChars) {
+      // HITO 2.5: tope por defecto aunque no se pida maxChars (ficheros enormes).
+      const cap = args.maxChars ?? 100000;
+      if (out.length > cap) {
+        out = out.slice(0, cap) + "\n(... [truncado: usa offset/limit])";
+      } else if (args.maxChars && out.length > args.maxChars) {
         out = out.slice(0, args.maxChars) + "\n(... [truncado por maxChars])";
       }
       if (lines.length > offset - 1 + limit) out += `\n(... ${lines.length - (offset - 1 + limit)} líneas más, usa offset=${offset + limit})`;

@@ -93,19 +93,33 @@ export const DEFAULT_POLICY: SandboxPolicy = {
     "shutdown",
     "reboot",
     "curl http", // unvalidated network writes stay out of the silent path
+    // HITO 2.5: payloads codificados/ofuscados (bypass de patrones por -enc).
+    "-EncodedCommand",
+    "FromBase64String",
+    "Invoke-Expression",
+    "iex",
   ],
   sensitivePaths: [],
   askBefore: [
     "rm", "rmdir", "del", "del /s", "Remove-Item", "deploy", "terraform apply",
     "kubectl delete", "docker compose down -v", "sudo", "git push", "git push -f",
+    // HITO 2.5: código en línea (el contenido interior no se audita) -> preguntar.
+    "python -c", "python3 -c", "node -e",
   ],
 };
 
 export function compilePolicy(policy: SandboxPolicy): PolicyRule[] {
   const rules: PolicyRule[] = [];
   // 1) Hard denies first: they must always win over any other rule.
+  // HITO 2.5: cada entrada genera ADEMÁS una variante normalizada
+  // ("/s /q" -> "/s/q", el espacio va ANTES de la barra) para que el
+  // espaciado no degrade deny a ask.
   for (const p of policy.hardDeny) {
     rules.push({ action: "deny", pattern: new RegExp(`(^|[\\s;&|])${escapeRe(p)}`, "i"), reason: `bloqueado por politica: ${p}`, requireConfirm: false });
+    const norm = p.replace(/\s+/g, " ").replace(/\s+\//g, "/");
+    if (norm !== p) {
+      rules.push({ action: "deny", pattern: new RegExp(`(^|[\\s;&|])${escapeRe(norm)}`, "i"), reason: `bloqueado por politica: ${p}`, requireConfirm: false });
+    }
   }
   // 2) Legacy askBefore: these may run but ONLY with explicit confirmation.
   for (const p of policy.askBefore) {
@@ -134,11 +148,26 @@ export function leadingToken(command: string): string {
  *                requires explicit human confirmation before running.
  */
 export function decide(command: string, rules: PolicyRule[], allowCommands: string[]): PolicyDecision {
-  // 1) hard-denies win over everything
+  // 1) hard-denies win over everything. Se prueban contra el comando tal cual
+  // y contra una forma normalizada (espacios colapsados, "/s /q" -> "/s/q"):
+  // HITO 2.5, las variantes de espaciado no deben degradar deny a ask.
+  const normCmd = command.replace(/\s+/g, " ").replace(/\s+\//g, "/");
   for (const r of rules) {
-    if (r.action === "deny" && r.pattern.test(command)) {
+    if (r.action === "deny" && (r.pattern.test(command) || r.pattern.test(normCmd))) {
       return { action: "deny", reason: r.reason, requireConfirm: false };
     }
+  }
+  // 1b) HITO 2.5: decodificadores .NET (siempre exec-adjacent). El límite
+  // incluye ':' '.' '[' '(' porque llegan como [Convert]::FromBase64String.
+  if (/(^|[\s;&|\[(:.])FromBase64String/i.test(command)) {
+    return { action: "deny", reason: "bloqueado por politica: FromBase64String", requireConfirm: false };
+  }
+  // 1b) HITO 2.5: powershell/pwsh/cmd con flags cortos ofuscados (-e, -enc)
+  // o iex en cualquier orden de flags: se deniega siempre.
+  const head = leadingToken(command);
+  if ((head === "powershell" || head === "pwsh" || head === "cmd") &&
+      /(^|[\s;&|])(-e\b|-enc|iex\b|invoke-expression)/i.test(command)) {
+    return { action: "deny", reason: "bloqueado por politica: payload codificado u ofuscado (powershell/cmd)", requireConfirm: false };
   }
   // 2) askBefore upgrade (still may run, but needs confirmation)
   for (const r of rules) {

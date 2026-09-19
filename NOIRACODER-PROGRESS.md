@@ -50,6 +50,12 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
       (12/12). Cubre ANSI/OSC/APC/C1/C0/DEL/bidi-spoof/truncado. Hallazgo: los
       bytes C1 sueltos no son UTF-8 válido (U+FFFD) — por eso el saneo Go es
       a nivel de byte.
+- [x] 2.5 Adversaria: `test/adversarial.mjs` 36/36 (`test:adversarial`) + E2E
+      48/48. Turnos reales: canario intacto, trap de injection leída pero no
+      ejecutada, fichero 10MB rechazado con guía. Evidencia
+      docs/evidence/h2-adversarial.md. Campo de pruebas limpiado.
+- [x] 2.6 Residual env-token documentado en THREAT-MODEL.md.
+- HITO 2 COMPLETO. Siguiente: HITO 3 (experiencia).
 - [ ] 2.5 Batería adversaria T1–T5 + 48 E2E.
 - [ ] 2.6 Riesgo residual env-token.
 
