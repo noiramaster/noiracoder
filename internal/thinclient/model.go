@@ -303,8 +303,8 @@ func (m *Model) handleCommand(text string) bool {
 			m.addLine("[error] modelo: " + err.Error())
 			return true
 		}
-		m.modelName = parts[1]
-		m.addLine("(modelo preferido: " + parts[1] + ")")
+		m.modelName = Sanitize(parts[1])
+		m.addLine("(modelo preferido: " + m.modelName + ")")
 		m.setStatus()
 		return true
 	}
@@ -349,7 +349,7 @@ func (m *Model) onEvent(ev Event) {
 			m.viewport.GotoBottom()
 		}
 	case "model.switch":
-		m.modelName = or(str(ev, "a"), m.modelName)
+		m.modelName = Sanitize(or(str(ev, "a"), m.modelName))
 		m.addLine(fmt.Sprintf("[modelo] %s → %s (%s)", str(ev, "de"), str(ev, "a"), str(ev, "motivo")))
 		m.setStatus()
 	case "confirm.request":
@@ -376,7 +376,7 @@ func (m *Model) onEvent(ev Event) {
 		m.addLine(fmt.Sprintf("[tool] %s fin%s", str(ev, "nombre"), code))
 	case "session.updated":
 		if n := str(ev, "nombre"); n != "" {
-			m.sessName = n
+			m.sessName = Sanitize(n)
 		}
 		m.setStatus()
 	case "turn.error":
