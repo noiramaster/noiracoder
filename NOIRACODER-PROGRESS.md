@@ -24,7 +24,10 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
 ## Hito 1 — ESQUELETO ANDANTE (en curso, 2026-09-19)
 - [x] Hooks motor (f516610): `signal`, `onModelSwitch`, `model?` en
       orchestrator/agentLoop. Typecheck OK, E2E 48/48 (sin cambio).
-- [ ] Servidor thin SSE (`src/server/thin.ts` + `serve --thin`).
+- [x] Servidor thin SSE (266f9ec): `src/server/thin.ts` + `serve --thin`.
+      Verificado ejecutando (docs/evidence/h1-thin-server.md): health/401/426,
+      sesiones, modelos, turno real con streaming (turn.text→end done),
+      undo revirtió artefacto del propio turno. Sin huérfanos.
 - [ ] Go cliente fino (rama noira-rebrand, eliminar motor heredado).
 - [ ] Wrapper ciclo de vida (puerto/token/env, fallback Ink).
 - [ ] Pruebas pty + 401/409/426 (evidencia en docs/evidence/).

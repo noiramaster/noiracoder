@@ -7,9 +7,11 @@ smoke.mjs
 *.log
 .env
 
-# Go binary (download from releases)
+# Go binaries (local build / download from releases)
 bin/noira-go.exe
 bin/noira-go
+bin/noira-thin.exe
+bin/noira-thin
 .noira/
 .noiracoder/opencode.db*
 

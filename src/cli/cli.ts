@@ -249,6 +249,21 @@ export async function cliMain(argv: string[], meta?: { invokedAs?: string }): Pr
         const { startThinServer } = await import("../server/thin.js");
         const svc = await startThinServer({ port: args.port, log, level: args.level, lang, authToken, mcp: mcp ?? undefined });
         log.raw(`[thin] token: ${authToken.slice(0, 8)}… (completo en NOIRA_SERVE_TOKEN si se fijó)`);
+        // HITO 1.3: si el wrapper muere de golpe (cierre de ventana), el motor
+        // se suicida para no dejar huérfanos. EPERM = sigue vivo; otro error = muerto.
+        const ppid = process.ppid;
+        const watch = setInterval(() => {
+          try {
+            process.kill(ppid, 0);
+          } catch (e) {
+            const code = (e as NodeJS.ErrnoException)?.code;
+            if (code !== "EPERM") {
+              log.warn("[thin] el wrapper murió; cerrando el motor (sin huérfanos).");
+              void svc.close().finally(() => process.exit(0));
+            }
+          }
+        }, 5000);
+        (watch as unknown as { unref?: () => void }).unref?.();
         // Mantiene el proceso vivo hasta Ctrl+C.
         await new Promise(() => {});
         await svc.close();
