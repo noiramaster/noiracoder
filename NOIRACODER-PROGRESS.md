@@ -112,6 +112,16 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
 - Siguiente: HITO 7 (verificación final; publicar SOLO si todo pasa).
 
 ## Hito 7 — VERIFICACIÓN FINAL (listo para publicar, 2026-09-20)
+
+## Verificaciones pedidas (2026-09-20, sin publicar)
+- [x] CI multi-OS (`verify-thin.yml`, run 35506528146): ubuntu + macos-14
+      (arm64) + macos-15-intel (x64) en verde — build, boot exit 2, wrapper,
+      install.sh en ubuntu. Evidencia docs/evidence/ci-thin.md.
+- [x] Fallback Ink ante Go rota (pty local 4/4 + rama 10 s con notepad):
+      falta/crash/exit<3s/spawn-error → Ink con mensaje; colgada → kill+Ink.
+      Endpoint `GET /v1/status` para el watchdog.
+- Lección: `name:` YAML con `:` sin entrecomillar tumba el workflow (runs 0s
+  + dispatch 422). Validador local con go+yaml.v3.
 - [x] 7.1 Suites en verde (ver arriba) + Go tests + vet.
 - [x] 7.2 pty 9/9 con binario CI (docs/evidence/h7-final.md).
 - [ ] 7.3 Publicar (runbook):
