@@ -172,8 +172,11 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
   `npm run build` + `npm run build:thin` + `npm link` + `noira --go`
   (link, no `install -g`, hasta la 0.2.0). pty instalación normal 5/5 con
   turno real; cuota ausente en turno mínimo = por diseño (thin.ts:219).
-- [ ] B Runbook 0.2.0 (candado prepublishOnly, pty binario del tag, tarball
-  contra release, comandos usuario vs opencode). Versión aún 0.1.0 (bump pendiente).
+- [x] B1 Candado (docs/evidence/b1-candado.md): SHA256 esperado sale del
+  SHA256SUMS del release (no del paquete). `prepublishOnly` aborta sin
+  release/activos/SUMS malformado: `npm publish --dry-run` falla (exit 1,
+  publica nada). Releases hoy: solo `v0.1.0` sin assets. Rama positiva SOLO
+  POR CÓDIGO hasta el runbook real.
 - [ ] REPETICIÓN FINAL adversaria(39)/e2e(48)/i18n/pty.
 
 ## PENDIENTES DEL USUARIO
