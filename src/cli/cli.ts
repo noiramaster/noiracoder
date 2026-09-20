@@ -137,6 +137,8 @@ export async function cliMain(argv: string[], meta?: { invokedAs?: string }): Pr
       return runTui({
         cwd: process.cwd(),
         version,
+        // El wrapper deja aquí el motivo si cayó a Ink (D4: aviso persistente).
+        notice: process.env.NOIRA_NOTICE || undefined,
       });
     } else {
       const { runRepl } = await import("./repl.js");

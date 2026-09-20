@@ -19,15 +19,15 @@ interface Msg { role: "user" | "assistant"; content: string; }
 
 const GOLD = "#FBBF24";
 
-export async function runTui(opts: { cwd: string; version: string }): Promise<number> {
+export async function runTui(opts: { cwd: string; version: string; notice?: string }): Promise<number> {
   const mcp = await connectMcp(opts.cwd);
   return new Promise((resolve) => {
-    const { waitUntilExit } = render(React.createElement(App, { cwd: opts.cwd, version: opts.version, mcp }), { exitOnCtrlC: true });
+    const { waitUntilExit } = render(React.createElement(App, { cwd: opts.cwd, version: opts.version, notice: opts.notice, mcp }), { exitOnCtrlC: true });
     waitUntilExit().then(() => { mcp?.close(); resolve(0); });
   });
 }
 
-function App({ cwd, version, mcp }: { cwd: string; version: string; mcp?: McpRegistry | null }) {
+function App({ cwd, version, notice, mcp }: { cwd: string; version: string; notice?: string; mcp?: McpRegistry | null }) {
   const { exit } = useApp();
   const [key, setKey] = useState<string | null>(null);
   const [msgs, setMsgs] = useState<Msg[]>([]);
@@ -188,6 +188,11 @@ function App({ cwd, version, mcp }: { cwd: string; version: string; mcp?: McpReg
       React.createElement(Text, { color: C.yellow, bold: true }, `> noira ${version}`),
       React.createElement(Text, { color: C.dim }, `Noira · ${level}`),
     ),
+    notice
+      ? React.createElement(Box, { marginTop: 1, borderStyle: "round", borderColor: C.yellow },
+          React.createElement(Text, { color: C.yellow, wrap: "wrap" }, notice),
+        )
+      : null,
     React.createElement(Box, { flexDirection: "column", flexGrow: 1, marginTop: 1 },
       ...list,
       thinking,

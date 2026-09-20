@@ -165,7 +165,9 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
 - [x] A3 Flujo dev local: `npm run build:thin` (scripts/build-thin.mjs) deja el
   binario donde el wrapper lo busca (rutas idénticas, verificado) + sección
   "Desarrollo local" en README. El postinstall no pisa binario existente.
-- [ ] A4 Aviso persistente verificado (Ink + welcome/REPL).
+- [x] A4 Aviso persistente verificado (docs/evidence/a4-aviso.md): pty sin
+  binario 6/6 (caja amarilla que permanece + cómo arreglar) + rama sin TTY
+  (`[warn]` en stdout). `repl.ts` también lo imprime sin TTY (nuevo).
 - [ ] A5 Comando exacto usuario + pty sobre instalación normal.
 - [ ] B Runbook 0.2.0 (candado prepublishOnly, pty binario del tag, tarball
   contra release, comandos usuario vs opencode). Versión aún 0.1.0 (bump pendiente).

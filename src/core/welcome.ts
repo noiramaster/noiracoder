@@ -31,4 +31,8 @@ export function printWelcome(version: string): void {
   const text = welcomeArt(version);
   // Only color when stdout is a TTY; the helper already handles that.
   process.stdout.write(text + "\n");
+  // D4: si el wrapper cayó a Node, el motivo queda visible tras la bienvenida.
+  if (process.env.NOIRA_NOTICE) {
+    process.stdout.write(color.yellow(`> ${process.env.NOIRA_NOTICE}`) + "\n\n");
+  }
 }

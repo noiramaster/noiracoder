@@ -524,6 +524,9 @@ export async function runRepl(opts: ReplOptions): Promise<number> {
   const { version } = await import("../packageVersion.js");
   const { printWelcome } = await import("../core/welcome.js");
   if (process.stdout.isTTY) printWelcome(version);
+  // A4: sin TTY no hay welcome ni TUI Ink; el aviso del wrapper (stderr)
+  // se pierde entre el resto de salida: se repite en stdout y permanece.
+  else if (process.env.NOIRA_NOTICE) log.warn(process.env.NOIRA_NOTICE);
   const selector = new LanguageSelector();
   const store = new SessionStore(opts.cwd);
 
