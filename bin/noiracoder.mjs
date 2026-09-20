@@ -36,11 +36,14 @@ function startNode() {
     });
 }
 
-/** HITO 1.3: arranca motor thin + pantalla Go, ciclo de vida completo. */
+/** HITO 1.3 + verificación: arranca motor thin + pantalla Go, ciclo de vida completo. */
 async function startGo() {
-  if (!existsSync(thinBin)) {
+  // Override para pruebas (binario roto a propósito): NOIRA_THIN_BIN.
+  const overrideBin = process.env.NOIRA_THIN_BIN || "";
+  const bin = overrideBin || thinBin;
+  if (!existsSync(bin)) {
     console.error("> Sin binario thin (noira-thin): se usa el respaldo Ink/Node.");
-    console.error("> El binario llega en el Hito 6 con hash verificado; en desarrollo: go build ./cmd/noira-thin");
+    console.error("> El binario llega con hash verificado (Hito 6); en desarrollo: go build ./cmd/noira-thin");
     startNode();
     return;
   }
@@ -80,12 +83,38 @@ async function startGo() {
     startNode();
     return;
   }
-  console.error("> Pantalla Go (cliente fino del motor, Hito 1).");
-  const go = spawn(thinBin, [], {
+  console.error("> Pantalla Go (cliente fino del motor).");
+  const t0 = Date.now();
+  const go = spawn(bin, [], {
     env: { ...process.env, NOIRA_PORT: String(port), NOIRA_TOKEN: token },
-    stdio: "inherit",
+    // stdout+stdin heredados (la TUI pinta ahí); stderr por pipe para
+    // diagnosticar arranques fallidos sin manchar la pantalla.
+    stdio: ["inherit", "inherit", "pipe"],
   });
-  const goGone = new Promise((resolve) => go.once("exit", (code) => resolve(code)));
+  let goErr = "";
+  go.stderr?.on("data", (c) => { goErr = (goErr + String(c)).slice(-2000); });
+  const goGone = new Promise((resolve) => {
+    go.once("exit", (code) => resolve(code));
+    go.once("error", (err) => resolve({ spawnError: err }));
+  });
+  // Si la pantalla no conecta al motor en 10 s (colgada antes del SSE),
+  // se la mata y se cae a Ink con mensaje claro.
+  const noClientWatch = setTimeout(async () => {
+    if (go.exitCode !== null) return;
+    try {
+      const r = await fetch(`http://127.0.0.1:${port}/v1/status`, {
+        headers: { Authorization: `Bearer ${token}`, "X-Noira-Protocol": "1" },
+      });
+      const st = await r.json().catch(() => ({}));
+      if (st && st.clientes === 0) {
+        console.error("> La pantalla Go no conectó en 10 s (colgada); se usa el respaldo Ink/Node.");
+        try {
+          if (process.platform === "win32") spawn("taskkill", ["/pid", String(go.pid), "/T", "/F"]);
+          else go.kill("SIGTERM");
+        } catch { /* ya salió */ }
+      }
+    } catch { /* el motor dirá; no decidir aquí */ }
+  }, 10000);
   // Si el motor muere primero, mata la Go (sin huérfanos); la Go ya muestra fatal.
   void motorGone.then(() => {
     if (go.exitCode === null) {
@@ -97,6 +126,7 @@ async function startGo() {
     }
   });
   const code = await goGone;
+  clearTimeout(noClientWatch);
   try {
     if (motor.exitCode === null) {
       if (process.platform === "win32") {
@@ -104,9 +134,22 @@ async function startGo() {
       } else motor.kill("SIGTERM");
     }
   } catch { /* ya salió */ }
+  if (code !== null && typeof code === "object" && code.spawnError) {
+    // El binario ni siquiera arrancó (arquitectura, permisos, fichero roto).
+    console.error(`> La pantalla Go no arrancó (${code.spawnError.message || code.spawnError}); se usa el respaldo Ink/Node.`);
+    startNode();
+    return;
+  }
   if (code === 3) {
     // Protocolo distinto u otro error fatal del cliente: Ink con aviso.
     console.error("> La pantalla Go no pudo hablar con el motor; se usa el respaldo Ink/Node.");
+    startNode();
+    return;
+  }
+  if (typeof code === "number" && code !== 0 && Date.now() - t0 < 3000) {
+    // Murió sola antes de 3 s (cuelgue en arranque, hash corrupto, etc.).
+    console.error(`> La pantalla Go terminó muy pronto (código ${code}); se usa el respaldo Ink/Node.`);
+    if (goErr) console.error(goErr.split("\n").slice(-5).join("\n"));
     startNode();
     return;
   }

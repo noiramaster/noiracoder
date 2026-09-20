@@ -279,6 +279,17 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
       return;
     }
 
+    // ── Estado (lo usa el wrapper para detectar pantallas colgadas) ──
+    if (req.method === "GET" && url.pathname === "/v1/status") {
+      json(res, 200, {
+        ok: true,
+        protocol: THIN_PROTOCOL,
+        clientes: sse && !sse.writableEnded ? 1 : 0,
+        turnoActivo: activeTurn !== null,
+      });
+      return;
+    }
+
     // ── SSE (un solo cliente) ──
     if (req.method === "GET" && url.pathname === "/v1/events") {
       if (sse && !sse.writableEnded) {
