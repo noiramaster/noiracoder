@@ -16,11 +16,7 @@ permissions:
 
 jobs:
   verify:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -63,8 +59,8 @@ jobs:
           node bin/noiracoder.mjs --version
           node bin/noiracoder.mjs --go --version
 
-      - name: install.sh de punta a punta (solo ubuntu)
-        if: matrix.os == 'ubuntu-latest'
+      - name: install.sh de punta a punta
+        if: runner.os == 'Linux'
         run: |
           sudo bash install.sh || bash install.sh
           noira --version || "$HOME/.npm-global/bin/noira" --version || true
