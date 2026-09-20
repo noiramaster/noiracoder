@@ -177,7 +177,17 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
   release/activos/SUMS malformado: `npm publish --dry-run` falla (exit 1,
   publica nada). Releases hoy: solo `v0.1.0` sin assets. Rama positiva SOLO
   POR CÓDIGO hasta el runbook real.
-- [ ] REPETICIÓN FINAL adversaria(39)/e2e(48)/i18n/pty.
+- [x] B2/B3 Runbook (docs/evidence/b-runbook.md): pty sobre binario DEL TAG +
+  tarball contra release real = PENDIENTES DEL TAG (regla no-publicar; pasos
+  3–4 del runbook con harnesses listos). Simulación verificada en A2.
+- [x] B4 Runbook final numerado (usuario: version minor, tags, publish con
+  app/llave — nunca recovery code; opencode: pty tag, tarball real, install
+  limpio). Anuncio: Linux/macOS arranque OK (CI), sesión completa Windows.
+- [x] REPETICIÓN FINAL 2026-09-20 (docs/evidence/final-2026-09-20.md):
+  e2e 48/48, adversaria 39/39, i18n 0, sanitize OK, go OK+vet, pty final
+  5/5 + A5 5/5 + A2 11/11 + A4 6/6. Sin exploits: sin parada dura.
+- Para retomar: esta sección (sesión 2026-09-20); A completa; B pendiente
+  solo del tag 0.2.0 del usuario. Versión aún 0.1.0 (bump = paso 1 runbook).
 
 ## PENDIENTES DEL USUARIO
 - Regenerar clave OpenRouter (`noira login`) — la actual da 401.
