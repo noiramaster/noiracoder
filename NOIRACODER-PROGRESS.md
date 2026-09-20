@@ -162,7 +162,9 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
   (descarga+hash OK, hash-mal rechaza sin romper) + `--go` abre la pantalla
   Go completa con motor real, `/quit` 0, sin huérfanos. Sin bug bloqueante.
   Hallazgo: cuota solo con dato (status_test.go nuevo, `go test` OK).
-- [ ] A3 `npm run build:thin` + doc flujo local.
+- [x] A3 Flujo dev local: `npm run build:thin` (scripts/build-thin.mjs) deja el
+  binario donde el wrapper lo busca (rutas idénticas, verificado) + sección
+  "Desarrollo local" en README. El postinstall no pisa binario existente.
 - [ ] A4 Aviso persistente verificado (Ink + welcome/REPL).
 - [ ] A5 Comando exacto usuario + pty sobre instalación normal.
 - [ ] B Runbook 0.2.0 (candado prepublishOnly, pty binario del tag, tarball

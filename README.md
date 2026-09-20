@@ -23,7 +23,23 @@ npm i -g noiracoder
 ```bash
 noira login   # 1 vez, 1 clic
 noira         # abre chat — como claude / opencode
+noira --go    # pantalla Go completa (cliente fino del motor)
 ```
+
+## Desarrollo local
+
+```bash
+npm install
+npm run build
+npm run build:thin   # necesita Go: compila bin/noira-thin(.exe), donde lo busca el wrapper
+node bin/noiracoder.mjs --go
+```
+
+`npm link` enlaza el repo tal cual y no descarga nada: sin `npm run build:thin`
+(o sin release descargable) `--go` cae al respaldo Ink/Node con un aviso en
+pantalla. El postinstall nunca pisa un binario ya existente, así que compilar
+en local y reinstalar después conviven sin problema. En `npm i -g noiracoder`
+el binario llega solo (postinstall con SHA256 verificado).
 
 Niveles (solo ves `Noira · <nivel>`):
 

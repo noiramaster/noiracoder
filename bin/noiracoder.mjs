@@ -43,7 +43,8 @@ async function startGo() {
   const bin = overrideBin || thinBin;
   if (!existsSync(bin)) {
     console.error("> Sin binario thin (noira-thin): se usa el respaldo Ink/Node.");
-    console.error("> El binario llega con hash verificado (Hito 6); en desarrollo: go build ./cmd/noira-thin");
+    console.error("> El binario llega con hash verificado (Hito 6); en desarrollo: npm run build:thin");
+    process.env.NOIRA_NOTICE = "Pantalla Go no disponible: falta el binario. Arreglo: npm run build:thin (o espera la 0.2.0). Sigues en el motor Node.";
     startNode();
     return;
   }
@@ -80,6 +81,7 @@ async function startGo() {
     try { motor.kill(); } catch { /* ya muerto */ }
     console.error("> El motor no arrancó a tiempo; se usa el respaldo Ink/Node.");
     if (motorErr) console.error(motorErr.split("\n").slice(-5).join("\n"));
+    process.env.NOIRA_NOTICE = "Pantalla Go no disponible: el motor no arrancó. Sigues en el motor Node.";
     startNode();
     return;
   }
@@ -108,6 +110,7 @@ async function startGo() {
       const st = await r.json().catch(() => ({}));
       if (st && st.clientes === 0) {
         console.error("> La pantalla Go no conectó en 10 s (colgada); se usa el respaldo Ink/Node.");
+        process.env.NOIRA_NOTICE = "Pantalla Go no disponible: no conectó en 10 s (colgada). Sigues en el motor Node.";
         try {
           if (process.platform === "win32") spawn("taskkill", ["/pid", String(go.pid), "/T", "/F"]);
           else go.kill("SIGTERM");
@@ -137,12 +140,14 @@ async function startGo() {
   if (code !== null && typeof code === "object" && code.spawnError) {
     // El binario ni siquiera arrancó (arquitectura, permisos, fichero roto).
     console.error(`> La pantalla Go no arrancó (${code.spawnError.message || code.spawnError}); se usa el respaldo Ink/Node.`);
+    process.env.NOIRA_NOTICE = "Pantalla Go no disponible: el binario no arrancó (arquitectura o permisos). Sigues en el motor Node.";
     startNode();
     return;
   }
   if (code === 3) {
     // Protocolo distinto u otro error fatal del cliente: Ink con aviso.
     console.error("> La pantalla Go no pudo hablar con el motor; se usa el respaldo Ink/Node.");
+    process.env.NOIRA_NOTICE = "Pantalla Go no disponible: protocolo incompatible. Actualiza noira y noira-thin. Sigues en el motor Node.";
     startNode();
     return;
   }
@@ -150,6 +155,7 @@ async function startGo() {
     // Murió sola antes de 3 s (cuelgue en arranque, hash corrupto, etc.).
     console.error(`> La pantalla Go terminó muy pronto (código ${code}); se usa el respaldo Ink/Node.`);
     if (goErr) console.error(goErr.split("\n").slice(-5).join("\n"));
+    process.env.NOIRA_NOTICE = `Pantalla Go no disponible: terminó sola (código ${code}). Sigues en el motor Node.`;
     startNode();
     return;
   }
@@ -161,6 +167,7 @@ if (wantGo && !isNc && !forceNode && interactiveTTY) {
 } else {
   if (wantGo && !isNc && !interactiveTTY) {
     console.error("> --go necesita terminal interactivo: se usa el motor Node.");
+    process.env.NOIRA_NOTICE = "Pantalla Go no disponible: sin terminal interactivo. Sigues en el motor Node.";
   }
   if (wantGo && isNc) {
     console.error("> `nc` es siempre el respaldo Ink/Node: --go se ignora.");

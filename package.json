@@ -23,6 +23,8 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "build:thin": "node scripts/build-thin.mjs",
+    "prepublishOnly": "node scripts/check-release.mjs",
     "postinstall": "node scripts/fetch-go-binary.mjs || true",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "start": "node dist/index.js",

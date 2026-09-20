@@ -50,7 +50,7 @@ function fetchBuf(url, redirects = 3) {
   });
 }
 
-const TAG = "noira-go-v0.1.0";
+const TAG = "noira-go-v" + JSON.parse(readFileSync(join(here, "..", "package.json"), "utf8")).version;
 const REPO = "noiramaster/noiracoder";
 
 async function main() {
@@ -69,6 +69,15 @@ async function main() {
     if (override) {
       console.error(`[noira] NOIRA_GO_BIN_URL: descargando binario de pruebas…`);
       const buf = await fetchBuf(override);
+      // NOIRA_GO_SHA256 (opcional): verifica el hash también en modo override.
+      const wantHash = process.env.NOIRA_GO_SHA256 || "";
+      if (wantHash) {
+        const got = createHash("sha256").update(buf).digest("hex");
+        if (got.toLowerCase() !== wantHash.toLowerCase()) {
+          throw new Error(`hash distinto (quiero ${wantHash.slice(0, 12)}…, tengo ${got.slice(0, 12)}…)`);
+        }
+        console.error(`[noira] hash verificado (${wantHash.slice(0, 12)}…).`);
+      }
       const { writeFile } = await import("node:fs/promises");
       await writeFile(tmp, buf);
     } else {
