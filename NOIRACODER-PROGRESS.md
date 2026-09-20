@@ -157,7 +157,11 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
   conoce `--go`/`noira-thin`; sin binario cae en silencio a cliMain y `--go`
   se ejecuta como prompt one-shot → línea `Noira · medium`. Sin aviso porque
   en esa copia el aviso no existe. Hipótesis NOIRA_THIN_BIN refutada.
-- [ ] A2 Camino normal por tarball + pty sin NOIRA_THIN_BIN.
+- [x] A2 Camino normal por tarball + pty sin NOIRA_THIN_BIN: 11/11 PASS
+  (docs/evidence/a2-normal.md). Tarball 0.1.0 (180 ficheros) + postinstall
+  (descarga+hash OK, hash-mal rechaza sin romper) + `--go` abre la pantalla
+  Go completa con motor real, `/quit` 0, sin huérfanos. Sin bug bloqueante.
+  Hallazgo: cuota solo con dato (status_test.go nuevo, `go test` OK).
 - [ ] A3 `npm run build:thin` + doc flujo local.
 - [ ] A4 Aviso persistente verificado (Ink + welcome/REPL).
 - [ ] A5 Comando exacto usuario + pty sobre instalación normal.
