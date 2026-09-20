@@ -129,7 +129,15 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
       2. `git tag noira-go-v0.2.0` + push → CI adjunta 5 binarios + SHA256SUMS.
       3. Usuario: `npm publish --access public` (pide su security key) + output.
       4. Yo: install limpio global en temp (verifica hash+boot) y constancia.
+      5. Nota: Linux/macOS verificados en ARRANQUE (CI 3/3); sesión completa
+         solo en Windows. macOS/Linux en sesión = PENDIENTE (sin acceso).
 - Para retomar: este archivo desde "Hito 0"; evidencia en docs/evidence/.
+
+## Verificación final pre-0.2.0 (2026-09-20, sin publicar)
+- /v1/status: 401/401/426 + forma sin fugas (tests + PROTOCOL.md).
+- Baterías: adversarial 39/39, e2e 48/48, i18n 0, sanitize OK, go OK.
+- pty 9/9 + 5/5 con binario CI fresco (run 35511945096).
+- Evidencia: docs/evidence/final-020-prep.md.
 - [x] 6.2 fetch-go-binary (hash + override + fallback) en `files`+postinstall.
 - [x] 6.3 install.sh/ps1 con fetch explícito (approve global no existe).
 - [x] 6.4 Windows aislado 3/3 (boot, Kilo sin claves, sessions, uninstall).

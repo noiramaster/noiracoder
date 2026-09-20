@@ -40,6 +40,7 @@ sin streaming ni confirmaciones remotas). El Hito 1 lo lleva hasta aquí.
 | Método | Ruta | Uso |
 |---|---|---|
 | GET | `/health` | liveness (sin auth) |
+| GET | `/v1/status` | estado para el watchdog del wrapper: `{ok, protocol, clientes, turnoActivo}`. Con auth como los demás (sin token → 401). No expone rutas, claves ni contenido de sesiones. Prueba: `test/adversarial.mjs` (401/426/forma). |
 | GET | `/v1/events?protocol=1` | **SSE único** (un cliente; 2º → 409) |
 | GET | `/v1/models` | modelos `{id, provider, disponible, cuota}` |
 | POST | `/v1/model` `{id}` | cambio manual de modelo |

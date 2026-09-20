@@ -110,6 +110,15 @@ try {
   });
   const j = await r.json();
   check("confirm-desconocida-ignorada", j.ok === false, JSON.stringify(j));
+  // /v1/status: con auth como los demás; sin fugas (solo ok/protocol/clientes/turnoActivo).
+  r = await fetch(`http://127.0.0.1:${PORT}/v1/status`, { headers: { "X-Noira-Protocol": "1" } });
+  check("status-401-sin-token", r.status === 401, `fue=${r.status}`);
+  r = await fetch(`http://127.0.0.1:${PORT}/v1/status`, { headers: { Authorization: H.Authorization } });
+  check("status-426-sin-version", r.status === 426, `fue=${r.status}`);
+  r = await fetch(`http://127.0.0.1:${PORT}/v1/status`, { headers: H });
+  const st = await r.json();
+  const keys = Object.keys(st).sort().join(",");
+  check("status-forma-sin-fugas", r.status === 200 && keys === "clientes,ok,protocol,turnoActivo", keys);
 } finally {
   srv.kill();
 }
