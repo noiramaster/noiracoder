@@ -16,7 +16,11 @@ permissions:
 
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-14, macos-15-intel]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -38,7 +42,7 @@ jobs:
           go build -trimpath -ldflags "-s -w" -o /tmp/noira-thin-test ./cmd/noira-thin
           ls -la /tmp/noira-thin-test
 
-      - name: Boot sin entorno (esperado: exit 2 + mensaje)
+      - name: "Boot sin entorno (esperado: exit 2 + mensaje)"
         run: |
           set +e
           /tmp/noira-thin-test 2>boot-err.log
@@ -59,8 +63,8 @@ jobs:
           node bin/noiracoder.mjs --version
           node bin/noiracoder.mjs --go --version
 
-      - name: install.sh de punta a punta
-        if: runner.os == 'Linux'
+      - name: "install.sh de punta a punta (solo ubuntu)"
+        if: matrix.os == 'ubuntu-latest'
         run: |
           sudo bash install.sh || bash install.sh
           noira --version || "$HOME/.npm-global/bin/noira" --version || true
