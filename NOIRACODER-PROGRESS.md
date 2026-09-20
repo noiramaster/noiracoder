@@ -32,7 +32,7 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
       matar motor → error visible, matar pty → sin huérfanos, 409, 401/426 por HTTP.
 - Siguiente: HITO 2 (confirmaciones/tools, memoria visible, saneo+adversaria).
 
-## Hito 2 — FUNCIONALIDAD + ADVERSARIA (en curso, 2026-09-19)
+## Hito 2 — FUNCIONALIDAD + ADVERSARIA (COMPLETO 2026-09-19)
 - [x] 2.1 Herramientas vía motor: `onTool` en registry→orchestrator→thin
       (`turn.tool_start/end`), deploy ya exigía confirm, plan mode deniega todo.
       Watchdog con margen de herramienta (10 min). Evidencia docs/evidence/h2-tools.md.
@@ -84,7 +84,7 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
 - E2E 48/48 + adversarial 36/36 + sanitize tras todo.
 - Siguiente: HITO 5 (mensaje, traducciones, landing, blog).
 
-## Hito 5 — MENSAJE + TRADUCCIONES + LANDING + BLOG (en curso, 2026-09-19)
+## Hito 5 — MENSAJE + TRADUCCIONES + LANDING + BLOG (COMPLETO 2026-09-19)
 - [x] 5.1 Sin "privacidad local": mensaje nuevo (memoria+rotación+sin registro)
       en i18n.js ×7, metas, sobre, que-es. CLI ya limpio. Quedan: claves
       cifradas + servidor con token (permitido).
