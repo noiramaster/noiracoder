@@ -168,7 +168,10 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
 - [x] A4 Aviso persistente verificado (docs/evidence/a4-aviso.md): pty sin
   binario 6/6 (caja amarilla que permanece + cómo arreglar) + rama sin TTY
   (`[warn]` en stdout). `repl.ts` también lo imprime sin TTY (nuevo).
-- [ ] A5 Comando exacto usuario + pty sobre instalación normal.
+- [x] A5 Comando usuario (docs/evidence/a5-usuario.md): `npm install` +
+  `npm run build` + `npm run build:thin` + `npm link` + `noira --go`
+  (link, no `install -g`, hasta la 0.2.0). pty instalación normal 5/5 con
+  turno real; cuota ausente en turno mínimo = por diseño (thin.ts:219).
 - [ ] B Runbook 0.2.0 (candado prepublishOnly, pty binario del tag, tarball
   contra release, comandos usuario vs opencode). Versión aún 0.1.0 (bump pendiente).
 - [ ] REPETICIÓN FINAL adversaria(39)/e2e(48)/i18n/pty.
