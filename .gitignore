@@ -6,6 +6,7 @@ smoke.mjs
 .DS_Store
 *.log
 .env
+*.tgz
 
 # Go binaries (local build / download from releases)
 bin/noira-go.exe

@@ -145,6 +145,26 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
 - QuotaTracker ahora respeta NOIRARC_HOME (antes, homedir fijo).
 - Siguiente: HITO 7 (verificación final; publicar SOLO si todo pasa).
 
+## Sesión 2026-09-20 (continuación) — `noira --go` no abre en uso normal + runbook 0.2.0
+- PASO 0 hecho: `main` limpio salvo el trabajo a medias de la sesión anterior
+  (postinstall con TAG de package.json + `prepublishOnly` + `build:thin` +
+  aviso persistente NOIRA_NOTICE). Cambios coherentes: NO se hizo stash.
+  Sin ficheros inesperados del texto pegado (solo el .tgz de `npm pack`,
+  eliminado; `*.tgz` ignorado). `AGENTS.md` con entradas 2026-09-10 intacto
+  (no editable por el modelo). Evidencia: docs/evidence/a1-causa.md.
+- [x] A1 Causa exacta (VERIFICADO EJECUTANDO): el `noira` global es una copia
+  física vieja (0.1.0, 19/09) cuyo wrapper busca `noira-go.exe` (legacy) y no
+  conoce `--go`/`noira-thin`; sin binario cae en silencio a cliMain y `--go`
+  se ejecuta como prompt one-shot → línea `Noira · medium`. Sin aviso porque
+  en esa copia el aviso no existe. Hipótesis NOIRA_THIN_BIN refutada.
+- [ ] A2 Camino normal por tarball + pty sin NOIRA_THIN_BIN.
+- [ ] A3 `npm run build:thin` + doc flujo local.
+- [ ] A4 Aviso persistente verificado (Ink + welcome/REPL).
+- [ ] A5 Comando exacto usuario + pty sobre instalación normal.
+- [ ] B Runbook 0.2.0 (candado prepublishOnly, pty binario del tag, tarball
+  contra release, comandos usuario vs opencode). Versión aún 0.1.0 (bump pendiente).
+- [ ] REPETICIÓN FINAL adversaria(39)/e2e(48)/i18n/pty.
+
 ## PENDIENTES DEL USUARIO
 - Regenerar clave OpenRouter (`noira login`) — la actual da 401.
 - PRUEBA-VISUAL.md (Hito 3.7) en su terminal real.
