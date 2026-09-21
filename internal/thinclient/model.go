@@ -54,7 +54,10 @@ var (
 
 // New crea el modelo y arranca el stream de eventos.
 func New(c *Client) *Model {
-	lang := detectLang()
+	lang := c.Lang
+	if lang == "" {
+		lang = DetectLang()
+	}
 	ta := textarea.New()
 	ta.Placeholder = T(lang, "prompt_ph")
 	ta.Focus()
@@ -100,10 +103,10 @@ func (m *Model) setStatus() {
 		T(m.lang, "st_session") + ": " + or(m.sessName, "—"),
 	}
 	if m.quotaPct > 0 {
-		parts = append(parts, fmt.Sprintf(T(m.lang, "st_quota"), m.quotaPct))
+		parts = append(parts, F(m.lang, "st_quota", map[string]string{"pct": fmt.Sprint(m.quotaPct)}))
 	}
 	if m.thinking {
-		parts = append(parts, fmt.Sprintf(T(m.lang, "st_thinking"), m.modelName))
+		parts = append(parts, F(m.lang, "st_thinking", map[string]string{"model": m.modelName}))
 	}
 	if m.turnID != "" {
 		parts = append(parts, T(m.lang, "st_turn"))
@@ -142,10 +145,10 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case evErr:
-		if m.turnID == "" && !m.thinking {
-			m.fatal = "motor: " + msg.err.Error()
-			return m, tea.Quit
-		}
+	if m.turnID == "" && !m.thinking {
+		m.fatal = T(m.lang, "err_motor") + msg.err.Error()
+		return m, tea.Quit
+	}
 		m.addLine(T(m.lang, "err_motor") + msg.err.Error())
 		m.thinking = false
 		m.turnID = ""
@@ -184,7 +187,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "y", "Y", "s", "S", "enter":
 				c := m.confirm
 				m.confirm = nil
-				m.addLine(fmt.Sprintf(T(m.lang, "confirm_yes"), c.detail))
+				m.addLine(F(m.lang, "confirm_yes", map[string]string{"detail": c.detail}))
 				go func() {
 					_ = m.client.Confirm(c.id, true)
 				}()
@@ -280,7 +283,9 @@ func (m *Model) handleCommand(text string) bool {
 			if s.ID == m.sessionID {
 				mark = "*"
 			}
-			m.addLine(fmt.Sprintf("%s%d · %s (%d turnos)", mark, i+1, s.Nombre, s.Turnos))
+			m.addLine(F(m.lang, "session_row", map[string]string{
+			"mark": mark, "n": fmt.Sprint(i + 1), "name": s.Nombre, "turns": fmt.Sprint(s.Turnos),
+		}))
 		}
 		m.addLine(T(m.lang, "resume_hint"))
 		return true
@@ -316,7 +321,7 @@ func (m *Model) handleCommand(text string) bool {
 				m.addLine(t.Content)
 			}
 		}
-		m.addLine(fmt.Sprintf(T(m.lang, "resumed"), name, len(turns)/2))
+		m.addLine(F(m.lang, "resumed", map[string]string{"name": name, "turns": fmt.Sprint(len(turns) / 2)}))
 		m.setStatus()
 		return true
 	case "/new":
@@ -341,7 +346,7 @@ func (m *Model) handleCommand(text string) bool {
 		return true
 	case "/model":
 		if len(parts) < 2 {
-			m.addLine(fmt.Sprintf(T(m.lang, "model_usage"), m.modelName))
+			m.addLine(F(m.lang, "model_usage", map[string]string{"model": m.modelName}))
 			return true
 		}
 		if err := m.client.SetModel(parts[1]); err != nil {
@@ -349,7 +354,7 @@ func (m *Model) handleCommand(text string) bool {
 			return true
 		}
 		m.modelName = Sanitize(parts[1])
-		m.addLine(fmt.Sprintf(T(m.lang, "model_set"), m.modelName))
+		m.addLine(F(m.lang, "model_set", map[string]string{"model": m.modelName}))
 		m.setStatus()
 		return true
 	}
@@ -360,7 +365,7 @@ func (m *Model) handleCommand(text string) bool {
 func (m *Model) sendTurn(text string) {	turnID, sessID, err := m.client.Turn(m.sessionID, text, m.mode)
 	if err != nil || m.program == nil {
 		if m.program != nil {
-			m.program.Send(evErr{fmt.Errorf("%sturno: %v", T(m.lang, "err_line"), err)})
+			m.program.Send(evErr{fmt.Errorf("%s%s", T(m.lang, "err_line"), err)})
 		}
 		return
 	}
@@ -395,7 +400,9 @@ func (m *Model) onEvent(ev Event) {
 		}
 	case "model.switch":
 		m.modelName = Sanitize(or(str(ev, "a"), m.modelName))
-		m.addLine(fmt.Sprintf(T(m.lang, "model_switched"), str(ev, "de"), str(ev, "a"), str(ev, "motivo")))
+		m.addLine(F(m.lang, "model_switched", map[string]string{
+			"from": str(ev, "de"), "to": str(ev, "a"), "reason": str(ev, "motivo"),
+		}))
 		m.setStatus()
 	case "confirm.request":
 		m.confirm = &confirmState{id: str(ev, "confirmId"), detail: str(ev, "detalle")}
@@ -404,21 +411,21 @@ func (m *Model) onEvent(ev Event) {
 			m.quotaPct = int(v)
 		}
 		if a := str(ev, "aviso"); a != "" {
-			m.addLine(fmt.Sprintf(T(m.lang, "quota_warn"), a))
+			m.addLine(F(m.lang, "quota_warn", map[string]string{"notice": a}))
 		}
 		m.setStatus()
 	case "confirm.result":
-		m.addLine(fmt.Sprintf("[confirm] %s", str(ev, "motivo")))
+		m.addLine(F(m.lang, "confirm_result", map[string]string{"reason": str(ev, "motivo")}))
 	case "memory.event":
-		m.addLine(fmt.Sprintf(T(m.lang, "mem_line"), str(ev, "nivel"), str(ev, "resumen")))
+		m.addLine(F(m.lang, "mem_line", map[string]string{"level": str(ev, "nivel"), "summary": str(ev, "resumen")}))
 	case "turn.tool_start":
-		m.addLine(fmt.Sprintf(T(m.lang, "tool_start"), str(ev, "nombre"), str(ev, "detalle")))
+		m.addLine(F(m.lang, "tool_start", map[string]string{"name": str(ev, "nombre"), "detail": str(ev, "detalle")}))
 	case "turn.tool_end":
 		code := ""
 		if v, ok := ev.Data["exitCode"]; ok && v == float64(1) {
 			code = T(m.lang, "tool_end_fail")
 		}
-		m.addLine(fmt.Sprintf(T(m.lang, "tool_end"), str(ev, "nombre"), code))
+		m.addLine(F(m.lang, "tool_end", map[string]string{"name": str(ev, "nombre"), "result": code}))
 	case "session.updated":
 		if n := str(ev, "nombre"); n != "" {
 			m.sessName = Sanitize(n)

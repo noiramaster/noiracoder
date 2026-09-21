@@ -25,6 +25,16 @@ func main() {
 		os.Exit(3)
 	}
 	_ = engine
+	// M1.1: las cadenas vienen del motor (fuente única). Sin catálogo no
+	// hay pantalla honesta: error claro y salida ≠ 0 (el wrapper cae a Ink).
+	lang := thinclient.DetectLang()
+	c.Lang = lang
+	cat, err := c.I18n(lang)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "[noira-thin] sin catálogo de pantalla:", err)
+		os.Exit(3)
+	}
+	thinclient.SetCatalog(cat)
 	m := thinclient.New(c)
 	p := tea.NewProgram(m, tea.WithAltScreen())
 	m.Attach(p)

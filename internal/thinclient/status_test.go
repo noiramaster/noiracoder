@@ -5,16 +5,20 @@ import (
 	"testing"
 )
 
-// A2: la barra de estado muestra modelo/modo/sesión siempre y el segmento
+// A2/M1.1: la barra de estado muestra modelo/modo/sesión siempre y el segmento
 // de cuota solo cuando hay dato (quotaPct > 0). Sin dato no se inventa.
+// El catálogo lo pone el test (en producción viene de /v1/i18n).
 func TestSetStatusQuota(t *testing.T) {
+	SetCatalog(map[string]string{
+		"st_model": "model", "st_mode": "mode", "st_session": "session",
+		"st_quota": "quota: {pct}%",
+	})
 	cases := []struct {
 		lang      string
 		base      []string
 		quotaWant string
 	}{
 		{"en", []string{"model: (router)", "mode: build", "session: —"}, "quota: 8%"},
-		{"es", []string{"modelo: (router)", "modo: build", "sesión: —"}, "cuota: 8%"},
 	}
 	for _, c := range cases {
 		m := &Model{lang: c.lang, modelName: "(router)", mode: "build"}

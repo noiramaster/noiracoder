@@ -225,7 +225,10 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
 - [x] M1.1a Fuente única TS (`src/i18n/screen.ts`: 60 claves×7, `{vars}`) +
   `GET /v1/i18n?lang=` (mismas puertas; fallback exacto→base→en verificado:
   es/pt-BR→pt/xx→en, 401 sin auth, 426 proto viejo) + PROTOCOL v2.
-- [ ] M1.1b Migración Go (sin diccionarios) + rebuild.
+- [x] M1.1b Go sin diccionarios (protocolo v2, `F` con `{vars}`, main exige
+  `/v1/i18n` o exit 3): `go build+vet+test` OK, binario reconstruido, pty
+  historial 5/5 contra el flujo v2.
+- [ ] M1.1c Lint de literales + test:i18n:screen.
 
 ## PENDIENTES DEL USUARIO
 - Regenerar clave OpenRouter (`noira login`) — la actual da 401.

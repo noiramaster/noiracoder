@@ -1,6 +1,10 @@
 // Package thinclient — pantalla Go como CLIENTE FINO del motor TS.
 // Solo pinta y recoge teclas. No importa (ni enlaza) herramientas,
 // permisos, proveedores ni sesiones del motor antiguo.
+//
+// M1.1: sin diccionarios. Las cadenas vienen del motor (GET /v1/i18n) y los
+// errores usan claves del catálogo (F). Antes de cargar el catálogo solo
+// hay diagnósticos por stderr (los ve el wrapper, nunca la pantalla).
 package thinclient
 
 import (
@@ -10,12 +14,13 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 )
 
-// PROTOCOL es la versión de docs/PROTOCOL.md que habla este cliente.
-const PROTOCOL = "1"
+// PROTOCOL es la versión de docs/PROTOCOL.md que habla este cliente (v2: +/v1/i18n).
+const PROTOCOL = "2"
 
 // Event es un evento SSE del motor.
 type Event struct {
@@ -27,6 +32,7 @@ type Event struct {
 type Client struct {
 	Base  string
 	Token string
+	Lang  string
 	http  *http.Client
 }
 
@@ -37,6 +43,28 @@ func NewClient(port, token string) *Client {
 		Token: token,
 		http:  &http.Client{Timeout: 30 * time.Second},
 	}
+}
+
+// I18n trae el catálogo de pantalla del motor (M1.1, fuente única).
+func (c *Client) I18n(lang string) (map[string]string, error) {
+	st, b, err := c.req("GET", "/v1/i18n?lang="+url.QueryEscape(lang), nil)
+	if err != nil {
+		return nil, err
+	}
+	if st != 200 {
+		return nil, fmt.Errorf("i18n %d: %s", st, strings.TrimSpace(string(b)))
+	}
+	var v struct {
+		Lang    string            `json:"lang"`
+		Strings map[string]string `json:"strings"`
+	}
+	if err := json.Unmarshal(b, &v); err != nil {
+		return nil, err
+	}
+	if len(v.Strings) == 0 {
+		return nil, fmt.Errorf("i18n: catálogo vacío")
+	}
+	return v.Strings, nil
 }
 
 func (c *Client) req(method, path string, body any) (int, []byte, error) {
@@ -87,13 +115,14 @@ func (c *Client) Health() (string, error) {
 		Engine   string `json:"engine"`
 	}
 	if err := json.Unmarshal(b, &v); err != nil {
-		return "", fmt.Errorf("health ilegible: %w", err)
+		return "", fmt.Errorf("%s: %w", T(c.Lang, "err_health_unreadable"), err)
 	}
 	if !v.OK {
-		return "", fmt.Errorf("motor no ok")
+		return "", fmt.Errorf("%s", T(c.Lang, "err_motor_not_ok"))
 	}
 	if fmt.Sprint(v.Protocol) != PROTOCOL {
-		return "", fmt.Errorf("protocolo distinto: motor v%d, cliente v%s (actualiza noira / noira-go)", v.Protocol, PROTOCOL)
+		return "", fmt.Errorf("%s", F(c.Lang, "err_protocol_mismatch",
+			map[string]string{"motor": fmt.Sprint(v.Protocol), "client": PROTOCOL}))
 	}
 	return v.Engine, nil
 }
@@ -107,10 +136,11 @@ func (c *Client) Turn(sessionID, message, mode string) (turnID, sessID string, e
 		return "", "", err
 	}
 	if st == 409 {
-		return "", "", fmt.Errorf("ya hay un turno en curso")
+		return "", "", fmt.Errorf("%s", T(c.Lang, "err_turn_active"))
 	}
 	if st != 202 {
-		return "", "", fmt.Errorf("turno rechazado (%d): %s", st, strings.TrimSpace(string(b)))
+		return "", "", fmt.Errorf("%s", F(c.Lang, "err_turn_rejected",
+			map[string]string{"status": fmt.Sprint(st), "body": strings.TrimSpace(string(b))}))
 	}
 	var v struct {
 		TurnID    string `json:"turnId"`
@@ -131,7 +161,8 @@ func (c *Client) Confirm(confirmID string, approved bool) error {
 		return err
 	}
 	if st != 200 {
-		return fmt.Errorf("confirm rechazado (%d): %s", st, strings.TrimSpace(string(b)))
+		return fmt.Errorf("%s", F(c.Lang, "err_confirm_rejected",
+			map[string]string{"status": fmt.Sprint(st), "body": strings.TrimSpace(string(b))}))
 	}
 	return nil
 }
@@ -162,7 +193,8 @@ func (c *Client) Sessions() ([]Session, error) {
 		return nil, err
 	}
 	if st != 200 {
-		return nil, fmt.Errorf("sesiones %d", st)
+		return nil, fmt.Errorf("%s", F(c.Lang, "err_sessions_status",
+			map[string]string{"status": fmt.Sprint(st)}))
 	}
 	var v struct {
 		Sesiones []Session `json:"sesiones"`
@@ -180,7 +212,8 @@ func (c *Client) History(id string) ([]Turn, string, error) {
 		return nil, "", err
 	}
 	if st != 200 {
-		return nil, "", fmt.Errorf("sesión %d", st)
+		return nil, "", fmt.Errorf("%s", F(c.Lang, "err_session_status",
+			map[string]string{"status": fmt.Sprint(st)}))
 	}
 	var v struct {
 		Nombre string `json:"nombre"`
@@ -199,7 +232,8 @@ func (c *Client) SetModel(id string) error {
 		return err
 	}
 	if st != 200 {
-		return fmt.Errorf("modelo %d: %s", st, strings.TrimSpace(string(b)))
+		return fmt.Errorf("%s", F(c.Lang, "err_model_status",
+			map[string]string{"status": fmt.Sprint(st), "body": strings.TrimSpace(string(b))}))
 	}
 	return nil
 }
@@ -222,12 +256,13 @@ func (c *Client) Stream(onEvent func(Event), onError func(error)) {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode == 409 {
-		onError(fmt.Errorf("ya hay una pantalla conectada (409)"))
+		onError(fmt.Errorf("%s", T(c.Lang, "err_screen_connected")))
 		return
 	}
 	if resp.StatusCode != 200 {
 		b, _ := io.ReadAll(io.LimitReader(resp.Body, 4<<10))
-		onError(fmt.Errorf("events %d: %s", resp.StatusCode, strings.TrimSpace(string(b))))
+		onError(fmt.Errorf("%s", F(c.Lang, "err_events_status",
+			map[string]string{"status": fmt.Sprint(resp.StatusCode), "body": strings.TrimSpace(string(b))})))
 		return
 	}
 	sc := bufio.NewScanner(resp.Body)
@@ -263,8 +298,9 @@ func (c *Client) Stream(onEvent func(Event), onError func(error)) {
 		}
 	}
 	if err := sc.Err(); err != nil {
-		onError(fmt.Errorf("stream cortado: %w", err))
+		onError(fmt.Errorf("%s", F(c.Lang, "err_stream_cut",
+			map[string]string{"detail": err.Error()})))
 		return
 	}
-	onError(fmt.Errorf("stream cerrado por el motor"))
+	onError(fmt.Errorf("%s", T(c.Lang, "err_stream_closed")))
 }

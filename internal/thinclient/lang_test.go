@@ -1,6 +1,7 @@
 package thinclient
 
-// HITO 3.6 — la tabla está completa en los 7 idiomas y detectLang lee prefs.
+// M1.1 — sin diccionarios en Go: el catálogo lo sirve el motor (SetCatalog).
+// Aquí: sustitución {vars}, passthrough de claves ausentes y detección.
 
 import (
 	"os"
@@ -8,41 +9,33 @@ import (
 	"testing"
 )
 
-func TestLangTableComplete(t *testing.T) {
-	langs := []string{"en", "es", "pt", "fr", "de", "it", "ar"}
-	base := map[string]bool{}
-	for k := range stringsTable["en"] {
-		base[k] = true
+func TestCatalogSubst(t *testing.T) {
+	SetCatalog(map[string]string{
+		"model_switched": "[model] {from} → {to} ({reason})",
+		"st_quota":       "quota: {pct}%",
+		"hints":          "Enter send · /help",
+	})
+	got := F("es", "model_switched", map[string]string{"from": "a", "to": "b", "reason": "quota"})
+	if got != "[model] a → b (quota)" {
+		t.Errorf("sustitución rota: %q", got)
 	}
-	if len(base) < 20 {
-		t.Fatalf("tabla EN demasiado pequeña: %d claves", len(base))
+	got = F("es", "st_quota", map[string]string{"pct": "8"})
+	if got != "quota: 8%" {
+		t.Errorf("sustitución rota: %q", got)
 	}
-	// Cognados legítimos (misma palabra en ambos idiomas), no "sin traducir".
-	allowSame := map[string]bool{
-		"es:err_line": true, "fr:st_session": true, "fr:st_mode": true,
-		"fr:quota_warn": true, "it:st_quota": true, "it:quota_warn": true,
+	// Variable desconocida se deja tal cual (visible, nunca silencioso).
+	got = F("es", "st_quota", map[string]string{"otra": "x"})
+	if got != "quota: {pct}%" {
+		t.Errorf("var desconocida debe quedar: %q", got)
 	}
-	for _, l := range langs {
-		dict, ok := stringsTable[l]
-		if !ok {
-			t.Errorf("falta idioma %s", l)
-			continue
-		}
-		for k := range base {
-			v, ok := dict[k]
-			if !ok || v == "" {
-				t.Errorf("%s: falta clave %s", l, k)
-			}
-			if ok && l != "en" && k != "confirm_yn" && !allowSame[l+":"+k] && v == stringsTable["en"][k] {
-				t.Errorf("%s: %s idéntica al inglés (sin traducir)", l, k)
-			}
-		}
-	}
-	if T("xx", "hints") == "" || T("xx", "hints") != T("en", "hints") {
-		t.Errorf("fallback a inglés roto")
-	}
+	// Clave ausente se devuelve tal cual (la ve el lint, no se inventa).
 	if T("es", "no_existe") != "no_existe" {
 		t.Errorf("clave ausente debe devolverse tal cual")
+	}
+	// Sin catálogo, todo es passthrough (pantalla no arranca: main exige i18n).
+	SetCatalog(nil)
+	if T("es", "hints") != "hints" {
+		t.Errorf("sin catálogo debe pasar la clave")
 	}
 }
 
@@ -50,16 +43,17 @@ func TestDetectLang(t *testing.T) {
 	dir := t.TempDir()
 	os.Setenv("NOIRARC_HOME", dir)
 	defer os.Unsetenv("NOIRARC_HOME")
-	if got := detectLang(); got != "en" {
+	if got := DetectLang(); got != "en" {
 		t.Errorf("sin prefs debe ser en, fue %s", got)
 	}
 	os.MkdirAll(filepath.Join(dir, ".noirarc"), 0o755)
 	os.WriteFile(filepath.Join(dir, ".noirarc", "prefs.json"), []byte(`{"language":"ar"}`), 0o644)
-	if got := detectLang(); got != "ar" {
+	if got := DetectLang(); got != "ar" {
 		t.Errorf("con prefs ar debe ser ar, fue %s", got)
 	}
-	os.WriteFile(filepath.Join(dir, ".noirarc", "prefs.json"), []byte(`{"language":"xx"}`), 0o644)
-	if got := detectLang(); got != "en" {
-		t.Errorf("idioma inválido debe caer a en, fue %s", got)
+	// El motor resuelve el fallback (exacto → base → en); aquí pasa el valor.
+	os.WriteFile(filepath.Join(dir, ".noirarc", "prefs.json"), []byte(`{"language":"pt-BR"}`), 0o644)
+	if got := DetectLang(); got != "pt-BR" {
+		t.Errorf("prefs pt-BR debe pasar tal cual (fallback en motor), fue %s", got)
 	}
 }
