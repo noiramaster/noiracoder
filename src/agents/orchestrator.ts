@@ -165,6 +165,7 @@ export async function orchestrate(
 
   const memory = new ProjectMemory(opts.cwd);
   await memory.ensureFileExists();
+  await memory.noteIfNew(opts.log);
   const { compileMemory } = await import("../memory/memory.js");
   const compiled = await compileMemory({ cwd: opts.cwd, prompt });
   const agentsMd = compiled.project;

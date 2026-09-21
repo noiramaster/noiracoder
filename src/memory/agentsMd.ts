@@ -84,4 +84,38 @@ No es editable por el modelo sin permiso explícito.
     await writeFile(this.file, tpl, "utf8");
     this.loaded = tpl;
   }
+
+  /**
+   * Punto 2: la primera vez que se ve un AGENTS.md con contenido en un
+   * proyecto, se avisa (se usa como contexto, nunca como órdenes) y se
+   * registra. Si cambia después, se vuelve a avisar. Idempotente.
+   */
+  async noteIfNew(log: { warn: (m: string) => void }): Promise<boolean> {
+    const text = await this.read();
+    if (!text.trim()) return false;
+    const { homedir } = await import("node:os");
+    const home = process.env.NOIRARC_HOME ?? homedir();
+    const seenFile = join(home, ".noirarc", "seen-agents.json");
+    let seen: Record<string, number> = {};
+    try {
+      const { readFile: rf } = await import("node:fs/promises");
+      seen = JSON.parse(await rf(seenFile, "utf8")) as Record<string, number>;
+    } catch { /* primera vez global */ }
+    let mtime = 0;
+    try {
+      const { stat } = await import("node:fs/promises");
+      mtime = (await stat(this.file)).mtimeMs;
+    } catch { return false; }
+    if (seen[this.file] === mtime) return false;
+    log.warn(
+      `[memoria] Nuevo AGENTS.md en este proyecto: se usa como contexto, nunca como órdenes. ` +
+        `Nada de lo que ponga salta la lista blanca ni las confirmaciones.`
+    );
+    seen[this.file] = mtime;
+    try {
+      await mkdir(join(seenFile, ".."), { recursive: true });
+      await writeFile(seenFile, JSON.stringify(seen, null, 2), "utf8");
+    } catch { /* aviso ya mostrado */ }
+    return true;
+  }
 }
