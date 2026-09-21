@@ -237,6 +237,9 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
   relTime/dayBucket/groupLabel, `rel` en sessions, Go FP+pluralCategory, fila
   en vivo `(1 turno) · hace 24 minutos`. NOIRARC_HOME unificado a home
   (i18n/keys/crypto/quota); e2e 48/48.
+- [x] M1.3/1.4/1.5 (docs/evidence/m1-lang.md): /lang en help+Tab; autodetección
+  SO (virgen→es, se guarda); endpoints langs/lang/lang-answer + Go /lang con
+  cambio en vivo; answerLang auto|ui|fijo. pty 6/6.
 
 ## PENDIENTES DEL USUARIO
 - Regenerar clave OpenRouter (`noira login`) — la actual da 401.

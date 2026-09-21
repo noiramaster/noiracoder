@@ -4,6 +4,7 @@ package thinclient
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/textarea"
@@ -214,6 +215,14 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, nil
 			}
 			return m, tea.Quit
+		case tea.KeyTab:
+			// M1.3: Tab completa /comandos (solo fuera de diálogos).
+			if m.confirm == nil && m.turnID == "" {
+				if done := completeSlash(m.input.Value()); done != m.input.Value() {
+					m.input.SetValue(done)
+				}
+			}
+			return m, nil
 		case tea.KeyEnter:
 			text := strings.TrimSpace(m.input.Value())
 			if text == "" || m.turnID != "" {
@@ -249,7 +258,92 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-// handleCommand ejecuta comandos con / (Hito 2.3). Devuelve true si era comando.
+// slashCmds son los comandos con / (M1.3: nombres fijos en inglés).
+var slashCmds = []string{"/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/lang", "/quit"}
+
+// completeSlash completa con Tab el comando empezado (prefijo único o común).
+func completeSlash(input string) string {
+	if !strings.HasPrefix(input, "/") || strings.Contains(input, " ") {
+		return input
+	}
+	var hits []string
+	for _, c := range slashCmds {
+		if strings.HasPrefix(c, input) {
+			hits = append(hits, c)
+		}
+	}
+	if len(hits) == 0 {
+		return input
+	}
+	if len(hits) == 1 {
+		return hits[0] + " "
+	}
+	pre := hits[0]
+	for _, h := range hits[1:] {
+		for !strings.HasPrefix(h, pre) {
+			pre = pre[:len(pre)-1]
+		}
+	}
+	return pre
+}
+
+// handleLang lista/fija idioma UI y modo de respuesta (M1.5, efecto inmediato).
+func (m *Model) handleLang(parts []string) bool {
+	if len(parts) == 1 {
+		ui, answer, langs, err := m.client.Langs()
+		if err != nil {
+			m.addLine(T(m.lang, "err_model") + err.Error())
+			return true
+		}
+		for i, l := range langs {
+			mark := " "
+			if l.Code == ui {
+				mark = "*"
+			}
+			m.addLine(mark + " " + fmt.Sprint(i+1) + " " + l.Native + " (" + l.Code + ")")
+		}
+		m.addLine(F(m.lang, "lang_current", map[string]string{"lang": ui, "answer": answer}))
+		return true
+	}
+	if parts[1] == "answer" && len(parts) > 2 {
+		msg, err := m.client.SetAnswer(parts[2])
+		if err != nil {
+			m.addLine(T(m.lang, "err_model") + err.Error())
+			return true
+		}
+		m.addLine(msg)
+		return true
+	}
+	target := parts[1]
+	if idx, err := strconv.Atoi(target); err == nil {
+		if _, _, langs, lerr := m.client.Langs(); lerr == nil && idx >= 1 && idx <= len(langs) {
+			target = langs[idx-1].Code
+		}
+	}
+	lang, msg, err := m.client.SetLang(target)
+	if err != nil {
+		m.addLine(T(m.lang, "err_model") + err.Error())
+		return true
+	}
+	if lang == "" {
+		m.addLine(T(m.lang, "lang_usage"))
+		return true
+	}
+	cat, err := m.client.I18n(lang)
+	if err != nil {
+		m.addLine(T(m.lang, "err_model") + err.Error())
+		return true
+	}
+	SetCatalog(cat)
+	m.lang = lang
+	if msg != "" {
+		m.addLine(msg)
+	} else {
+		m.addLine(F(m.lang, "lang_auto", map[string]string{}))
+	}
+	m.setStatus()
+	return true
+}
 func (m *Model) handleCommand(text string) bool {
 	if !strings.HasPrefix(text, "/") {
 		return false
@@ -347,6 +441,8 @@ func (m *Model) handleCommand(text string) bool {
 		return true
 	case "/quit":
 		return true
+	case "/lang":
+		return m.handleLang(parts)
 	case "/model":
 		if len(parts) < 2 {
 			m.addLine(F(m.lang, "model_usage", map[string]string{"model": m.modelName}))

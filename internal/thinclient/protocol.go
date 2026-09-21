@@ -239,6 +239,68 @@ func (c *Client) SetModel(id string) error {
 	return nil
 }
 
+// LangInfo es un idioma de interfaz (código + nombre nativo, del motor).
+type LangInfo struct {
+	Code   string `json:"code"`
+	Native string `json:"native"`
+}
+
+// Langs trae idioma UI actual, modo de respuesta y lista (GET /v1/langs).
+func (c *Client) Langs() (ui, answer string, langs []LangInfo, err error) {
+	st, b, err := c.req("GET", "/v1/langs", nil)
+	if err != nil {
+		return "", "", nil, err
+	}
+	if st != 200 {
+		return "", "", nil, fmt.Errorf("%s", F(c.Lang, "err_request",
+			map[string]string{"status": fmt.Sprint(st)}))
+	}
+	var v struct {
+		UI     string     `json:"ui"`
+		Answer string     `json:"answer"`
+		Langs  []LangInfo `json:"langs"`
+	}
+	if err := json.Unmarshal(b, &v); err != nil {
+		return "", "", nil, err
+	}
+	return v.UI, v.Answer, v.Langs, nil
+}
+
+// SetLang fija el idioma de interfaz (POST /v1/lang). Devuelve lang + msg.
+func (c *Client) SetLang(lang string) (string, string, error) {
+	st, b, err := c.req("POST", "/v1/lang", map[string]any{"lang": lang})
+	if err != nil {
+		return "", "", err
+	}
+	var v struct {
+		Lang string `json:"lang"`
+		Msg  string `json:"msg"`
+		Auto bool   `json:"auto"`
+	}
+	if err := json.Unmarshal(b, &v); err != nil || st != 200 {
+		return "", "", fmt.Errorf("%s", F(c.Lang, "err_request",
+			map[string]string{"status": fmt.Sprint(st)}))
+	}
+	return v.Lang, v.Msg, nil
+}
+
+// SetAnswer fija el idioma de respuesta: auto|ui|código (POST /v1/lang/answer).
+func (c *Client) SetAnswer(mode string) (string, error) {
+	st, b, err := c.req("POST", "/v1/lang/answer", map[string]any{"mode": mode})
+	if err != nil {
+		return "", err
+	}
+	var v struct {
+		Mode string `json:"mode"`
+		Msg  string `json:"msg"`
+	}
+	if err := json.Unmarshal(b, &v); err != nil || st != 200 {
+		return "", fmt.Errorf("%s", F(c.Lang, "err_request",
+			map[string]string{"status": fmt.Sprint(st)}))
+	}
+	return v.Msg, nil
+}
+
 // Stream abre el SSE único y emite eventos hasta que se cierre o ctx cancele.
 // Llama onEvent por cada evento; heartbeat (:) se ignora.
 func (c *Client) Stream(onEvent func(Event), onError func(error)) {

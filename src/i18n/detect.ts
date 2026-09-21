@@ -2,6 +2,7 @@
  * Heuristic language detection from raw prompt text: classifies the dominant
  * Unicode script and maps it to an ISO 639-1 language code.
  */
+import { execFileSync } from "node:child_process";
 
 type Ranges = ReadonlyArray<readonly [number, number]>;
 
@@ -123,4 +124,29 @@ function detectLatinLanguage(prompt: string): string | null {
 export function normalizeLocale(locale: string): string {
   const match = /^[a-zA-Z]+/.exec(locale.trim());
   return match ? match[0].toLowerCase() : "";
+}
+
+/**
+ * M1.4 — idioma del SO al primer arranque (sin preguntar): LC_ALL >
+ * LC_MESSAGES > LANG > LANGUAGE y, en Windows, la lista de idiomas de
+ * interfaz preferidos del usuario. Devuelve "" si no hay nada utilizable.
+ */
+export function detectOsLang(env: NodeJS.ProcessEnv = process.env): string {
+  const raw =
+    env.LC_ALL || env.LC_MESSAGES || env.LANG || env.LANGUAGE || "";
+  const first = raw.split(":")[0].split(".")[0].split("@")[0];
+  const code = normalizeLocale(first.replace("_", "-"));
+  if (code && code !== "c" && code !== "posix") return code;
+  if (process.platform === "win32") {
+    try {
+      const out = execFileSync(
+        "powershell",
+        ["-NoProfile", "-Command", "(Get-WinUserLanguageList)[0].LanguageTag"],
+        { timeout: 8000, stdio: ["ignore", "pipe", "ignore"] },
+      ).toString().trim();
+      const win = normalizeLocale(out.replace("_", "-"));
+      if (win) return win;
+    } catch { /* sin idioma Windows: cae al defecto */ }
+  }
+  return "";
 }

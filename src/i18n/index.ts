@@ -3,7 +3,7 @@
  * preference stored in ~/.noirarc/prefs.json (overridable via NOIRARC_HOME).
  */
 
-import { readFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
@@ -13,7 +13,7 @@ import {
   SUPPORTED_LANGUAGES,
   type Messages,
 } from "./dictionary.js";
-import { detectLanguageFromPrompt, normalizeLocale } from "./detect.js";
+import { detectLanguageFromPrompt, detectOsLang, normalizeLocale } from "./detect.js";
 
 export function T(key: keyof Messages, lang: string): string {
   const entry = MESSAGES[lang] ?? MESSAGES[DEFAULT_LANGUAGE];
@@ -46,6 +46,9 @@ export async function freeWarningOnce(log: { warn: (m: string) => void }, lang: 
 
 interface Prefs {
   language?: string;
+  /** Idioma de las respuestas del modelo: "auto" (como escribe el usuario),
+   * "ui" (como la interfaz) o un código fijo. */
+  answerLang?: string;
 }
 
 function defaultConfigDir(): string {
@@ -65,15 +68,50 @@ export class LanguageSelector {
 
   getLanguage(): string {
     if (this.cached !== null) return this.cached;
-    this.cached = this.normalizeStored(this.readPrefs().language ?? "");
+    const stored = this.readPrefs().language ?? "";
+    if (stored) {
+      this.cached = this.normalizeStored(stored);
+      return this.cached;
+    }
+    // M1.4: primer arranque sin prefs → idioma del SO, sin preguntar, y se guarda.
+    const code = this.normalizeStored(detectOsLang());
+    try {
+      mkdirSync(this.configDir, { recursive: true });
+      writeFileSync(this.prefsFile, JSON.stringify({ language: code }, null, 2) + "\n", "utf8");
+    } catch { /* idioma ya resuelto; persistirá cuando se pueda */ }
+    this.cached = code;
     return this.cached;
   }
 
   async setLanguage(lang: string): Promise<void> {
     const code = this.normalizeStored(normalizeLocale(lang));
+    const prev = this.readPrefs();
     await mkdir(this.configDir, { recursive: true });
-    await writeFile(this.prefsFile, JSON.stringify({ language: code }, null, 2) + "\n", "utf8");
+    await writeFile(this.prefsFile, JSON.stringify({ ...prev, language: code }, null, 2) + "\n", "utf8");
     this.cached = code;
+  }
+
+  /** M1.5: idioma de respuesta (auto|ui|código). */
+  getAnswerLang(): string {
+    const a = this.readPrefs().answerLang ?? "auto";
+    if (a === "auto" || a === "ui") return a;
+    return this.normalizeStored(normalizeLocale(a));
+  }
+
+  async setAnswerLang(mode: string): Promise<string> {
+    const m = mode === "ui" ? "ui" : mode === "auto" ? "auto" : this.normalizeStored(normalizeLocale(mode));
+    const prev = this.readPrefs();
+    await mkdir(this.configDir, { recursive: true });
+    await writeFile(this.prefsFile, JSON.stringify({ ...prev, answerLang: m }, null, 2) + "\n", "utf8");
+    return m;
+  }
+
+  /** Resuelve el idioma de respuesta para un turno: auto→lengua del mensaje. */
+  resolveAnswerLang(msgLang: string, uiLang: string): string {
+    const a = this.getAnswerLang();
+    if (a === "ui") return uiLang;
+    if (a === "auto") return msgLang || uiLang;
+    return a;
   }
 
   async resolveLanguage(prompt: string): Promise<string> {
@@ -91,8 +129,15 @@ export class LanguageSelector {
     try {
       const raw = readFileSync(this.prefsFile, "utf8");
       const parsed: unknown = JSON.parse(raw);
-      if (parsed !== null && typeof parsed === "object" && typeof Reflect.get(parsed, "language") === "string") {
-        return { language: Reflect.get(parsed, "language") as string };
+      if (parsed !== null && typeof parsed === "object") {
+        const out: Prefs = {};
+        if (typeof Reflect.get(parsed, "language") === "string") {
+          out.language = Reflect.get(parsed, "language") as string;
+        }
+        if (typeof Reflect.get(parsed, "answerLang") === "string") {
+          out.answerLang = Reflect.get(parsed, "answerLang") as string;
+        }
+        return out;
       }
     } catch {
       // prefs missing or malformed: fall through to defaults
@@ -110,6 +155,7 @@ export {
   SUPPORTED_LANGUAGES,
   DEFAULT_LANGUAGE,
   detectLanguageFromPrompt,
+  detectOsLang,
   normalizeLocale,
   type Messages,
 };

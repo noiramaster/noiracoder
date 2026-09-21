@@ -407,6 +407,64 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
       return;
     }
 
+    // ── Idioma UI + respuestas (M1.5) ──
+    if (req.method === "GET" && url.pathname === "/v1/langs") {
+      const { LanguageSelector } = await import("../i18n/index.js");
+      const sel = new LanguageSelector();
+      const natives: Record<string, string> = {
+        en: "English", es: "español", pt: "português", fr: "français",
+        de: "Deutsch", it: "italiano", ar: "العربية",
+      };
+      json(res, 200, {
+        ui: opts.lang,
+        answer: sel.getAnswerLang(),
+        langs: Object.keys(natives).map((code) => ({ code, native: natives[code] })),
+      });
+      return;
+    }
+    if (req.method === "POST" && url.pathname === "/v1/lang") {
+      try {
+        const { LanguageSelector, detectOsLang } = await import("../i18n/index.js");
+        const { screenString, renderScreen } = await import("../i18n/screen.js");
+        const parsed = JSON.parse(await readBody(req)) as { lang?: string };
+        const want = (parsed.lang ?? "").trim().toLowerCase();
+        const sel = new LanguageSelector();
+        if (want === "auto" || want === "") {
+          await sel.setLanguage(detectOsLang());
+          opts.lang = sel.getLanguage();
+          json(res, 200, { ok: true, lang: opts.lang, auto: true });
+          return;
+        }
+        await sel.setLanguage(want);
+        opts.lang = sel.getLanguage();
+        json(res, 200, {
+          ok: true,
+          lang: opts.lang,
+          msg: renderScreen(screenString(opts.lang, "lang_set"), { lang: opts.lang }),
+        });
+      } catch (e) {
+        json(res, 400, { error: e instanceof Error ? e.message : String(e) });
+      }
+      return;
+    }
+    if (req.method === "POST" && url.pathname === "/v1/lang/answer") {
+      try {
+        const { LanguageSelector } = await import("../i18n/index.js");
+        const { screenString, renderScreen } = await import("../i18n/screen.js");
+        const parsed = JSON.parse(await readBody(req)) as { mode?: string };
+        const sel = new LanguageSelector();
+        const mode = await sel.setAnswerLang((parsed.mode ?? "auto").trim().toLowerCase());
+        json(res, 200, {
+          ok: true,
+          mode,
+          msg: renderScreen(screenString(opts.lang, "lang_answer_set"), { mode }),
+        });
+      } catch (e) {
+        json(res, 400, { error: e instanceof Error ? e.message : String(e) });
+      }
+      return;
+    }
+
     // ── Sesiones ──
     if (req.method === "GET" && url.pathname === "/v1/sessions") {
       const { relTime } = await import("../i18n/screen.js");
