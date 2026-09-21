@@ -467,7 +467,7 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
 
     // ── Sesiones ──
     if (req.method === "GET" && url.pathname === "/v1/sessions") {
-      const { relTime } = await import("../i18n/screen.js");
+      const { relTime, dayBucket, groupLabel } = await import("../i18n/screen.js");
       const metas = await store.list();
       json(res, 200, {
         sesiones: metas.map((m) => ({
@@ -475,6 +475,9 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
           nombre: m.title,
           updatedAt: m.updatedAt,
           rel: relTime(opts.lang, m.updatedAt),
+          grupo: groupLabel(opts.lang, dayBucket(m.updatedAt)),
+          fija: m.pinned === true,
+          activa: activeTurn?.sessionId === m.id,
           turnos: m.turns.length,
         })),
       });
@@ -507,6 +510,60 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
         updatedAt: meta.updatedAt,
         turnos: meta.turns.map((t) => ({ role: t.role, content: t.content.slice(0, 4000), ts: t.ts })),
       });
+      return;
+    }
+
+    // M2.3: renombrar/fijar (PATCH) y borrar (DELETE) con las mismas puertas.
+    // El listado solo trae título y metadatos, nunca contenido.
+    if (req.method === "PATCH" && url.pathname.startsWith("/v1/sessions/")) {
+      const id = url.pathname.slice("/v1/sessions/".length).split("/")[0];
+      try {
+        const parsed = JSON.parse(await readBody(req)) as { nombre?: string; fija?: boolean };
+        let meta = null;
+        if (typeof parsed.nombre === "string" && parsed.nombre.trim()) {
+          meta = await store.rename(id, parsed.nombre);
+        }
+        if (typeof parsed.fija === "boolean") {
+          meta = (await store.setPin(id, parsed.fija)) ?? meta;
+        }
+        if (!meta) {
+          json(res, 404, { error: screenString(opts.lang, "err_session_not_found") });
+          return;
+        }
+        json(res, 200, { ok: true, id: meta.id, nombre: meta.title, fija: meta.pinned === true });
+      } catch (e) {
+        json(res, 400, { error: e instanceof Error ? e.message : String(e) });
+      }
+      return;
+    }
+    if (req.method === "DELETE" && url.pathname.startsWith("/v1/sessions/")) {
+      const id = url.pathname.slice("/v1/sessions/".length).split("/")[0];
+      const metas = await store.list();
+      if (!metas.some((m) => m.id === id)) {
+        json(res, 404, { error: screenString(opts.lang, "err_session_not_found") });
+        return;
+      }
+      await store.remove(id, process.cwd());
+      json(res, 200, { ok: true, id });
+      return;
+    }
+
+    // M2.7: UI recordada (panel abierto + sesión activa).
+    if (req.method === "GET" && url.pathname === "/v1/ui") {
+      const { LanguageSelector } = await import("../i18n/index.js");
+      json(res, 200, new LanguageSelector().getUi());
+      return;
+    }
+    if (req.method === "POST" && url.pathname === "/v1/ui") {
+      try {
+        const { LanguageSelector } = await import("../i18n/index.js");
+        const parsed = JSON.parse(await readBody(req)) as { panelOpen?: boolean; sessionId?: string | null };
+        const sel = new LanguageSelector();
+        await sel.setUi({ panelOpen: parsed.panelOpen, sessionId: parsed.sessionId });
+        json(res, 200, { ok: true, ...sel.getUi() });
+      } catch (e) {
+        json(res, 400, { error: e instanceof Error ? e.message : String(e) });
+      }
       return;
     }
 

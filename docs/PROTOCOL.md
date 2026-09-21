@@ -48,8 +48,11 @@ diccionarios en Go); v1 queda obsoleto (426).
 | GET | `/v1/events?protocol=1` | **SSE único** (un cliente; 2º → 409) |
 | GET | `/v1/models` | modelos `{id, provider, disponible, cuota}` |
 | POST | `/v1/model` `{id}` | cambio manual de modelo |
-| GET | `/v1/sessions` | lista `{id, nombre, updatedAt, modelo, modo}` |
+| GET | `/v1/sessions` | lista solo metadatos (nunca contenido): `{id, nombre, updatedAt, rel, grupo, fija, activa, turnos}` |
 | POST | `/v1/sessions` `{nombre?}` | crear sesión |
+| PATCH | `/v1/sessions/:id` `{nombre?, fija?}` | **(M2.3)** renombrar (marca user) / fijar |
+| DELETE | `/v1/sessions/:id` | **(M2.3)** borrar (la UI confirma antes) |
+| GET/POST | `/v1/ui` | **(M2.7)** `{panelOpen, sessionId}` recordados |
 | POST | `/v1/turn` `{sessionId?, mensaje, modo, modelo?}` | nuevo turno → `{turnId}` (409 si hay turno activo) |
 | POST | `/v1/cancel` `{turnId}` | cancelar turno (Ctrl+C no cierra sesión) |
 | POST | `/v1/confirm` `{confirmId, aprobado}` | responder confirmación |
@@ -70,7 +73,9 @@ rechaza cualquier herramienta de escritura antes de ejecutarla).
 - `model.switch` `{de, a, motivo}` — rotación visible siempre.
 - `model.quota` `{proveedor, usadoPct, aviso}` — aviso al acercarse al límite.
 - `memory.event` `{nivel, resumen}` — qué se guardó (sesión/proyecto/global).
-- `session.updated` `{id, nombre}` — nombre inteligente tras el turno.
+- `session.updated` `{id, nombre}` — nombre inteligente tras el turno
+  (M2.8: `auto` por titulador en 2º plano o `fallback`; `user` si se renombró;
+  nunca se pisa user/fijada).
 - `turn.error` `{turnId, mensaje}` — error claro, nunca silencio.
 - `turn.end` `{turnId, motivo: done|cancelled|error}`.
 

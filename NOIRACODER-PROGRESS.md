@@ -240,6 +240,10 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
 - [x] M1.3/1.4/1.5 (docs/evidence/m1-lang.md): /lang en help+Tab; autodetección
   SO (virgen→es, se guarda); endpoints langs/lang/lang-answer + Go /lang con
   cambio en vivo; answerLang auto|ui|fijo. pty 6/6.
+- [x] M2a Motor sesiones (verificado HTTP): rename/pin (PATCH), delete
+  (DELETE), lista con rel/grupo/fija/activa (401/404 OK), UI recordada
+  (GET/POST /v1/ui); PROTOCOL actualizado. De paso: readPrefs leía solo
+  language (UI prefs no volvían; corregido).
 - [x] M1.7/1.8/1.10/1.11/1.12 + punto 4 (docs/evidence/m1-resto.md):
   errorExternal en 4 puntos TS; barra 2 líneas <60 cols (runewidth);
   CLI 7×25 + fallback; pty 13 idiomas 52/52; RTL documentado;

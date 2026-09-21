@@ -49,6 +49,9 @@ interface Prefs {
   /** Idioma de las respuestas del modelo: "auto" (como escribe el usuario),
    * "ui" (como la interfaz) o un código fijo. */
   answerLang?: string;
+  /** M2.7: panel abierto + sesión activa (lo recuerda la Go). */
+  panelOpen?: boolean;
+  sessionId?: string | null;
 }
 
 function defaultConfigDir(): string {
@@ -114,6 +117,22 @@ export class LanguageSelector {
     return a;
   }
 
+  /** M2.7: UI recordada (panel + sesión). */
+  getUi(): { panelOpen: boolean; sessionId: string | null } {
+    const p = this.readPrefs();
+    return { panelOpen: p.panelOpen ?? true, sessionId: p.sessionId ?? null };
+  }
+
+  async setUi(ui: { panelOpen?: boolean; sessionId?: string | null }): Promise<void> {
+    const prev = this.readPrefs();
+    await mkdir(this.configDir, { recursive: true });
+    await writeFile(
+      this.prefsFile,
+      JSON.stringify({ ...prev, ...(ui.panelOpen !== undefined ? { panelOpen: ui.panelOpen } : {}), ...(ui.sessionId !== undefined ? { sessionId: ui.sessionId } : {}) }, null, 2) + "\n",
+      "utf8"
+    );
+  }
+
   async resolveLanguage(prompt: string): Promise<string> {
     const stored = this.readPrefs().language;
     if (stored) return this.getLanguage();
@@ -136,6 +155,13 @@ export class LanguageSelector {
         }
         if (typeof Reflect.get(parsed, "answerLang") === "string") {
           out.answerLang = Reflect.get(parsed, "answerLang") as string;
+        }
+        if (typeof Reflect.get(parsed, "panelOpen") === "boolean") {
+          out.panelOpen = Reflect.get(parsed, "panelOpen") as boolean;
+        }
+        const sid = Reflect.get(parsed, "sessionId");
+        if (typeof sid === "string" || sid === null) {
+          out.sessionId = sid as string | null;
         }
         return out;
       }

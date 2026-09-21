@@ -23,6 +23,12 @@ export interface SessionMeta {
   cwd: string;
   level: string;
   title: string;
+  /** Quién puso el título: el usuario (no se toca) o auto (regenerable). */
+  titleBy?: "user" | "auto";
+  /** Veces que se generó título con modelo (máx 1 + 1 regeneración). */
+  titleGens?: number;
+  /** Sesión fijada (no la pisa el titulador). */
+  pinned?: boolean;
   createdAt: string;
   updatedAt: string;
   turns: SessionTurn[];
@@ -115,6 +121,36 @@ export class SessionStore {
     } catch {
       // ignore
     }
+  }
+
+  /** Renombra (marca titleBy=user: el titulador no la toca). */
+  async rename(id: string, title: string): Promise<SessionMeta | null> {
+    const meta = await this.load(id);
+    if (!meta) return null;
+    meta.title = title.slice(0, 80).replace(/\n/g, " ").trim() || meta.title;
+    meta.titleBy = "user";
+    meta.updatedAt = new Date().toISOString();
+    await this.save(meta, meta.cwd);
+    return meta;
+  }
+
+  /** Fija/desfija (las fijadas tampoco se retitulan). */
+  async setPin(id: string, pinned: boolean): Promise<SessionMeta | null> {
+    const meta = await this.load(id);
+    if (!meta) return null;
+    meta.pinned = pinned;
+    await this.save(meta, meta.cwd);
+    return meta;
+  }
+
+  /** Guarda título automático (respeta user/pin fuera de aquí). */
+  async saveAutoTitle(id: string, title: string): Promise<void> {
+    const meta = await this.load(id);
+    if (!meta || meta.titleBy === "user" || meta.pinned) return;
+    meta.title = title;
+    meta.titleBy = "auto";
+    meta.titleGens = (meta.titleGens ?? 0) + 1;
+    await this.save(meta, meta.cwd);
   }
 
   /** Builds a compact conversational tail for context injection. */
