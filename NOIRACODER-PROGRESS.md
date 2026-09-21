@@ -222,6 +222,10 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
   presenta "Noira, tu asistente de programación"). De paso: los cancelled
   ~16 s de M0.a eran el parent-watchdog suicidando harnesses (CIM
   intermitente); `NOIRA_NO_PARENT_WATCH=1` lo salta en tests.
+- [x] M1.1a Fuente única TS (`src/i18n/screen.ts`: 60 claves×7, `{vars}`) +
+  `GET /v1/i18n?lang=` (mismas puertas; fallback exacto→base→en verificado:
+  es/pt-BR→pt/xx→en, 401 sin auth, 426 proto viejo) + PROTOCOL v2.
+- [ ] M1.1b Migración Go (sin diccionarios) + rebuild.
 
 ## PENDIENTES DEL USUARIO
 - Regenerar clave OpenRouter (`noira login`) — la actual da 401.

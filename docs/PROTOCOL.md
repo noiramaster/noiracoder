@@ -1,8 +1,10 @@
 # NoiraCoder — Protocolo motor (TS) ↔ pantalla (Go): CLIENTE FINO
 
-Versión del protocolo: **1**. Estado: **diseño (Hito 0)** — el servidor actual
+Versión del protocolo: **2**. Estado: **diseño (Hito 0)** — el servidor actual
 (`src/server/server.ts`) solo tiene `GET /health` + `POST /session` (bloqueante,
 sin streaming ni confirmaciones remotas). El Hito 1 lo lleva hasta aquí.
+M1.1 sube a v2: la Go pide sus cadenas a `GET /v1/i18n?lang=` (sin
+diccionarios en Go); v1 queda obsoleto (426).
 
 ## 0. Principios no negociables
 
@@ -30,10 +32,11 @@ sin streaming ni confirmaciones remotas). El Hito 1 lo lleva hasta aquí.
 
 ## 2. Versionado
 
-- La Go envía `X-Noira-Protocol: 1` en cada request y como query del SSE.
+- La Go envía `X-Noira-Protocol: 2` en cada request y como query del SSE.
 - Versión distinta → `426 Upgrade Required` + `{error, protocol}` y cada lado
   aborta con mensaje legible ("actualiza noira / noira-go").
-- `GET /health` (sin auth) responde `{ok, app:"noiracoder", protocol:1}`.
+  Historial: v1 (Hitos 1–7) → v2 (M1.1: añade `/v1/i18n`, sin diccionarios en Go).
+- `GET /health` (sin auth) responde `{ok, app:"noiracoder", protocol:2}`.
 
 ## 3. Endpoints (todos con `Authorization: Bearer`, salvo `/health`)
 
@@ -41,6 +44,7 @@ sin streaming ni confirmaciones remotas). El Hito 1 lo lleva hasta aquí.
 |---|---|---|
 | GET | `/health` | liveness (sin auth) |
 | GET | `/v1/status` | estado para el watchdog del wrapper: `{ok, protocol, clientes, turnoActivo}`. Con auth como los demás (sin token → 401). No expone rutas, claves ni contenido de sesiones. Prueba: `test/adversarial.mjs` (401/426/forma). |
+| GET | `/v1/i18n?lang=xx` | **(v2)** catálogo de pantalla: `{lang, strings}` con fallback exacto → base → `en`. Sin auth extra: las mismas puertas (Bearer + versión). La Go no trae diccionarios. |
 | GET | `/v1/events?protocol=1` | **SSE único** (un cliente; 2º → 409) |
 | GET | `/v1/models` | modelos `{id, provider, disponible, cuota}` |
 | POST | `/v1/model` `{id}` | cambio manual de modelo |

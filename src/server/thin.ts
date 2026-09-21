@@ -18,7 +18,7 @@ import { doUndo, doRedo } from "../tools/undoSnapshot.js";
 import { sanitizeThinOut } from "./sanitize.js";
 import { DEFAULT_POLICY } from "../sandbox/policies.js";
 
-export const THIN_PROTOCOL = 1;
+export const THIN_PROTOCOL = 2;
 const HOST = "127.0.0.1";
 const CONFIRM_TIMEOUT_MS = 120000;
 const TURN_NO_EVENT_TIMEOUT_MS = 60000;
@@ -287,6 +287,16 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
         clientes: sse && !sse.writableEnded ? 1 : 0,
         turnoActivo: activeTurn !== null,
       });
+      return;
+    }
+
+    // ── Catálogo de pantalla (M1.1, protocolo v2): la Go no trae
+    // diccionarios; pide sus cadenas aquí. Fallback exacto → base → en.
+    if (req.method === "GET" && url.pathname === "/v1/i18n") {
+      const { screenStrings } = await import("../i18n/screen.js");
+      const asked = url.searchParams.get("lang") ?? "en";
+      const { lang, strings } = screenStrings(asked);
+      json(res, 200, { lang, strings });
       return;
     }
 
