@@ -232,7 +232,8 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
   `{vars}` intactos, idénticas solo técnicas, Go cero literales (allowlist
   documentada), thin.ts 0 errores literales (usan catálogo con opts.lang),
   trinquete TS. Sufijo de truncado por catálogo. `go test+vet` OK.
-- [ ] M1.1d pty 7 idiomas.
+- [x] M1.1d pty 7 idiomas 56/56 (docs/evidence/m1-fuente-unica.md cierra M1.1).
+- [ ] M1.2 Plurales/Intl/fechas relativas. GATE M1: test:i18n + pty (corren al final).
 
 ## PENDIENTES DEL USUARIO
 - Regenerar clave OpenRouter (`noira login`) — la actual da 401.
