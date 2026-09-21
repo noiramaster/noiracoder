@@ -196,7 +196,10 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
   sobre Kilo directo 1,1–1,4 s). Con router auto HOY: cancelado ~16 s o
   50–60 s sin ningún evento previo (ayer completaba: volatilidad free +
   pick ciego sin failover visible → M4/M7).
-- [ ] M0.b Capturas ANTES en screens/before/.
+- [x] M0.b Capturas ANTES (docs/evidence/screens/before/: vacia, conversacion,
+  error, pequena, .html+.txt vía pty + @xterm/headless). Confirman M0.f(2,4):
+  `modelo: (router)` al arrancar, título = primer mensaje; y el failover por
+  cuota SÍ pone el modelo real (`nvidia/nemotron…`) tras rotar.
 - [ ] M0.c Inventario de textos visibles (i18n-inventory.md).
 - [ ] M0.d Inventario de idiomas actuales.
 - [ ] M0.e Comparativa NoiraCoder vs OpenCode vs Claude Code.

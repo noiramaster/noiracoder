@@ -1,0 +1,29 @@
+> Pantalla Go (cliente fino del motor).[1B[39D[38;2;34;34;34m[?1049h[H[38;2;251;191;36;1m> NOIRACODER[0m  [38;2;102;102;102m(router) · build
+[0m> NOIRACODER conectado al motor.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[38;2;34;34;34m╭────────────────────────────────────────────────────────────────────────────────────────────────╮  
+│ [37;40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[0m[35C[38;2;34;34;34m│  
+│ [37m┃[94C[38;2;34;34;34m│  
+│ [37m┃[94C[38;2;34;34;34m│  
+╰────────────────────────────────────────────────────────────────────────────────────────────────╯  
+[38;2;102;102;102mEnter enviar · ↑↓ historial · Ctrl+C cancela turno/sale · /help comandos
+modelo: (router) · modo: build · sesión: —[5A[58C[38;2;34;34;34m[?2004h[?1004h
