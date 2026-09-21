@@ -213,7 +213,9 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
   faltan @, !, /init, /compact, /diff, /undo|redo visibles, /export, /copy,
   /model con búsqueda, --continue/--print, ratón, panel, títulos, IDE/stats.
   Tenemos: sesiones+resume, plan/build, permisos motor, MCP motor, historial.
-- [ ] M0.f Primer arranque + problemas observados (1–4).
+- [x] M0.f Primer arranque (docs/evidence/m0-firstrun.md): HOME virgen arranca
+  en EN sin aviso free y "hola" se queda pensando (stall router). Problemas
+  1–4 verificados (1 por código en identity.ts:49-51; 2–4 en capturas).
 - [ ] M0.g baseline.md.
 
 ## PENDIENTES DEL USUARIO
