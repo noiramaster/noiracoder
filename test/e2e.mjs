@@ -154,7 +154,7 @@ const httpReq = (port, pathname, opts = {}) =>
   const secret = "sk-or-v3-E2E-DPAPI-" + Date.now();
   await keys.storeKey("openrouter", secret);
 
-  const file = path.join(tmpHome, "keys.json");
+  const file = path.join(tmpHome, ".noirarc", "keys.json");
   const raw = await fs.readFile(file).catch(() => null);
   record("3a keys: se escribe keys.json", raw !== null && raw.length > 0, `bytes=${raw ? raw.length : 0}`);
 

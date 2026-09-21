@@ -27,7 +27,7 @@ export const OPENROUTER_FREE_DAILY = {
 export const GROQ_FREE_RPD = 1000;
 
 function configFile(): string {
-  const base = process.env.NOIRARC_HOME ?? join(os.homedir(), ".noirarc");
+  const base = join(process.env.NOIRARC_HOME ?? os.homedir(), ".noirarc");
   return join(base, "config.json");
 }
 

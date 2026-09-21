@@ -283,8 +283,9 @@ func (m *Model) handleCommand(text string) bool {
 			if s.ID == m.sessionID {
 				mark = "*"
 			}
-			m.addLine(F(m.lang, "session_row", map[string]string{
-			"mark": mark, "n": fmt.Sprint(i + 1), "name": s.Nombre, "turns": fmt.Sprint(s.Turnos),
+			m.addLine(FP(m.lang, "session_row", s.Turnos, map[string]string{
+			"mark": mark, "n": fmt.Sprint(i + 1), "name": s.Nombre,
+			"turns": fmt.Sprint(s.Turnos), "rel": or(s.Rel, "—"),
 		}))
 		}
 		m.addLine(T(m.lang, "resume_hint"))
@@ -321,7 +322,9 @@ func (m *Model) handleCommand(text string) bool {
 				m.addLine(t.Content)
 			}
 		}
-		m.addLine(F(m.lang, "resumed", map[string]string{"name": name, "turns": fmt.Sprint(len(turns) / 2)}))
+		m.addLine(FP(m.lang, "resumed", len(turns)/2, map[string]string{
+		"name": name, "turns": fmt.Sprint(len(turns) / 2),
+	}))
 		m.setStatus()
 		return true
 	case "/new":

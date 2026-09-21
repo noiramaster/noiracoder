@@ -22,7 +22,7 @@ const HEADER = "NOIRAC::1::"; // magic + version
 
 /** Same config dir resolution as keys.ts, but no import cycle. */
 export function secretsConfigDir(): string {
-  return process.env.NOIRARC_HOME ?? join(os.homedir(), ".noirarc");
+  return join(process.env.NOIRARC_HOME ?? os.homedir(), ".noirarc");
 }
 
 async function dpapi(action: "encrypt" | "decrypt", data: Buffer): Promise<Buffer> {

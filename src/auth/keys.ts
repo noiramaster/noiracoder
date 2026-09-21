@@ -14,7 +14,8 @@ export type ProviderKeyId =
   | "openrouter" | "groq" | "cerebras" | "mistral" | "github" | "nvidia" | "cohere" | "cloudflare" | "huggingface" | "zen" | "vercel" | "kilo";
 
 export function configDir(): string {
-  return process.env.NOIRARC_HOME ?? join(os.homedir(), ".noirarc");
+  // NOIRARC_HOME equivale a home (como Go y sessions.ts).
+  return join(process.env.NOIRARC_HOME ?? os.homedir(), ".noirarc");
 }
 
 async function readKeysMap(): Promise<Record<string, string>> {

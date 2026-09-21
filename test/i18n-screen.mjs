@@ -8,7 +8,7 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { screenStrings } from "../dist/i18n/screen.js";
+import { screenStrings, screenPlural, relTime, dayBucket, groupLabel } from "../dist/i18n/screen.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 let fails = [];
@@ -23,15 +23,20 @@ const KEYS = Object.keys(T.en);
 // ── A1 paridad ──
 {
   let bad = 0;
+  const CATS = new Set(["zero", "one", "two", "few", "many", "other"]);
   for (const l of LANGS) {
     for (const k of KEYS) {
       if (typeof T[l][k] !== "string" || T[l][k].length === 0) { fail(`falta clave ${k} en ${l}`); bad++; }
     }
     for (const k of Object.keys(T[l])) {
-      if (!KEYS.includes(k)) { fail(`clave extra ${k} en ${l}`); bad++; }
+      // Variantes plurales extra solo en ar (6 formas); el resto, paridad exacta.
+      const m = k.match(/^(.*)__(\w+)$/);
+      if (!KEYS.includes(k) && !(l === "ar" && m && KEYS.includes(m[1]) && CATS.has(m[2]))) {
+        fail(`clave extra ${k} en ${l}`); bad++;
+      }
     }
   }
-  if (!bad) pass(`paridad ${KEYS.length} claves × ${LANGS.length} idiomas`);
+  if (!bad) pass(`paridad ${KEYS.length} claves × ${LANGS.length} idiomas (+variantes ar)`);
 }
 // ── A2 placeholders {x} iguales ──
 {
@@ -39,9 +44,18 @@ const KEYS = Object.keys(T.en);
   let bad = 0;
   for (const k of KEYS) {
     const want = vars(T.en[k]);
+    const wantSet = new Set(want.split(",").filter(Boolean));
     for (const l of LANGS) {
       if (l === "en") continue;
-      if (vars(T[l][k]) !== want) { fail(`placeholders ${k} en ${l}: [${vars(T[l][k])}] vs EN [${want}]`); bad++; }
+      const got = vars(T[l][k]);
+      const isVariant = /__(zero|one|two|few|many|other)$/.test(k);
+      if (isVariant) {
+        // Las variantes pueden OMITIR vars (formas numberless) pero no añadir.
+        const extra = got.split(",").filter(Boolean).filter((v) => !wantSet.has(v));
+        if (extra.length) { fail(`placeholders ${k} en ${l}: añade [${extra}]`); bad++; }
+      } else if (got !== want) {
+        fail(`placeholders ${k} en ${l}: [${got}] vs EN [${want}]`); bad++;
+      }
     }
     const open = (T.en[k].match(/\{/g) || []).length;
     const close = (T.en[k].match(/\}/g) || []).length;
@@ -69,6 +83,52 @@ const KEYS = Object.keys(T.en);
     }
   }
   if (!bad) pass("sin cadenas sin traducir (salvo técnicas)");
+}
+// ── A5 plurales completos por idioma (M1.2) ──
+{
+  const NEED = {
+    en: ["one", "other"], es: ["one", "other"], pt: ["one", "other"],
+    fr: ["one", "other"], de: ["one", "other"], it: ["one", "other"],
+    ar: ["zero", "one", "two", "few", "many", "other"],
+  };
+  let bad = 0;
+  for (const l of LANGS) {
+    for (const base of ["resumed", "session_row"]) {
+      for (const c of NEED[l]) {
+        const v = T[l][`${base}__${c}`];
+        // Árabe zero/one/two son numberless por gramática ("دوران", "لا أدوار").
+        const numberless = l === "ar" && ["zero", "one", "two"].includes(c);
+        if (typeof v !== "string" || (!numberless && !v.includes("{turns}"))) { fail(`plural ${l}:${base}__${c} ausente o sin {{turns}}`); bad++; }
+      }
+    }
+  }
+  if (!bad) pass("plurales completos (ar 6, resto one/other)");
+}
+// ── A6 unidades: plural, relativo, cubos (M1.2) ──
+{
+  let bad = 0;
+  const eq = (got, want, name) => { if (got !== want) { fail(`${name}: got=${JSON.stringify(got)} want=${JSON.stringify(want)}`); bad++; } };
+  eq(screenPlural("ar", "resumed", 0, { name: "X" }), "(تم استئناف الجلسة: X، لا أدوار)", "ar-zero");
+  eq(screenPlural("ar", "resumed", 1, { name: "X" }), "(تم استئناف الجلسة: X، دور واحد)", "ar-one");
+  eq(screenPlural("ar", "resumed", 2, { name: "X" }), "(تم استئناف الجلسة: X، دوران)", "ar-two");
+  eq(screenPlural("ar", "resumed", 5, { name: "X", turns: 5 }), "(تم استئناف الجلسة: X، 5 أدوار)", "ar-few");
+  eq(screenPlural("ar", "resumed", 11, { name: "X", turns: 11 }), "(تم استئناف الجلسة: X، 11 دورًا)", "ar-many");
+  eq(screenPlural("en", "resumed", 1, { name: "X", turns: 1 }), "(session resumed: X, 1 turn)", "en-one");
+  eq(screenPlural("fr", "resumed", 0, { name: "X", turns: 0 }), "(session reprise : X, 0 tour)", "fr-zero-es-one");
+  eq(screenPlural("xx", "resumed", 3, { name: "X", turns: 3 }), "(session resumed: X, 3 turns)", "fallback-en");
+  const now = Date.now();
+  const r1 = relTime("es", new Date(now - 90 * 1000).toISOString(), now);
+  if (!/minuto/.test(r1)) { fail(`relTime es 90s: ${r1}`); bad++; }
+  const r2 = relTime("en", new Date(now - 3 * 3600000).toISOString(), now);
+  if (!/hour/.test(r2)) { fail(`relTime en 3h: ${r2}`); bad++; }
+  if (relTime("es", "no-fecha", now) !== "") { fail("relTime con fecha mala debe ser vacío"); bad++; }
+  eq(dayBucket(new Date(now - 1000).toISOString(), now), "today", "bucket-today");
+  eq(dayBucket(new Date(now - 86400000).toISOString(), now), "yesterday", "bucket-yesterday");
+  eq(dayBucket(new Date(now - 3 * 86400000).toISOString(), now), "week", "bucket-week");
+  eq(dayBucket(new Date(now - 30 * 86400000).toISOString(), now), "older", "bucket-older");
+  eq(groupLabel("es", "today"), "Hoy", "group-es");
+  eq(groupLabel("ar", "older"), "قبل", "group-ar");
+  if (!bad) pass("plural/relativo/cubos OK (incl. árabe 6 formas)");
 }
 // ── A4 mojibake + duplicados ──
 {

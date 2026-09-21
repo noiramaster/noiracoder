@@ -73,3 +73,66 @@ func F(lang, key string, vars map[string]string) string {
 	}
 	return s
 }
+
+// FP elige la forma plural del catálogo (M1.2): clave__categoria, caída a
+// __other y a la clave base. Reglas CLDR mínimas para nuestros 7 idiomas
+// (el motor hace lo fino con Intl; aquí basta para pintar la fila).
+func FP(lang, key string, n int, vars map[string]string) string {
+	cat := pluralCategory(lang, n)
+	if s, ok := screenCatalog[key+"__"+cat]; ok && s != "" {
+		return subst(s, vars)
+	}
+	if s, ok := screenCatalog[key+"__other"]; ok && s != "" {
+		return subst(s, vars)
+	}
+	return F(lang, key, vars)
+}
+
+func subst(s string, vars map[string]string) string {
+	for k, v := range vars {
+		s = strings.ReplaceAll(s, "{"+k+"}", v)
+	}
+	return s
+}
+
+// pluralCategory: en/es/pt/it/de 1→one; fr 0,1→one; ar 6 formas; resto other.
+func pluralCategory(lang string, n int) string {
+	base := lang
+	for i, c := range base {
+		if c == '-' || c == '_' {
+			base = base[:i]
+			break
+		}
+	}
+	switch base {
+	case "ar":
+		if n == 0 {
+			return "zero"
+		}
+		if n == 1 {
+			return "one"
+		}
+		if n == 2 {
+			return "two"
+		}
+		if n >= 3 && n <= 10 {
+			return "few"
+		}
+		if n >= 11 && n <= 99 {
+			return "many"
+		}
+		return "other"
+	case "fr":
+		if n <= 1 {
+			return "one"
+		}
+		return "other"
+	case "en", "es", "pt", "it", "de":
+		if n == 1 {
+			return "one"
+		}
+		return "other"
+	default:
+		return "other"
+	}
+}

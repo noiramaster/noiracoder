@@ -409,12 +409,14 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
 
     // ── Sesiones ──
     if (req.method === "GET" && url.pathname === "/v1/sessions") {
+      const { relTime } = await import("../i18n/screen.js");
       const metas = await store.list();
       json(res, 200, {
         sesiones: metas.map((m) => ({
           id: m.id,
           nombre: m.title,
           updatedAt: m.updatedAt,
+          rel: relTime(opts.lang, m.updatedAt),
           turnos: m.turns.length,
         })),
       });

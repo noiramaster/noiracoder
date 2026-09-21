@@ -178,6 +178,7 @@ type Session struct {
 	ID     string `json:"id"`
 	Nombre string `json:"nombre"`
 	Turnos int    `json:"turnos"`
+	Rel    string `json:"rel"`
 }
 
 // Turn es un intercambio guardado.

@@ -39,6 +39,36 @@ func TestCatalogSubst(t *testing.T) {
 	}
 }
 
+func TestPluralCategory(t *testing.T) {
+	cases := []struct {
+		lang string
+		n    int
+		want string
+	}{
+		{"en", 1, "one"}, {"en", 0, "other"}, {"en", 5, "other"},
+		{"es", 1, "one"}, {"es", 2, "other"},
+		{"fr", 0, "one"}, {"fr", 1, "one"}, {"fr", 2, "other"},
+		{"de", 1, "one"}, {"de", 3, "other"},
+		{"ar", 0, "zero"}, {"ar", 1, "one"}, {"ar", 2, "two"},
+		{"ar", 5, "few"}, {"ar", 11, "many"}, {"ar", 100, "other"},
+		{"xx", 1, "other"},
+	}
+	for _, c := range cases {
+		if got := pluralCategory(c.lang, c.n); got != c.want {
+			t.Errorf("plural(%s,%d) = %q, quiero %q", c.lang, c.n, got, c.want)
+		}
+	}
+	// FP cae a __other y a la clave (visible, nunca inventa).
+	SetCatalog(map[string]string{"resumed__other": "r({turns})"})
+	if got := FP("ar", "resumed", 0, map[string]string{"turns": "0"}); got != "r(0)" {
+		t.Errorf("FP fallback other roto: %q", got)
+	}
+	SetCatalog(nil)
+	if got := FP("es", "resumed", 3, map[string]string{"turns": "3"}); got != "resumed" {
+		t.Errorf("FP sin catálogo debe pasar la clave: %q", got)
+	}
+}
+
 func TestDetectLang(t *testing.T) {
 	dir := t.TempDir()
 	os.Setenv("NOIRARC_HOME", dir)

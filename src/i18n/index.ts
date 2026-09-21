@@ -49,8 +49,8 @@ interface Prefs {
 }
 
 function defaultConfigDir(): string {
-  if (process.env.NOIRARC_HOME) return process.env.NOIRARC_HOME;
-  return join(homedir(), ".noirarc");
+  // NOIRARC_HOME equivale a home (como Go y sessions.ts): siempre .noirarc debajo.
+  return join(process.env.NOIRARC_HOME ?? homedir(), ".noirarc");
 }
 
 export class LanguageSelector {

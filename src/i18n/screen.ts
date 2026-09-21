@@ -16,6 +16,8 @@ const en: ScreenStrings = {
   confirm_yes: "[confirm] allowed by the user: {detail}",
   confirm_no: "[confirm] denied by the user.",
   resumed: "(session resumed: {name}, {turns} turns)",
+  resumed__one: "(session resumed: {name}, {turns} turn)",
+  resumed__other: "(session resumed: {name}, {turns} turns)",
   new_session: "(new session)",
   no_sessions: "(no saved sessions)",
   resume_hint: "use /resume <n> to continue a session",
@@ -48,9 +50,12 @@ const en: ScreenStrings = {
   fatal_line: "Check that the engine is still alive.",
   confirm_q: "Allow this?",
   confirm_yn: "[y] yes   [n] no",
-  session_row: "{mark}{n} · {name} ({turns} turns)",
+  session_row: "{mark}{n} · {name} ({turns} turns) · {rel}",
+  session_row__one: "{mark}{n} · {name} ({turns} turn) · {rel}",
+  session_row__other: "{mark}{n} · {name} ({turns} turns) · {rel}",
   confirm_result: "[confirm] {reason}",
   err_health_unreadable: "unreadable health",
+  group_today: "Today", group_yesterday: "Yesterday", group_week: "This week", group_older: "Earlier",
   err_motor_not_ok: "engine not ok",
   err_protocol_mismatch: "protocol mismatch: engine v{motor}, client v{client} (update noira / noira-go)",
   err_turn_active: "a turn is already running",
@@ -78,6 +83,8 @@ const es: ScreenStrings = {
   confirm_yes: "[confirm] permitido por el usuario: {detail}",
   confirm_no: "[confirm] denegado por el usuario.",
   resumed: "(sesión reanudada: {name}, {turns} turnos)",
+  resumed__one: "(sesión reanudada: {name}, {turns} turno)",
+  resumed__other: "(sesión reanudada: {name}, {turns} turnos)",
   new_session: "(nueva sesión)",
   no_sessions: "(sin sesiones guardadas)",
   resume_hint: "usa /resume <n> para continuar una sesión",
@@ -110,9 +117,12 @@ const es: ScreenStrings = {
   fatal_line: "Revisa que el motor siga vivo.",
   confirm_q: "¿Permites esto?",
   confirm_yn: "[y] sí   [n] no",
-  session_row: "{mark}{n} · {name} ({turns} turnos)",
+  session_row: "{mark}{n} · {name} ({turns} turnos) · {rel}",
+  session_row__one: "{mark}{n} · {name} ({turns} turno) · {rel}",
+  session_row__other: "{mark}{n} · {name} ({turns} turnos) · {rel}",
   confirm_result: "[confirm] {reason}",
   err_health_unreadable: "health ilegible",
+  group_today: "Hoy", group_yesterday: "Ayer", group_week: "Esta semana", group_older: "Antes",
   err_motor_not_ok: "motor no ok",
   err_protocol_mismatch: "protocolo distinto: motor v{motor}, cliente v{client} (actualiza noira / noira-go)",
   err_turn_active: "ya hay un turno en curso",
@@ -140,6 +150,8 @@ const pt: ScreenStrings = {
   confirm_yes: "[confirm] permitido pelo utilizador: {detail}",
   confirm_no: "[confirm] negado pelo utilizador.",
   resumed: "(sessão retomada: {name}, {turns} turnos)",
+  resumed__one: "(sessão retomada: {name}, {turns} turno)",
+  resumed__other: "(sessão retomada: {name}, {turns} turnos)",
   new_session: "(nova sessão)",
   no_sessions: "(sem sessões guardadas)",
   resume_hint: "usa /resume <n> para continuar uma sessão",
@@ -172,9 +184,12 @@ const pt: ScreenStrings = {
   fatal_line: "Verifica que o motor continua vivo.",
   confirm_q: "Permites isto?",
   confirm_yn: "[y] sim   [n] não",
-  session_row: "{mark}{n} · {name} ({turns} turnos)",
+  session_row: "{mark}{n} · {name} ({turns} turnos) · {rel}",
+  session_row__one: "{mark}{n} · {name} ({turns} turno) · {rel}",
+  session_row__other: "{mark}{n} · {name} ({turns} turnos) · {rel}",
   confirm_result: "[confirm] {reason}",
   err_health_unreadable: "health ilegível",
+  group_today: "Hoje", group_yesterday: "Ontem", group_week: "Esta semana", group_older: "Antes",
   err_motor_not_ok: "motor não ok",
   err_protocol_mismatch: "protocolo distinto: motor v{motor}, cliente v{client} (atualiza noira / noira-go)",
   err_turn_active: "já há um turno em curso",
@@ -202,6 +217,8 @@ const fr: ScreenStrings = {
   confirm_yes: "[confirm] autorisé par l'utilisateur : {detail}",
   confirm_no: "[confirm] refusé par l'utilisateur.",
   resumed: "(session reprise : {name}, {turns} tours)",
+  resumed__one: "(session reprise : {name}, {turns} tour)",
+  resumed__other: "(session reprise : {name}, {turns} tours)",
   new_session: "(nouvelle session)",
   no_sessions: "(aucune session enregistrée)",
   resume_hint: "utilise /resume <n> pour continuer une session",
@@ -234,9 +251,12 @@ const fr: ScreenStrings = {
   fatal_line: "Vérifie que le moteur est toujours vivant.",
   confirm_q: "Autoriser ceci ?",
   confirm_yn: "[y] oui   [n] non",
-  session_row: "{mark}{n} · {name} ({turns} tours)",
+  session_row: "{mark}{n} · {name} ({turns} tours) · {rel}",
+  session_row__one: "{mark}{n} · {name} ({turns} tour) · {rel}",
+  session_row__other: "{mark}{n} · {name} ({turns} tours) · {rel}",
   confirm_result: "[confirm] {reason}",
   err_health_unreadable: "health illisible",
+  group_today: "Aujourd'hui", group_yesterday: "Hier", group_week: "Cette semaine", group_older: "Avant",
   err_motor_not_ok: "moteur pas ok",
   err_protocol_mismatch: "protocole différent : moteur v{motor}, client v{client} (mets à jour noira / noira-go)",
   err_turn_active: "un tour est déjà en cours",
@@ -264,6 +284,8 @@ const de: ScreenStrings = {
   confirm_yes: "[confirm] vom Benutzer erlaubt: {detail}",
   confirm_no: "[confirm] vom Benutzer verweigert.",
   resumed: "(Sitzung fortgesetzt: {name}, {turns} Züge)",
+  resumed__one: "(Sitzung fortgesetzt: {name}, {turns} Zug)",
+  resumed__other: "(Sitzung fortgesetzt: {name}, {turns} Züge)",
   new_session: "(neue Sitzung)",
   no_sessions: "(keine gespeicherten Sitzungen)",
   resume_hint: "nutze /resume <n> um fortzufahren",
@@ -296,9 +318,12 @@ const de: ScreenStrings = {
   fatal_line: "Prüfe, ob die Engine noch lebt.",
   confirm_q: "Dies erlauben?",
   confirm_yn: "[y] ja   [n] nein",
-  session_row: "{mark}{n} · {name} ({turns} Züge)",
+  session_row: "{mark}{n} · {name} ({turns} Züge) · {rel}",
+  session_row__one: "{mark}{n} · {name} ({turns} Zug) · {rel}",
+  session_row__other: "{mark}{n} · {name} ({turns} Züge) · {rel}",
   confirm_result: "[confirm] {reason}",
   err_health_unreadable: "Health unlesbar",
+  group_today: "Heute", group_yesterday: "Gestern", group_week: "Diese Woche", group_older: "Früher",
   err_motor_not_ok: "Engine nicht ok",
   err_protocol_mismatch: "Protokoll abweichend: Engine v{motor}, Client v{client} (noira / noira-go aktualisieren)",
   err_turn_active: "es läuft bereits ein Zug",
@@ -326,6 +351,8 @@ const it: ScreenStrings = {
   confirm_yes: "[confirm] consentito dall'utente: {detail}",
   confirm_no: "[confirm] negato dall'utente.",
   resumed: "(sessione ripresa: {name}, {turns} turni)",
+  resumed__one: "(sessione ripresa: {name}, {turns} turno)",
+  resumed__other: "(sessione ripresa: {name}, {turns} turni)",
   new_session: "(nuova sessione)",
   no_sessions: "(nessuna sessione salvata)",
   resume_hint: "usa /resume <n> per continuare una sessione",
@@ -358,9 +385,12 @@ const it: ScreenStrings = {
   fatal_line: "Verifica che il motore sia ancora vivo.",
   confirm_q: "Consentire questo?",
   confirm_yn: "[y] sì   [n] no",
-  session_row: "{mark}{n} · {name} ({turns} turni)",
+  session_row: "{mark}{n} · {name} ({turns} turni) · {rel}",
+  session_row__one: "{mark}{n} · {name} ({turns} turno) · {rel}",
+  session_row__other: "{mark}{n} · {name} ({turns} turni) · {rel}",
   confirm_result: "[confirm] {reason}",
   err_health_unreadable: "health illeggibile",
+  group_today: "Oggi", group_yesterday: "Ieri", group_week: "Questa settimana", group_older: "Prima",
   err_motor_not_ok: "motore non ok",
   err_protocol_mismatch: "protocollo diverso: motore v{motor}, client v{client} (aggiorna noira / noira-go)",
   err_turn_active: "c'è già un turno in corso",
@@ -388,6 +418,12 @@ const ar: ScreenStrings = {
   confirm_yes: "[تأكيد] سمح به المستخدم: {detail}",
   confirm_no: "[تأكيد] رفضه المستخدم.",
   resumed: "(تم استئناف الجلسة: {name}، {turns} أدوار)",
+  resumed__zero: "(تم استئناف الجلسة: {name}، لا أدوار)",
+  resumed__one: "(تم استئناف الجلسة: {name}، دور واحد)",
+  resumed__two: "(تم استئناف الجلسة: {name}، دوران)",
+  resumed__few: "(تم استئناف الجلسة: {name}، {turns} أدوار)",
+  resumed__many: "(تم استئناف الجلسة: {name}، {turns} دورًا)",
+  resumed__other: "(تم استئناف الجلسة: {name}، {turns} دورًا)",
   new_session: "(جلسة جديدة)",
   no_sessions: "(لا جلسات محفوظة)",
   resume_hint: "استخدم /resume <n> لمتابعة جلسة",
@@ -420,9 +456,16 @@ const ar: ScreenStrings = {
   fatal_line: "تحقق من أن المحرك ما زال يعمل.",
   confirm_q: "هل تسمح بهذا؟",
   confirm_yn: "[y] نعم   [n] لا",
-  session_row: "{mark}{n} · {name} ({turns} أدوار)",
+  session_row: "{mark}{n} · {name} ({turns} أدوار) · {rel}",
+  session_row__zero: "{mark}{n} · {name} (لا أدوار) · {rel}",
+  session_row__one: "{mark}{n} · {name} (دور واحد) · {rel}",
+  session_row__two: "{mark}{n} · {name} (دوران) · {rel}",
+  session_row__few: "{mark}{n} · {name} ({turns} أدوار) · {rel}",
+  session_row__many: "{mark}{n} · {name} ({turns} دورًا) · {rel}",
+  session_row__other: "{mark}{n} · {name} ({turns} دورًا) · {rel}",
   confirm_result: "[تأكيد] {reason}",
   err_health_unreadable: "health غير مقروء",
+  group_today: "اليوم", group_yesterday: "أمس", group_week: "هذا الأسبوع", group_older: "قبل",
   err_motor_not_ok: "المحرك ليس بخير",
   err_protocol_mismatch: "بروتوكول مختلف: المحرك v{motor}، العميل v{client} (حدّث noira / noira-go)",
   err_turn_active: "يوجد دور جارٍ",
@@ -472,4 +515,69 @@ export function renderScreen(template: string, vars: Record<string, string | num
   return template.replace(/\{(\w+)\}/g, (m, k: string) =>
     Object.prototype.hasOwnProperty.call(vars, k) ? String(vars[k]) : m,
   );
+}
+
+/**
+ * M1.2 — plural con TODAS las formas del idioma (Intl.PluralRules: árabe 6,
+ * resto 2 en nuestros 7). Busca `${key}__${categoria}`, cae a `__other` y
+ * luego a la clave base. Nunca concatena trozos.
+ */
+export function screenPlural(lang: string, key: string, count: number, vars: Record<string, string | number> = {}): string {
+  const norm = (lang || "en").toLowerCase().replace("_", "-");
+  let cat = "other";
+  try {
+    cat = new Intl.PluralRules(norm).select(count);
+  } catch { /* locale raro: other */ }
+  const table = TABLES[norm] ?? TABLES[norm.split("-")[0]] ?? TABLES.en;
+  const tpl = table[`${key}__${cat}`] ?? table[`${key}__other`] ?? table[key] ?? key;
+  return renderScreen(tpl, { ...vars, count });
+}
+
+/**
+ * M1.2 — tiempo relativo con Intl ("hace 2 h", "yesterday"…). Vacío si la
+ * fecha no parsea (nunca se inventa).
+ */
+export function relTime(lang: string, iso: string, nowMs = Date.now()): string {
+  const t = new Date(iso).getTime();
+  if (Number.isNaN(t)) return "";
+  const norm = (lang || "en").toLowerCase().replace("_", "-");
+  const sec = Math.round((t - nowMs) / 1000);
+  const a = Math.abs(sec);
+  try {
+    const rtf = new Intl.RelativeTimeFormat(norm, { numeric: "auto" });
+    if (a < 60) return rtf.format(sec, "second");
+    const min = Math.round(sec / 60);
+    if (Math.abs(min) < 60) return rtf.format(min, "minute");
+    const hr = Math.round(min / 60);
+    if (Math.abs(hr) < 24) return rtf.format(hr, "hour");
+    const day = Math.round(hr / 24);
+    if (Math.abs(day) < 7) return rtf.format(day, "day");
+    const week = Math.round(day / 7);
+    if (Math.abs(week) < 5) return rtf.format(week, "week");
+    const month = Math.round(day / 30);
+    if (Math.abs(month) < 12) return rtf.format(month, "month");
+    return rtf.format(Math.round(day / 365), "year");
+  } catch {
+    return "";
+  }
+}
+
+/** M1.2 — cubo de día local para agrupar (M2.1): today|yesterday|week|older. */
+export function dayBucket(iso: string, nowMs = Date.now()): "today" | "yesterday" | "week" | "older" {
+  const t = new Date(iso).getTime();
+  if (Number.isNaN(t)) return "older";
+  const day = (ms: number): string => {
+    const d = new Date(ms);
+    return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+  };
+  if (day(t) === day(nowMs)) return "today";
+  if (day(t) === day(nowMs - 86400000)) return "yesterday";
+  if (nowMs - t < 7 * 86400000 && nowMs >= t) return "week";
+  return "older";
+}
+
+/** Etiqueta de grupo ya traducida (group_today/yesterday/week/older). */
+export function groupLabel(lang: string, bucket: "today" | "yesterday" | "week" | "older"): string {
+  const map = { today: "group_today", yesterday: "group_yesterday", week: "group_week", older: "group_older" } as const;
+  return screenString(lang, map[bucket]);
 }

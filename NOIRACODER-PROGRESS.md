@@ -233,7 +233,10 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
   documentada), thin.ts 0 errores literales (usan catálogo con opts.lang),
   trinquete TS. Sufijo de truncado por catálogo. `go test+vet` OK.
 - [x] M1.1d pty 7 idiomas 56/56 (docs/evidence/m1-fuente-unica.md cierra M1.1).
-- [ ] M1.2 Plurales/Intl/fechas relativas. GATE M1: test:i18n + pty (corren al final).
+- [x] M1.2 Plurales/Intl (docs/evidence/m1-plurales.md): screenPlural (ar 6),
+  relTime/dayBucket/groupLabel, `rel` en sessions, Go FP+pluralCategory, fila
+  en vivo `(1 turno) · hace 24 minutos`. NOIRARC_HOME unificado a home
+  (i18n/keys/crypto/quota); e2e 48/48.
 
 ## PENDIENTES DEL USUARIO
 - Regenerar clave OpenRouter (`noira login`) — la actual da 401.
