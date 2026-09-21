@@ -1,5 +1,25 @@
 [
   {
+    "slug": "tui-streaming-tiempo-real",
+    "file": "2026-09-21-tui-streaming-tiempo-real.html",
+    "date": "2026-09-21",
+    "category": "noiracoder",
+    "title_es": "NoiraCoder y el streaming en tiempo real en TUI: cómo crear interfaces interactivas en la terminal",
+    "title_en": "Real-Time TUI Streaming with NoiraCoder",
+    "title_pt": "NoiraCoder e o TUI Streaming em Tempo Real",
+    "title_fr": "NoiraCoder : Streaming en temps réel dans le terminal TUI",
+    "title_de": "Echtzeit-Streaming im TUI mit NoiraCoder",
+    "title_it": "NoiraCoder e lo streaming in tempo reale con interfaccia TUI",
+    "title_ar": "NoiraCoder: البث في الوقت الحقيقي عبر واجهة النصية (TUI)",
+    "excerpt_es": "Descubre cómo NoiraCoder permite implementar streaming de datos en tiempo real dentro de una TUI en la terminal.",
+    "excerpt_en": "Explore how NoiraCoder brings live terminal UI streaming to developers, turning static code sessions into interactive experiences.",
+    "excerpt_pt": "Descubra como o NoiraCoder traz streaming de dados em tempo real diretamente no terminal usando interfaces TUI.",
+    "excerpt_fr": "NoiraCoder transforme le terminal en une interface TUI capable de diffuser du code et des logs en temps réel.",
+    "excerpt_de": "Erfahren Sie, wie NoiraCoder Echtzeit-Streaming in einer Terminal‑Benutzeroberfläche ermöglicht.",
+    "excerpt_it": "Scopri come NoiraCoder trasforma il terminale in un potente hub di streaming in tempo reale.",
+    "excerpt_ar": "استكشف كيف يتيح NoiraCoder البث الفوري للبيانات في الطرفية باستخدام تقنية TUI."
+  },
+  {
     "slug": "skills-especialistas-cuando-se-activan",
     "file": "2026-09-20-skills-especialistas-cuando-se-activan.html",
     "date": "2026-09-20",
