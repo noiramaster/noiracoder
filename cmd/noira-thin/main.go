@@ -38,6 +38,7 @@ func main() {
 	m := thinclient.New(c)
 	p := tea.NewProgram(m, tea.WithAltScreen())
 	m.Attach(p)
+	thinclient.WatchParent(p)
 	if _, err := p.Run(); err != nil {
 		fmt.Fprintln(os.Stderr, "[noira-thin] error:", err)
 		os.Exit(1)

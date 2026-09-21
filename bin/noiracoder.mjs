@@ -36,6 +36,55 @@ function startNode() {
     });
 }
 
+/** Punto 3: mata un proceso con su árbol (sin huérfanos en Windows). */
+function killTree(proc) {
+  if (!proc || proc.exitCode !== null) return;
+  try {
+    if (process.platform === "win32") {
+      spawn("taskkill", ["/pid", String(proc.pid), "/T", "/F"]);
+    } else proc.kill("SIGTERM");
+  } catch { /* ya salió */ }
+}
+
+/** Punto 3: limpia huérfanos PROPIOS de arranques anteriores (padre muerto +
+ * línea de comandos nuestra). Nunca toca procesos con padre vivo. Best-effort.
+ */
+async function cleanOrphans() {
+  try {
+    const { execFileSync } = await import("node:child_process");
+    const ownPid = String(process.pid);
+    const pats = ["serve --thin", "noira-thin"];
+    if (process.platform === "win32") {
+      const out = execFileSync("powershell",
+        ["-NoProfile", "-Command",
+          "Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -like '*serve --thin*' -or $_.Name -like 'noira-thin*' } | Select-Object ProcessId,ParentProcessId,CommandLine | ConvertTo-Json -Compress"],
+        { timeout: 15000, stdio: ["ignore", "pipe", "ignore"] }).toString();
+      let list = [];
+      try { list = JSON.parse(out); } catch { return; }
+      if (!Array.isArray(list)) list = [list];
+      const alive = new Set(list.map((p) => String(p.ProcessId)));
+      for (const p of list) {
+        const pid = String(p.ProcessId);
+        if (pid === ownPid) continue;
+        const ppid = String(p.ParentProcessId);
+        if (alive.has(ppid)) continue; // padre vivo: no es huérfano
+        try { execFileSync("taskkill", ["/pid", pid, "/T", "/F"], { stdio: "ignore" }); } catch {}
+      }
+    } else {
+      const out = execFileSync("ps", ["-eo", "pid,ppid,args"], { timeout: 10000 }).toString();
+      const rows = out.split("\n").slice(1).map((l) => l.trim().split(/\s+/));
+      const alive = new Set(rows.map((r) => r[0]));
+      for (const [pid, ppid, ...args] of rows) {
+        if (!pid || pid === ownPid) continue;
+        const cmd = args.join(" ");
+        if (!pats.some((p) => cmd.includes(p))) continue;
+        if (alive.has(ppid)) continue;
+        try { process.kill(Number(pid), "SIGKILL"); } catch {}
+      }
+    }
+  } catch { /* limpieza best-effort: nunca bloquea el arranque */ }
+}
+
 /** HITO 1.3 + verificación: arranca motor thin + pantalla Go, ciclo de vida completo. */
 async function startGo() {
   // Override para pruebas (binario roto a propósito): NOIRA_THIN_BIN.
@@ -49,6 +98,8 @@ async function startGo() {
     return;
   }
   const { default: net } = await import("node:net");
+  // Punto 3: antes de arrancar, limpia huérfanos propios de sesiones muertas.
+  await cleanOrphans();
   const port = await new Promise((resolve, reject) => {
     const s = net.createServer();
     s.once("error", reject);
@@ -95,6 +146,20 @@ async function startGo() {
   });
   let goErr = "";
   go.stderr?.on("data", (c) => { goErr = (goErr + String(c)).slice(-2000); });
+  // Punto 3: si el WRAPPER muere o lo matan (cierre de ventana, Ctrl+C,
+  // taskkill), los hijos mueren con él. Sin esto quedaban huérfanos.
+  let cleaning = false;
+  const cleanBoth = () => {
+    if (cleaning) return;
+    cleaning = true;
+    clearTimeout(noClientWatch);
+    killTree(go);
+    killTree(motor);
+  };
+  process.once("SIGINT", () => { cleanBoth(); process.exit(130); });
+  process.once("SIGTERM", () => { cleanBoth(); process.exit(143); });
+  process.once("SIGHUP", () => { cleanBoth(); process.exit(129); });
+  process.once("exit", () => { cleanBoth(); });
   const goGone = new Promise((resolve) => {
     go.once("exit", (code) => resolve(code));
     go.once("error", (err) => resolve({ spawnError: err }));
@@ -105,38 +170,21 @@ async function startGo() {
     if (go.exitCode !== null) return;
     try {
       const r = await fetch(`http://127.0.0.1:${port}/v1/status`, {
-        headers: { Authorization: `Bearer ${token}`, "X-Noira-Protocol": "1" },
+        headers: { Authorization: `Bearer ${token}`, "X-Noira-Protocol": "2" },
       });
       const st = await r.json().catch(() => ({}));
       if (st && st.clientes === 0) {
         console.error("> La pantalla Go no conectó en 10 s (colgada); se usa el respaldo Ink/Node.");
         process.env.NOIRA_NOTICE = "Pantalla Go no disponible: no conectó en 10 s (colgada). Sigues en el motor Node.";
-        try {
-          if (process.platform === "win32") spawn("taskkill", ["/pid", String(go.pid), "/T", "/F"]);
-          else go.kill("SIGTERM");
-        } catch { /* ya salió */ }
+        killTree(go);
       }
     } catch { /* el motor dirá; no decidir aquí */ }
   }, 10000);
   // Si el motor muere primero, mata la Go (sin huérfanos); la Go ya muestra fatal.
-  void motorGone.then(() => {
-    if (go.exitCode === null) {
-      try {
-        if (process.platform === "win32") {
-          spawn("taskkill", ["/pid", String(go.pid), "/T", "/F"]);
-        } else go.kill("SIGTERM");
-      } catch { /* ya salió */ }
-    }
-  });
+  void motorGone.then(() => killTree(go));
   const code = await goGone;
   clearTimeout(noClientWatch);
-  try {
-    if (motor.exitCode === null) {
-      if (process.platform === "win32") {
-        spawn("taskkill", ["/pid", String(motor.pid), "/T", "/F"]);
-      } else motor.kill("SIGTERM");
-    }
-  } catch { /* ya salió */ }
+  killTree(motor);
   if (code !== null && typeof code === "object" && code.spawnError) {
     // El binario ni siquiera arrancó (arquitectura, permisos, fichero roto).
     console.error(`> La pantalla Go no arrancó (${code.spawnError.message || code.spawnError}); se usa el respaldo Ink/Node.`);

@@ -240,6 +240,8 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
 - [x] M1.3/1.4/1.5 (docs/evidence/m1-lang.md): /lang en help+Tab; autodetección
   SO (virgen→es, se guarda); endpoints langs/lang/lang-answer + Go /lang con
   cambio en vivo; answerLang auto|ui|fijo. pty 6/6.
+- [x] Punto 3 anti-huérfanos (docs/evidence/orphan.md): killTree+handlers+
+  cleanOrphans en wrapper; WatchParent en Go; pty 4 salidas 12/12.
 - [x] Punto 2 AGENTS (docs/evidence/memoria-guard.md,
   `npm run test:memory-guard` 7/7): memoria enmarcada como DATOS en
   context.ts; aviso primera vez (seen-agents.json); turno trampa real no
