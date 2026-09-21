@@ -209,7 +209,10 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
   prefs → EN. Sonda hola_noira (memoria AGENTS.md ejecutada por un turno de
   prueba, 21/09 07:47) eliminada; AGENTS.md intacto (no editable por modelo).
   Hallazgo pasa a M2.8e/M5.3.
-- [ ] M0.e Comparativa NoiraCoder vs OpenCode vs Claude Code.
+- [x] M0.e Comparativa (docs/evidence/m0-comparativa.md, docs oficiales):
+  faltan @, !, /init, /compact, /diff, /undo|redo visibles, /export, /copy,
+  /model con búsqueda, --continue/--print, ratón, panel, títulos, IDE/stats.
+  Tenemos: sesiones+resume, plan/build, permisos motor, MCP motor, historial.
 - [ ] M0.f Primer arranque + problemas observados (1–4).
 - [ ] M0.g baseline.md.
 
