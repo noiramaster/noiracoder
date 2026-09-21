@@ -301,6 +301,23 @@ func (c *Client) SetAnswer(mode string) (string, error) {
 	return v.Msg, nil
 }
 
+// SetTitle fija el titulador auto|off (POST /v1/title). Devuelve el mensaje.
+func (c *Client) SetTitle(mode string) (string, error) {
+	st, b, err := c.req("POST", "/v1/title", map[string]any{"mode": mode})
+	if err != nil {
+		return "", err
+	}
+	var v struct {
+		Mode string `json:"mode"`
+		Msg  string `json:"msg"`
+	}
+	if err := json.Unmarshal(b, &v); err != nil || st != 200 {
+		return "", fmt.Errorf("%s", F(c.Lang, "err_request",
+			map[string]string{"status": fmt.Sprint(st)}))
+	}
+	return v.Msg, nil
+}
+
 // Stream abre el SSE único y emite eventos hasta que se cierre o ctx cancele.
 // Llama onEvent por cada evento; heartbeat (:) se ignora.
 func (c *Client) Stream(onEvent func(Event), onError func(error)) {

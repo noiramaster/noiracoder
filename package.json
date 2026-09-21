@@ -36,7 +36,8 @@
     "test:i18n:screen": "npm run build && node test/i18n-screen.mjs",
     "test:adversarial": "npm run build && node test/adversarial.mjs",
     "test:antileak": "npm run build && node test/antileak.mjs",
-    "test:memory-guard": "npm run build && node test/memory-guard.mjs"
+    "test:memory-guard": "npm run build && node test/memory-guard.mjs",
+    "test:titles": "npm run build && node test/titles.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",

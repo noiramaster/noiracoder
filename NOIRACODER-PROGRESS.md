@@ -240,6 +240,9 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
 - [x] M1.3/1.4/1.5 (docs/evidence/m1-lang.md): /lang en help+Tab; autodetección
   SO (virgen→es, se guarda); endpoints langs/lang/lang-answer + Go /lang con
   cambio en vivo; answerLang auto|ui|fijo. pty 6/6.
+- [x] M2b Títulos (docs/evidence/m2-titulos.md, `npm run test:titles` 25/25):
+  2º plano, 1+1 gens, cuenta cuota, redacta, anti-eco (PWNED×3 neutralizado
+  tras fallar 1 vez), /title auto|off en motor y Go.
 - [x] M2a Motor sesiones (verificado HTTP): rename/pin (PATCH), delete
   (DELETE), lista con rel/grupo/fija/activa (401/404 OK), UI recordada
   (GET/POST /v1/ui); PROTOCOL actualizado. De paso: readPrefs leía solo

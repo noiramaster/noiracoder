@@ -311,7 +311,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 // slashCmds son los comandos con / (M1.3: nombres fijos en inglés).
-var slashCmds = []string{"/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/lang", "/quit"}
+var slashCmds = []string{"/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/lang", "/title", "/quit"}
 
 // completeSlash completa con Tab el comando empezado (prefijo único o común).
 func completeSlash(input string) string {
@@ -495,6 +495,18 @@ func (m *Model) handleCommand(text string) bool {
 		return true
 	case "/lang":
 		return m.handleLang(parts)
+	case "/title":
+		if len(parts) < 2 {
+			m.addLine(T(m.lang, "title_usage"))
+			return true
+		}
+		msg, err := m.client.SetTitle(parts[1])
+		if err != nil {
+			m.addLine(T(m.lang, "err_model") + err.Error())
+			return true
+		}
+		m.addLine(msg)
+		return true
 	case "/model":
 		if len(parts) < 2 {
 			m.addLine(F(m.lang, "model_usage", map[string]string{"model": m.modelName}))

@@ -56,6 +56,7 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
   let sse: ServerResponse | null = null;
   let activeTurn: ActiveTurn | null = null;
   let preferredModel: string | undefined;
+  let titleAuto = true; // M2.8: /title auto|off
   const pendingConfirms = new Map<string, PendingConfirm>();
 
   const send = (event: string, data: unknown) => {
@@ -100,6 +101,30 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
   const smartName = (message: string): string => {
     const words = message.replace(/\s+/g, " ").trim().split(" ").slice(0, 8).join(" ");
     return words.slice(0, 60) || "nueva sesión";
+  };
+
+  // M2.8: titulador en 2º plano. 1 llamada barata + 1 regen si sigue
+  // genérico; sin cuota/error/off → fallback local. Nunca user/fijada.
+  // No compite con el turno (corre tras turn.end) ni reintenta en bucle.
+  const maybeTitle = async (id: string, message: string, sessionId: string): Promise<void> => {
+    try {
+      if (!titleAuto) return;
+      const metas = await store.list();
+      const meta = metas.find((m) => m.id === (sessionId || id));
+      if (!meta) return;
+      const firstUser = meta.turns.find((t) => t.role === "user")?.content ?? message;
+      const { needsTitle, fallbackTitle, generateAutoTitle } = await import("./titles.js");
+      const { sanitizeThinOut } = await import("./sanitize.js");
+      if (!needsTitle(meta, firstUser)) return;
+      let title = fallbackTitle(firstUser);
+      const gen = await generateAutoTitle(firstUser, { preferredModel }).catch(() => null);
+      if (gen && gen.title) title = gen.title;
+      title = sanitizeThinOut(title).trim() || title;
+      if (!title) return;
+      await store.saveAutoTitle(meta.id, title);
+      const fresh = await store.load(meta.id);
+      send("session.updated", { id: meta.id, nombre: fresh?.title ?? title });
+    } catch { /* el título nunca rompe nada */ }
   };
 
   // HITO 2.4: saneo compartido (la Go vuelve a sanear al pintar).
@@ -230,6 +255,8 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
       await store.append(meta, "assistant", result.output || "(sin salida)");
       send("session.updated", { id: meta.id, nombre: meta.title });
       send("turn.end", { turnId, motivo: "done" });
+      // M2.8: título en 2º plano (no bloquea; 1 llamada + 1 regen; cuenta cuota).
+      void maybeTitle(meta.id, message, sessionId);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       if (abort.signal.aborted || msg.includes("cancelado")) {
@@ -458,6 +485,28 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
           ok: true,
           mode,
           msg: renderScreen(screenString(opts.lang, "lang_answer_set"), { mode }),
+        });
+      } catch (e) {
+        json(res, 400, { error: e instanceof Error ? e.message : String(e) });
+      }
+      return;
+    }
+
+    // M2.8: /title auto|off (titulador en 2º plano).
+    if (req.method === "POST" && url.pathname === "/v1/title") {
+      try {
+        const { screenString, renderScreen } = await import("../i18n/screen.js");
+        const parsed = JSON.parse(await readBody(req)) as { mode?: string };
+        const mode = (parsed.mode ?? "auto").trim().toLowerCase();
+        if (mode !== "auto" && mode !== "off") {
+          json(res, 400, { error: renderScreen(screenString(opts.lang, "err_field_required"), { field: "mode" }) });
+          return;
+        }
+        titleAuto = mode === "auto";
+        json(res, 200, {
+          ok: true,
+          mode,
+          msg: renderScreen(screenString(opts.lang, "title_set"), { mode }),
         });
       } catch (e) {
         json(res, 400, { error: e instanceof Error ? e.message : String(e) });
