@@ -189,6 +189,20 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
 - Para retomar: esta sección (sesión 2026-09-20); A completa; B pendiente
   solo del tag 0.2.0 del usuario. Versión aún 0.1.0 (bump = paso 1 runbook).
 
+## Sesión 2026-09-21 — PROMPT MAESTRO v4 (mejoras antes de publicar, NO publicar)
+- [x] M0.a Latencia (docs/evidence/m0-latencia.md): CLI ~2,4 s caliente solo
+  en arrancar; motor frío 2,6–7 s; catálogo +2 s frío / +25 ms caliente;
+  turno 202 en +0,3 s. Con modelo fijado primer texto +1,9 s (pila +0,5 s
+  sobre Kilo directo 1,1–1,4 s). Con router auto HOY: cancelado ~16 s o
+  50–60 s sin ningún evento previo (ayer completaba: volatilidad free +
+  pick ciego sin failover visible → M4/M7).
+- [ ] M0.b Capturas ANTES en screens/before/.
+- [ ] M0.c Inventario de textos visibles (i18n-inventory.md).
+- [ ] M0.d Inventario de idiomas actuales.
+- [ ] M0.e Comparativa NoiraCoder vs OpenCode vs Claude Code.
+- [ ] M0.f Primer arranque + problemas observados (1–4).
+- [ ] M0.g baseline.md.
+
 ## PENDIENTES DEL USUARIO
 - Regenerar clave OpenRouter (`noira login`) — la actual da 401.
 - PRUEBA-VISUAL.md (Hito 3.7) en su terminal real.
