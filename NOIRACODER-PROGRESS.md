@@ -216,7 +216,8 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
 - [x] M0.f Primer arranque (docs/evidence/m0-firstrun.md): HOME virgen arranca
   en EN sin aviso free y "hola" se queda pensando (stall router). Problemas
   1–4 verificados (1 por código en identity.ts:49-51; 2–4 en capturas).
-- [ ] M0.g baseline.md.
+- [x] M0.g baseline.md (este hito queda cerrado; sigue M1).
+- [ ] M1 Idiomas (1.1 fuente única+i18n endpoint … 1.12). GATE: test:i18n + pty.
 
 ## PENDIENTES DEL USUARIO
 - Regenerar clave OpenRouter (`noira login`) — la actual da 401.
