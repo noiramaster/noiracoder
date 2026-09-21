@@ -33,6 +33,7 @@
     "test:e2e": "npm run build && node test/e2e.mjs",
     "test:sanitize": "npm run build && node test/sanitize.mjs",
     "test:i18n": "node test/i18n.mjs",
+    "test:i18n:screen": "npm run build && node test/i18n-screen.mjs",
     "test:adversarial": "npm run build && node test/adversarial.mjs",
     "test:antileak": "npm run build && node test/antileak.mjs"
   },

@@ -11,6 +11,9 @@ import (
 
 const maxLineLen = 2000
 
+// truncatedSuffix sale del catálogo (M1.1); por defecto inglés.
+var truncatedSuffix = "…[truncated]"
+
 // Sanitize elimina secuencias ANSI/OSC/C0/C1 (salvo \n y \t), controles
 // bidireccionales de spoofing y trunca líneas.
 func Sanitize(s string) string {
@@ -54,7 +57,7 @@ func Sanitize(s string) string {
 	lines := strings.Split(out.String(), "\n")
 	for i, l := range lines {
 		if len(l) > maxLineLen {
-			lines[i] = l[:maxLineLen] + "…[truncado]"
+			lines[i] = l[:maxLineLen] + truncatedSuffix
 		}
 	}
 	return strings.Join(lines, "\n")

@@ -16,6 +16,7 @@ import type { McpRegistry } from "../mcp/registry.js";
 import { SessionStore } from "../memory/sessions.js";
 import { doUndo, doRedo } from "../tools/undoSnapshot.js";
 import { sanitizeThinOut } from "./sanitize.js";
+import { screenString, renderScreen } from "../i18n/screen.js";
 import { DEFAULT_POLICY } from "../sandbox/policies.js";
 
 export const THIN_PROTOCOL = 2;
@@ -271,7 +272,7 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
     const token = authz.startsWith("Bearer ") ? authz.slice("Bearer ".length) : "";
     const { safeEqual } = await import("../auth/crypto.js");
     if (!token || !safeEqual(token, authToken)) {
-      json(res, 401, { error: "no autorizado: falta token Bearer válido" });
+      json(res, 401, { error: screenString(opts.lang, "err_unauthorized") });
       return;
     }
     if (!checkVersion(req)) {
@@ -303,7 +304,7 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
     // ── SSE (un solo cliente) ──
     if (req.method === "GET" && url.pathname === "/v1/events") {
       if (sse && !sse.writableEnded) {
-        json(res, 409, { error: "ya hay un cliente conectado" });
+        json(res, 409, { error: screenString(opts.lang, "err_client_connected") });
         return;
       }
       res.writeHead(200, {
@@ -394,7 +395,7 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
       try {
         const parsed = JSON.parse(await readBody(req)) as { id?: string };
         if (!parsed.id) {
-          json(res, 400, { error: "campo 'id' requerido" });
+          json(res, 400, { error: renderScreen(screenString(opts.lang, "err_field_required"), { field: "id" }) });
           return;
         }
         preferredModel = parsed.id;
@@ -437,7 +438,7 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
       const metas = await store.list();
       const meta = metas.find((m) => m.id === id);
       if (!meta) {
-        json(res, 404, { error: "sesión no encontrada" });
+        json(res, 404, { error: screenString(opts.lang, "err_session_not_found") });
         return;
       }
       json(res, 200, {
@@ -452,7 +453,7 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
     // ── Turno ──
     if (req.method === "POST" && url.pathname === "/v1/turn") {
       if (activeTurn) {
-        json(res, 409, { error: "ya hay un turno en curso", turnId: activeTurn.id });
+        json(res, 409, { error: screenString(opts.lang, "err_turn_in_progress"), turnId: activeTurn.id });
         return;
       }
       try {
@@ -463,7 +464,7 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
         };
         const message = (parsed.message ?? "").trim();
         if (!message) {
-          json(res, 400, { error: "campo 'message' requerido" });
+          json(res, 400, { error: renderScreen(screenString(opts.lang, "err_field_required"), { field: "message" }) });
           return;
         }
         const mode = parsed.mode === "plan" ? "plan" : "build";
@@ -471,7 +472,7 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
         if (sessionId) {
           const metas = await store.list();
           if (!metas.some((m) => m.id === sessionId)) {
-            json(res, 404, { error: "sesión no encontrada" });
+            json(res, 404, { error: screenString(opts.lang, "err_session_not_found") });
             return;
           }
         } else {
@@ -491,7 +492,7 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
       try {
         const parsed = JSON.parse(await readBody(req)) as { confirmId?: string; aprobado?: boolean };
         if (!parsed.confirmId) {
-          json(res, 400, { error: "campo 'confirmId' requerido" });
+          json(res, 400, { error: renderScreen(screenString(opts.lang, "err_field_required"), { field: "confirmId" }) });
           return;
         }
         const ok = resolveConfirm(parsed.confirmId, parsed.aprobado === true, "cliente");
@@ -510,7 +511,7 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
           json(res, 200, { ok: true, cancelado: activeTurn.id });
           return;
         }
-        json(res, 404, { error: "no hay turno en curso con ese id" });
+        json(res, 404, { error: screenString(opts.lang, "err_no_turn_id") });
       } catch (e) {
         json(res, 400, { error: e instanceof Error ? e.message : String(e) });
       }
@@ -528,7 +529,7 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
       return;
     }
 
-    json(res, 404, { error: "no encontrado" });
+    json(res, 404, { error: screenString(opts.lang, "err_not_found") });
   });
 
   await new Promise<void>((resolve, reject) => {

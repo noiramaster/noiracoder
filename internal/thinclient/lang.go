@@ -21,6 +21,11 @@ func SetCatalog(m map[string]string) {
 		m = map[string]string{}
 	}
 	screenCatalog = m
+	if s, ok := m["truncated_suffix"]; ok && s != "" {
+		truncatedSuffix = s
+	} else {
+		truncatedSuffix = "…[truncated]"
+	}
 }
 
 // DetectLang lee el idioma de prefs.json (la misma que el motor). Sin

@@ -228,7 +228,11 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
 - [x] M1.1b Go sin diccionarios (protocolo v2, `F` con `{vars}`, main exige
   `/v1/i18n` o exit 3): `go build+vet+test` OK, binario reconstruido, pty
   historial 5/5 contra el flujo v2.
-- [ ] M1.1c Lint de literales + test:i18n:screen.
+- [x] M1.1c Lint (`npm run test:i18n:screen`, 0 fallos): paridad 61×7,
+  `{vars}` intactos, idénticas solo técnicas, Go cero literales (allowlist
+  documentada), thin.ts 0 errores literales (usan catálogo con opts.lang),
+  trinquete TS. Sufijo de truncado por catálogo. `go test+vet` OK.
+- [ ] M1.1d pty 7 idiomas.
 
 ## PENDIENTES DEL USUARIO
 - Regenerar clave OpenRouter (`noira login`) — la actual da 401.

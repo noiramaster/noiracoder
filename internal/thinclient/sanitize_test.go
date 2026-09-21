@@ -35,6 +35,9 @@ func TestSanitizeCorpus(t *testing.T) {
 		}
 	}
 	got := Sanitize(long)
+	// El sufijo sale del catálogo (M1.1): con catálogo ES, en español.
+	SetCatalog(map[string]string{"truncated_suffix": "…[truncado]"})
+	got = Sanitize(long)
 	wantSuffix := "…[truncado]"
 	if !strings.HasSuffix(got, wantSuffix) || len(got) > maxLineLen+len(wantSuffix) {
 		t.Errorf("truncado: len=%d sufijo=%q", len(got), got[len(got)-20:])
