@@ -531,6 +531,16 @@ const ar: ScreenStrings = {
 
 const TABLES: Record<string, ScreenStrings> = { en, es, pt, fr, de, it, ar };
 
+/**
+ * Punto 4 (M1.9): procedencia honesta por idioma. "source" = idioma origen;
+ * "auto" = redactada por el mantenedor SIN revisor profesional. Ningún
+ * idioma es traducción profesional: no se anuncia como tal.
+ */
+export const SCREEN_PROVENANCE: Record<string, "source" | "auto"> = {
+  en: "source", es: "auto", pt: "auto", fr: "auto", de: "auto",
+  it: "auto", ar: "auto",
+};
+
 /** Cadena con fallback exacto → base (xx-YY → xx) → inglés. Sin clave → la clave. */
 export function screenString(lang: string, key: string): string {
   const norm = (lang || "en").toLowerCase().replace("_", "-");

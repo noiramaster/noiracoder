@@ -6,7 +6,10 @@ package thinclient
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
+
+	"github.com/mattn/go-runewidth"
 )
 
 func TestCatalogSubst(t *testing.T) {
@@ -66,6 +69,41 @@ func TestPluralCategory(t *testing.T) {
 	SetCatalog(nil)
 	if got := FP("es", "resumed", 3, map[string]string{"turns": "3"}); got != "resumed" {
 		t.Errorf("FP sin catálogo debe pasar la clave: %q", got)
+	}
+}
+
+func TestFitStatus40(t *testing.T) {
+	SetCatalog(map[string]string{
+		"st_model": "Modell", "st_mode": "Modus", "st_session": "Sitzung",
+		"st_quota": "Quote: {pct}%",
+	})
+	m := &Model{
+		lang:      "de",
+		modelName: "nvidia/nemotron-3-ultra-550b-a55b:free",
+		mode:      "build",
+		sessName:  "Eine sehr lange Sitzungsbezeichnung zum Kürzen",
+		quotaPct:  8,
+		width:     40,
+	}
+	m.setStatus()
+	lines := strings.Split(m.status, "\n")
+	if len(lines) != 2 {
+		t.Fatalf("a 40 debe partirse en 2 líneas: %q", m.status)
+	}
+	for _, ln := range lines {
+		if runewidth.StringWidth(ln) > 40 {
+			t.Errorf("línea >40: %q", ln)
+		}
+	}
+	if !strings.Contains(m.status, "Modus: build") || !strings.Contains(m.status, "Quote: 8%") {
+		t.Errorf("modo/cuota intactos: %q", m.status)
+	}
+	// CJK: ancho doble cuenta x2.
+	m2 := &Model{lang: "en", modelName: "m", mode: "b", sessName: "日本語テスト日本語", width: 40}
+	SetCatalog(map[string]string{"st_model": "model", "st_mode": "mode", "st_session": "session"})
+	m2.setStatus()
+	if runewidth.StringWidth(m2.status) > 40 {
+		t.Errorf("CJK >40: %q", m2.status)
 	}
 }
 

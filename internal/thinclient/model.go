@@ -11,6 +11,7 @@ import (
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/mattn/go-runewidth"
 )
 
 type evMsg struct{ ev Event }
@@ -112,7 +113,58 @@ func (m *Model) setStatus() {
 	if m.turnID != "" {
 		parts = append(parts, T(m.lang, "st_turn"))
 	}
-	m.status = strings.Join(parts, " · ")
+	m.status = fitStatus(parts, m.width, m)
+}
+
+// fitStatus recorta con prioridad M1.8: primero el nombre de sesión, luego
+// el modelo; modo, cuota y avisos no se tocan. Ancho visual (runewidth: CJK
+// doble). Si ni al mínimo cabe, se devuelve lo mínimo recortado.
+func fitStatus(parts []string, width int, m *Model) string {
+	joined := strings.Join(parts, " · ")
+	if width <= 0 || runewidth.StringWidth(joined) <= width {
+		return joined
+	}
+	sessLabel := T(m.lang, "st_session") + ": "
+	modelLabel := T(m.lang, "st_model") + ": "
+	restW := 0
+	nRest := 0
+	for i, p := range parts {
+		if i == 0 || i == 2 {
+			continue
+		}
+		restW += runewidth.StringWidth(p)
+		nRest++
+	}
+	seps := len(parts) - 1 // uniones " · " entre todos
+	fixed := restW + seps*3 + runewidth.StringWidth(sessLabel) + runewidth.StringWidth(modelLabel)
+	avail := width - fixed
+	// Modelo: hasta 25, mínimo 8. Sesión: el resto, mínimo 6.
+	modelBudget := 25
+	if avail-6 < modelBudget {
+		modelBudget = avail - 6
+	}
+	if modelBudget < 8 {
+		modelBudget = 8
+	}
+	sessBudget := avail - modelBudget
+	if sessBudget < 6 {
+		sessBudget = 6
+	}
+	parts[0] = modelLabel + runewidth.Truncate(m.modelName, modelBudget, "…")
+	sess := or(m.sessName, "—")
+	parts[2] = sessLabel + runewidth.Truncate(sess, sessBudget, "…")
+	joined = strings.Join(parts, " · ")
+	if runewidth.StringWidth(joined) <= width {
+		return joined
+	}
+	// M1.8: ventana estrecha (<60): la barra pasa a DOS líneas para no
+	// perder información (modelo·modo / sesión·cuota·avisos).
+	line1 := parts[0] + " · " + parts[1]
+	rest2 := []string{parts[2]}
+	if len(parts) > 3 {
+		rest2 = append(rest2, parts[3:]...)
+	}
+	return line1 + "\n" + strings.Join(rest2, " · ")
 }
 
 func or(a, b string) string {

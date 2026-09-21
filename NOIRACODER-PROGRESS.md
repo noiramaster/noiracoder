@@ -240,6 +240,11 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
 - [x] M1.3/1.4/1.5 (docs/evidence/m1-lang.md): /lang en help+Tab; autodetección
   SO (virgen→es, se guarda); endpoints langs/lang/lang-answer + Go /lang con
   cambio en vivo; answerLang auto|ui|fijo. pty 6/6.
+- [x] M1.7/1.8/1.10/1.11/1.12 + punto 4 (docs/evidence/m1-resto.md):
+  errorExternal en 4 puntos TS; barra 2 líneas <60 cols (runewidth);
+  CLI 7×25 + fallback; pty 13 idiomas 52/52; RTL documentado;
+  SCREEN_PROVENANCE (auto) + README honesto. GATE M1: test:i18n 0,
+  test:i18n:screen 0, pty 56/56+52/52+6/6 → M2.
 - [x] Punto 3 anti-huérfanos (docs/evidence/orphan.md): killTree+handlers+
   cleanOrphans en wrapper; WatchParent en Go; pty 4 salidas 12/12.
 - [x] Punto 2 AGENTS (docs/evidence/memoria-guard.md,

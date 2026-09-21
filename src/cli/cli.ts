@@ -14,7 +14,7 @@ import { createLogger } from "../core/logger.js";
 import { color } from "../core/logger.js";
 import { storeKey } from "../auth/keys.js";
 import { interactiveSignIn } from "../auth/oauth.js";
-import { LanguageSelector } from "../i18n/index.js";
+import { LanguageSelector, T } from "../i18n/index.js";
 import { appInfo } from "../core/appInfo.js";
 import { orchestrate } from "../agents/orchestrator.js";
 import { confirm } from "../sandbox/approve.js";
@@ -203,7 +203,8 @@ export async function cliMain(argv: string[], meta?: { invokedAs?: string }): Pr
         }
         return 0;
       } catch (e) {
-        log.error(e instanceof Error ? e.message : String(e));
+        log.error(T("errorExternal", lang));
+        log.raw(e instanceof Error ? e.message : String(e));
         return 1;
       }
     }
@@ -334,7 +335,8 @@ export async function cliMain(argv: string[], meta?: { invokedAs?: string }): Pr
         mcp?.close();
         return 0;
       } catch (e) {
-        log.error(e instanceof Error ? e.message : String(e));
+        log.error(T("errorExternal", lang));
+        log.raw(e instanceof Error ? e.message : String(e));
         mcp?.close();
         return 1;
       }

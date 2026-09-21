@@ -21,7 +21,7 @@ import os from "node:os";
 import { join } from "node:path";
 import { appInfo } from "../core/appInfo.js";
 import { createLogger, color, type Logger } from "../core/logger.js";
-import { LanguageSelector } from "../i18n/index.js";
+import { LanguageSelector, T } from "../i18n/index.js";
 import { storeKey } from "../auth/keys.js";
 import { interactiveSignIn } from "../auth/oauth.js";
 import { orchestrate } from "../agents/orchestrator.js";
@@ -300,7 +300,9 @@ async function runTurn(ctx: Ctx, raw: string): Promise<void> {
     const suggestions = generateSuggestions(result.output, ctx.session);
     await showSuggestions(ctx, suggestions);
   } catch (e) {
-    ctx.log.error(e instanceof Error ? e.message : String(e));
+    // M1.7: mensaje nuestro + detalle original debajo (sin traducir).
+    ctx.log.error(T("errorExternal", ctx.selector.getLanguage()));
+    ctx.log.raw(e instanceof Error ? e.message : String(e));
   }
 }
 

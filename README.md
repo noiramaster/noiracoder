@@ -60,7 +60,7 @@ src/
   agents/      orquestador dinámico + 4 sub-agentes (research/code/review/security), agent loop con streaming
   tools/       read/write/edit/delete/list, bash (sandboxed), git
   memory/      jerárquica: AGENTS.md + global + notas con tags + sesiones persistentes
-  i18n/        62 idiomas, detección por script, selector con memoria
+  i18n/        62 idiomas en CLI (7 completos, resto con fallback a inglés), pantalla Go en 7, selector con memoria y autodetección del SO. Traducciones automáticas en revisión, no profesionales.
   mcp/         cliente MCP por stdio + registro multi-servidor
   skills/      10 skills Noira (code-review, testing, refactor, debug, planning, docs, git-flow, security, perf, lang-expert)
   sandbox/     bwrap/seatbelt + políticas + confirmaciones inteligentes

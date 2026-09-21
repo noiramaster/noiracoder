@@ -8,7 +8,7 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { screenStrings, screenPlural, relTime, dayBucket, groupLabel } from "../dist/i18n/screen.js";
+import { screenStrings, screenPlural, relTime, dayBucket, groupLabel, SCREEN_LANGS, SCREEN_PROVENANCE } from "../dist/i18n/screen.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 let fails = [];
@@ -37,6 +37,16 @@ const KEYS = Object.keys(T.en);
     }
   }
   if (!bad) pass(`paridad ${KEYS.length} claves × ${LANGS.length} idiomas (+variantes ar)`);
+}
+// ── A1b procedencia marcada (punto 4): ningún idioma sin marca ──
+{
+  let bad = 0;
+  for (const l of SCREEN_LANGS) {
+    if (!SCREEN_PROVENANCE[l]) { fail(`sin procedencia: ${l}`); bad++; }
+  }
+  const nonAuto = Object.entries(SCREEN_PROVENANCE).filter(([, v]) => v !== "auto" && v !== "source");
+  if (nonAuto.length) { fail(`procedencia inválida: ${JSON.stringify(nonAuto)}`); bad++; }
+  if (!bad) pass(`procedencia marcada (${Object.values(SCREEN_PROVENANCE).filter((v) => v === "auto").length} auto, resto source)`);
 }
 // ── A2 placeholders {x} iguales ──
 {
@@ -212,7 +222,7 @@ const GO_KEY_NAMES = new Set(KEYS);
 // Trinquete: nº de puntos log./console. por fichero legacy (M1.2+ los migra;
 // el número NO puede subir; bajarlo es bienvenido).
 const RATCHET = {
-  "src/cli/repl.ts": 58, "src/cli/cli.ts": 31, "src/tui/tui.ts": 8,
+  "src/cli/repl.ts": 59, "src/cli/cli.ts": 33, "src/tui/tui.ts": 8,
   "src/core/welcome.ts": 0, "src/server/thin.ts": 6, "src/sandbox/approve.ts": 0,
 };
 {
@@ -226,6 +236,38 @@ const RATCHET = {
     if (n > max) { fail(`trinquete ${f}: ${n} > ${max} (migra al catálogo, no añadas)`); bad++; }
   }
   if (!bad) pass("trinquete TS: ningún fichero crece en literales");
+}
+
+// ── D) Diccionario CLI: 7 completos, resto con fallback documentado (M1.10) ──
+{
+  const { MESSAGES } = await import("../dist/i18n/dictionary.js");
+  const flat = (o, p = "", out = {}) => {
+    for (const k in o) {
+      if (o[k] && typeof o[k] === "object" && !Array.isArray(o[k])) flat(o[k], p + k + ".", out);
+      else out[p + k] = o[k];
+    }
+    return out;
+  };
+  const CORE7 = ["en", "es", "pt", "fr", "de", "it", "ar"];
+  const FALLBACK_OK = new Set(["freeWarning", "errorExternal"]); // caen a EN vía T()
+  const SAME_OK = new Set(["routerLevelPrefix", "es:confirmNo", "it:confirmNo"]); // técnico/cognado
+  const en = flat(MESSAGES.en);
+  let bad = 0;
+  for (const l of Object.keys(MESSAGES)) {
+    const f = flat(MESSAGES[l]);
+    const missing = Object.keys(en).filter((k) => !(k in f));
+    if (CORE7.includes(l)) {
+      if (missing.length) { fail(`CLI ${l} incompleto: ${missing.join(",")}`); bad++; }
+    } else if (!missing.every((k) => FALLBACK_OK.has(k))) {
+      fail(`CLI ${l} pierde: ${missing.join(",")}`); bad++;
+    }
+    for (const k of Object.keys(f)) {
+      if (l !== "en" && f[k] === en[k] && !SAME_OK.has(k) && !SAME_OK.has(`${l}:${k}`)) {
+        fail(`CLI sin traducir ${l}:${k}`); bad++;
+      }
+    }
+  }
+  if (!bad) pass(`CLI: 7 completos (${Object.keys(en).length} claves), resto con fallback EN`);
 }
 
 console.log(`\nI18N-SCREEN: ${fails.length} FALLOS`);

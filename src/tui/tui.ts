@@ -9,6 +9,7 @@ import { orchestrate } from "../agents/orchestrator.js";
 import { resolveApiKey, storeKey } from "../auth/keys.js";
 import { interactiveSignIn } from "../auth/oauth.js";
 import { connectMcp } from "../mcp/connect.js";
+import { T, LanguageSelector } from "../i18n/index.js";
 import type { McpRegistry } from "../mcp/registry.js";
 import type { Level } from "../types.js";
 import type { AgentRole } from "../agents/roster.js";
@@ -93,7 +94,10 @@ function App({ cwd, version, notice, mcp }: { cwd: string; version: string; noti
       });
       setMsgs((p) => [...p, { role: "assistant", content: r.output }]);
     } catch (e) {
-      setMsgs((p) => [...p, { role: "assistant", content: `[error] ${e instanceof Error ? e.message : String(e)}` }]);
+      // M1.7: mensaje nuestro + detalle original debajo (sin traducir).
+      const own = T("errorExternal", new LanguageSelector().getLanguage());
+      const detail = e instanceof Error ? e.message : String(e);
+      setMsgs((p) => [...p, { role: "assistant", content: `[error] ${own}\n${detail}` }]);
     } finally { setLoading(false); setAgent(null); setStream(""); }
   }, [loading, level, cwd, key, requestConfirm, mcp]);
 
