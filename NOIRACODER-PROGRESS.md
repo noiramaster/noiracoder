@@ -200,8 +200,15 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
   error, pequena, .html+.txt vía pty + @xterm/headless). Confirman M0.f(2,4):
   `modelo: (router)` al arrancar, título = primer mensaje; y el failover por
   cuota SÍ pone el modelo real (`nvidia/nemotron…`) tras rotar.
-- [ ] M0.c Inventario de textos visibles (i18n-inventory.md).
-- [ ] M0.d Inventario de idiomas actuales.
+- [x] M0.c Inventario de textos (docs/evidence/i18n-inventory.md): ~210 puntos
+  (Go 38 claves + ~15 literales fuera incl. 13 errores protocol.go; CLI 24
+  claves + ~100 literales; thin 10 errores; wrapper/instaladores ~21).
+  Plurales/Intl: 0. Incluye causa M0.f(1) en identity.ts:49-51.
+- [x] M0.d Idiomas: Go 7×38 completos; CLI 62 (7 completos, 55 sin
+  freeWarning); landing 7×162 (test 0 fallos). Sin autodetección SO; sin
+  prefs → EN. Sonda hola_noira (memoria AGENTS.md ejecutada por un turno de
+  prueba, 21/09 07:47) eliminada; AGENTS.md intacto (no editable por modelo).
+  Hallazgo pasa a M2.8e/M5.3.
 - [ ] M0.e Comparativa NoiraCoder vs OpenCode vs Claude Code.
 - [ ] M0.f Primer arranque + problemas observados (1–4).
 - [ ] M0.g baseline.md.
