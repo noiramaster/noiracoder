@@ -276,7 +276,13 @@ export async function cliMain(argv: string[], meta?: { invokedAs?: string }): Pr
             return (e as NodeJS.ErrnoException)?.code === "EPERM";
           }
         };
+        // Tests (adversarial/antileak/i18n…) gestionan la vida del motor a mano
+        // (spawn + kill + chequeo de huérfanos): con esta variable se salta
+        // el suicidio porque el "padre" es el harness, no el wrapper.
+        // El wrapper real NUNCA la fija.
+        const noParentWatch = process.env.NOIRA_NO_PARENT_WATCH === "1";
         const watch = setInterval(() => {
+          if (noParentWatch) return;
           void parentIsWrapper().then((alive) => {
             if (!alive) {
               log.warn("[thin] el wrapper murió; cerrando el motor (sin huérfanos).");

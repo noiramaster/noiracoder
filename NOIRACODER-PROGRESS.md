@@ -217,7 +217,11 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
   en EN sin aviso free y "hola" se queda pensando (stall router). Problemas
   1–4 verificados (1 por código en identity.ts:49-51; 2–4 en capturas).
 - [x] M0.g baseline.md (este hito queda cerrado; sigue M1).
-- [ ] M1 Idiomas (1.1 fuente única+i18n endpoint … 1.12). GATE: test:i18n + pty.
+- [x] M1.6 Anti-fuga (docs/evidence/m1-antileak.md, `npm run test:antileak`):
+  identity.ts sin nivel + sección anti-fuga; test 7 idiomas 8/8 (0 fugas,
+  presenta "Noira, tu asistente de programación"). De paso: los cancelled
+  ~16 s de M0.a eran el parent-watchdog suicidando harnesses (CIM
+  intermitente); `NOIRA_NO_PARENT_WATCH=1` lo salta en tests.
 
 ## PENDIENTES DEL USUARIO
 - Regenerar clave OpenRouter (`noira login`) — la actual da 401.
