@@ -1,5 +1,25 @@
 [
   {
+    "slug": "conectar-openrouter-groq-zen",
+    "file": "2026-09-22-conectar-openrouter-groq-zen.html",
+    "date": "2026-09-22",
+    "category": "noiracoder",
+    "title_es": "Conectar OpenRouter, Groq y Zen en NoiraCoder: Guía paso a paso",
+    "title_en": "Connecting NoiraCoder to OpenRouter, Groq, and Zen: A Step‑by‑Step Guide",
+    "title_pt": "Como conectar NoiraCoder ao OpenRouter, Groq e Zen",
+    "title_fr": "Connecter OpenRouter, Groq et Zen avec NoiraCoder",
+    "title_de": "NoiraCoder: Verbindung zu OpenRouter, Groq und Zen im Terminal",
+    "title_it": "NoiraCoder e la connessione a OpenRouter, Groq e Zen: una guida rapida",
+    "title_ar": "كيفية ربط NoiraCoder مع OpenRouter, Groq و Zen",
+    "excerpt_es": "Aprende a integrar rápidamente los servicios de OpenRouter, Groq y Zen en tu agente de código NoiraCoder desde la terminal.",
+    "excerpt_en": "Learn how to configure NoiraCoder to seamlessly work with OpenRouter, Groq, and Zen in just a few terminal commands.",
+    "excerpt_pt": "Aprenda a integrar rapidamente NoiraCoder com as APIs do OpenRouter, Groq e Zen em poucos passos no terminal.",
+    "excerpt_fr": "Découvrez comment NoiraCoder simplifie l’intégration d’OpenRouter, Groq et Zen en un seul flux de travail terminal.",
+    "excerpt_de": "Erfahren Sie, wie NoiraCoder nahtlos OpenRouter, Groq und Zen integriert.",
+    "excerpt_it": "Scopri come configurare NoiraCoder per integrare OpenRouter, Groq e Zen direttamente dal terminale.",
+    "excerpt_ar": "دليل سريع لدمج NoiraCoder مع OpenRouter, Groq و Zen في سطر الأوامر."
+  },
+  {
     "slug": "tui-streaming-tiempo-real",
     "file": "2026-09-21-tui-streaming-tiempo-real.html",
     "date": "2026-09-21",
