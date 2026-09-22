@@ -179,17 +179,23 @@ type Session struct {
 	Nombre string `json:"nombre"`
 	Turnos int    `json:"turnos"`
 	Rel    string `json:"rel"`
-}
-
-// Turn es un intercambio guardado.
-type Turn struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
+	Grupo  string `json:"grupo"`
+	Fija   bool   `json:"fija"`
+	Activa bool   `json:"activa"`
 }
 
 // Sessions lista sesiones persistidas (sobreviven a reinicios).
 func (c *Client) Sessions() ([]Session, error) {
-	st, b, err := c.req("GET", "/v1/sessions", nil)
+	return c.SessionsExt(false)
+}
+
+// SessionsExt lista del proyecto o de todos (?all=1, M2.1).
+func (c *Client) SessionsExt(all bool) ([]Session, error) {
+	path := "/v1/sessions"
+	if all {
+		path = "/v1/sessions?all=1"
+	}
+	st, b, err := c.req("GET", path, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -204,6 +210,70 @@ func (c *Client) Sessions() ([]Session, error) {
 		return nil, err
 	}
 	return v.Sesiones, nil
+}
+
+// PatchSession renombra y/o fija (M2.2). Devuelve nombre + fija.
+func (c *Client) PatchSession(id, nombre string, fija *bool) (string, bool, error) {
+	body := map[string]any{}
+	if nombre != "" {
+		body["nombre"] = nombre
+	}
+	if fija != nil {
+		body["fija"] = *fija
+	}
+	st, b, err := c.req("PATCH", "/v1/sessions/"+id, body)
+	if err != nil {
+		return "", false, err
+	}
+	var v struct {
+		Nombre string `json:"nombre"`
+		Fija   bool   `json:"fija"`
+	}
+	if err := json.Unmarshal(b, &v); err != nil || st != 200 {
+		return "", false, fmt.Errorf("%s", F(c.Lang, "err_request",
+			map[string]string{"status": fmt.Sprint(st)}))
+	}
+	return v.Nombre, v.Fija, nil
+}
+
+// DeleteSession borra (la UI confirma antes, M2.2).
+func (c *Client) DeleteSession(id string) error {
+	st, _, err := c.req("DELETE", "/v1/sessions/"+id, nil)
+	if err != nil {
+		return err
+	}
+	if st != 200 {
+		return fmt.Errorf("%s", F(c.Lang, "err_request",
+			map[string]string{"status": fmt.Sprint(st)}))
+	}
+	return nil
+}
+
+// GetUi trae panel abierto + sesión recordada (M2.7).
+func (c *Client) GetUi() (bool, string) {
+	st, b, err := c.req("GET", "/v1/ui", nil)
+	if err != nil || st != 200 {
+		return true, ""
+	}
+	var v struct {
+		PanelOpen bool   `json:"panelOpen"`
+		SessionID string `json:"sessionId"`
+	}
+	if err := json.Unmarshal(b, &v); err != nil {
+		return true, ""
+	}
+	return v.PanelOpen, v.SessionID
+}
+
+// SetUi persiste panel/sesión (M2.7). Best-effort.
+func (c *Client) SetUi(open bool, sessionID string) {
+	_, _, _ = c.req("POST", "/v1/ui", map[string]any{"panelOpen": open, "sessionId": sessionID})
+}
+
+// Turn es un intercambio guardado.
+type Turn struct {
+	Role    string `json:"role"`
+	Content string `json:"content"`
 }
 
 // History trae los turnos de una sesión para reanudarla.

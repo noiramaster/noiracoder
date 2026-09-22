@@ -74,7 +74,7 @@ async function waitHealth() {
   }
   return false;
 }
-const H = { Authorization: `Bearer ${TOKEN}`, "X-Noira-Protocol": "1" };
+const H = { Authorization: `Bearer ${TOKEN}`, "X-Noira-Protocol": "2" };
 try {
   check("srv-arranca", await waitHealth());
   let r = await fetch(`http://127.0.0.1:${PORT}/v1/sessions`);
@@ -85,9 +85,9 @@ try {
   check("426-sin-version", r.status === 426, `fue=${r.status}`);
   // Segundo SSE -> 409 (el primero se mantiene abierto).
   const c1 = new AbortController();
-  const sse1 = await fetch(`http://127.0.0.1:${PORT}/v1/events?protocol=1`, { headers: H, signal: c1.signal });
+  const sse1 = await fetch(`http://127.0.0.1:${PORT}/v1/events?protocol=2`, { headers: H, signal: c1.signal });
   check("sse1-200", sse1.status === 200, `fue=${sse1.status}`);
-  r = await fetch(`http://127.0.0.1:${PORT}/v1/events?protocol=1`, { headers: H });
+  r = await fetch(`http://127.0.0.1:${PORT}/v1/events?protocol=2`, { headers: H });
   check("409-segundo-SSE", r.status === 409, `fue=${r.status}`);
   c1.abort();
   // Cuerpo enorme -> el servidor corta la conexión sin buferizar (400 o corte).

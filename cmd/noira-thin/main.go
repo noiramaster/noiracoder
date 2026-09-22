@@ -8,6 +8,7 @@ import (
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
+	zone "github.com/lrstanley/bubblezone"
 	"github.com/opencode-ai/opencode/internal/thinclient"
 )
 
@@ -36,7 +37,12 @@ func main() {
 	}
 	thinclient.SetCatalog(cat)
 	m := thinclient.New(c)
-	p := tea.NewProgram(m, tea.WithAltScreen())
+	zone.NewGlobal()
+	opts := []tea.ProgramOption{tea.WithAltScreen()}
+	if m.MouseOn() {
+		opts = append(opts, tea.WithMouseCellMotion())
+	}
+	p := tea.NewProgram(m, opts...)
 	m.Attach(p)
 	thinclient.WatchParent(p)
 	if _, err := p.Run(); err != nil {

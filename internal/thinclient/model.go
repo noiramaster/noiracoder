@@ -12,6 +12,8 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/mattn/go-runewidth"
+	"github.com/atotto/clipboard"
+	zone "github.com/lrstanley/bubblezone"
 )
 
 type evMsg struct{ ev Event }
@@ -20,6 +22,9 @@ type evErr struct{ err error }
 type confirmState struct {
 	id     string
 	detail string
+	// kind "" = herramienta; "delsess" = borrar sesión (sessID).
+	kind   string
+	sessID string
 }
 
 type Model struct {
@@ -42,7 +47,11 @@ type Model struct {
 	histIdx   int
 	width     int
 	height    int
+	chatW     int
 	program   *tea.Program
+	panel     Panel
+	mouseOn   bool
+	renaming  bool
 }
 
 var (
@@ -73,6 +82,8 @@ func New(c *Client) *Model {
 		modelName: "(router)",
 		mode:      "build",
 		histIdx:   -1,
+		panel:     Panel{Open: true},
+		mouseOn:   mousePref(),
 	}
 	m.setStatus()
 	return m
@@ -86,6 +97,9 @@ func (m *Model) Attach(p *tea.Program) {
 		func(err error) { p.Send(evErr{err}) },
 	)
 }
+
+// MouseOn dice si la captura de ratón está activa (M2.5).
+func (m *Model) MouseOn() bool { return m.mouseOn }
 
 func (m *Model) Init() tea.Cmd { return textarea.Blink }
 
@@ -113,7 +127,7 @@ func (m *Model) setStatus() {
 	if m.turnID != "" {
 		parts = append(parts, T(m.lang, "st_turn"))
 	}
-	m.status = fitStatus(parts, m.width, m)
+	m.status = fitStatus(parts, m.chatW, m)
 }
 
 // fitStatus recorta con prioridad M1.8: primero el nombre de sesión, luego
@@ -178,28 +192,21 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.width, m.height = msg.Width, msg.Height
-		m.viewport.Width = msg.Width - 4
 		// HITO 3.2: en pantallas bajas se encoge la entrada para que quepan
-		// cabecera + chat + entrada + hints + estado.
-		ih := 3
-		if msg.Height < 18 {
-			ih = 1
-		}
-		m.input.SetHeight(ih)
-		m.viewport.Height = msg.Height - (1 + ih + 2 + 1 + 1) - 1
-		if m.viewport.Height < 3 {
-			m.viewport.Height = 3
-		}
-		m.input.SetWidth(msg.Width - 6)
+		// cabecera + chat + entrada + hints + estado. M2: con panel, el chat
+		// es más estrecho (relayout).
+		m.relayout()
 		return m, nil
 
 	case evMsg:
 		m.onEvent(msg.ev)
 		return m, nil
 
+	case pendingTimeoutMsg:
+		return m.panelTimeout(msg.gen)
+
 	case evErr:
-	if m.turnID == "" && !m.thinking {
-		m.fatal = T(m.lang, "err_motor") + msg.err.Error()
+	if m.turnID == "" && !m.thinking {		m.fatal = T(m.lang, "err_motor") + msg.err.Error()
 		return m, tea.Quit
 	}
 		m.addLine(T(m.lang, "err_motor") + msg.err.Error())
@@ -208,7 +215,23 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.setStatus()
 		return m, nil
 
+	case tea.MouseMsg:
+		// M2.5: rueda = desplaza chat; clic = sesiones/botones. Sin ratón se ignora.
+		if m.mouseOn {
+			return m.handleMouse(msg)
+		}
+		return m, nil
+
 	case tea.KeyMsg:
+		// Tanto Enter clásico como CR/LF como runas abren/ejecutan (algunas
+		// terminales decodifican \r de forma no determinista).
+		if msg.Type == tea.KeyRunes && (string(msg.Runes) == "\r" || string(msg.Runes) == "\n") {
+			return m.doEnter()
+		}
+		// M2.2: foco del panel (teclas, filtro, renombrado).
+		if um, cmd, done := m.handlePanelKey(msg); done {
+			return um, cmd
+		}
 		// HITO 3.5: historial con ↑↓ cuando la entrada es de una línea.
 		if (msg.Type == tea.KeyUp || msg.Type == tea.KeyDown) && m.confirm == nil &&
 			!strings.Contains(m.input.Value(), "\n") && len(m.history) > 0 {
@@ -240,6 +263,22 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "y", "Y", "s", "S", "enter":
 				c := m.confirm
 				m.confirm = nil
+				if c.kind == "delsess" {
+					if err := m.client.DeleteSession(c.sessID); err != nil {
+						m.addLine(T(m.lang, "err_sessions") + err.Error())
+					} else {
+						m.addLine(F(m.lang, "confirm_result", map[string]string{"reason": c.detail}))
+						if c.sessID == m.sessionID {
+							m.sessionID = ""
+							m.sessName = ""
+							m.messages = nil
+							m.viewport.SetContent("")
+							m.setStatus()
+						}
+						m.refreshPanel()
+					}
+					return m, nil
+				}
 				m.addLine(F(m.lang, "confirm_yes", map[string]string{"detail": c.detail}))
 				go func() {
 					_ = m.client.Confirm(c.id, true)
@@ -268,35 +307,49 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			return m, tea.Quit
 		case tea.KeyTab:
-			// M1.3: Tab completa /comandos (solo fuera de diálogos).
+			// M1.3: Tab completa /comandos; si no hay comando, cambia el foco.
+			// (Descarta tecla pendiente: cambiar de contexto cancela la espera.)
+			m.panel.pending = 0
+			m.panel.pendingGen++
 			if m.confirm == nil && m.turnID == "" {
-				if done := completeSlash(m.input.Value()); done != m.input.Value() {
-					m.input.SetValue(done)
+				if strings.HasPrefix(m.input.Value(), "/") {
+					if done := completeSlash(m.input.Value()); done != m.input.Value() {
+						m.input.SetValue(done)
+					}
+				} else if m.panel.Open {
+					m.panel.Focus = !m.panel.Focus
+					if !m.panel.Focus {
+						m.panel.Filter = ""
+					}
 				}
 			}
+			return m, nil
+		case tea.KeyCtrlB:
+			// M2.1: pliega/despliega el panel (visible en hints).
+			m.panel.pending = 0
+			m.panel.pendingGen++
+			m.panel.Open = !m.panel.Open
+			if !m.panel.Open {
+				m.panel.Focus = false
+			} else {
+				m.refreshPanel()
+			}
+			m.client.SetUi(m.panel.Open, m.sessionID)
+			m.relayout()
+			m.setStatus()
+			return m, nil
+		case tea.KeyEsc:
+			if m.panel.Focus {
+				m.panel.Focus = false
+				m.panel.Filter = ""
+				m.panel.pending = 0
+				m.panel.pendingGen++
+				return m, nil
+			}
+			// Esc fuera del panel: cae al input (comportamiento actual).
 			return m, nil
 		case tea.KeyEnter:
-			text := strings.TrimSpace(m.input.Value())
-			if text == "" || m.turnID != "" {
-				return m, nil
-			}
-			m.input.Reset()
-			m.history = append(m.history, text)
-			if len(m.history) > 200 {
-				m.history = m.history[len(m.history)-200:]
-			}
-			m.histIdx = -1
-			if m.handleCommand(text) {
-				if text == "/quit" {
-					return m, tea.Quit
-				}
-				return m, nil
-			}
-			m.addLine("> " + text)
-			m.thinking = true
-			m.setStatus()
-			go m.sendTurn(text)
-			return m, nil
+			return m.doEnter()
 		}
 	}
 
@@ -310,8 +363,37 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
+// doEnter ejecuta Intro venga como venga (KeyEnter o runas CR/LF).
+func (m *Model) doEnter() (tea.Model, tea.Cmd) {
+	// M2.2: Enter con panel enfocado abre/renombra, no lanza turno.
+	if m.panel.Focus && m.turnID == "" {
+		return m.panelEnter()
+	}
+	text := strings.TrimSpace(m.input.Value())
+	if text == "" || m.turnID != "" {
+		return m, nil
+	}
+	m.input.Reset()
+	m.history = append(m.history, text)
+	if len(m.history) > 200 {
+		m.history = m.history[len(m.history)-200:]
+	}
+	m.histIdx = -1
+	if m.handleCommand(text) {
+		if text == "/quit" {
+			return m, tea.Quit
+		}
+		return m, nil
+	}
+	m.addLine("> " + text)
+	m.thinking = true
+	m.setStatus()
+	go m.sendTurn(text)
+	return m, nil
+}
+
 // slashCmds son los comandos con / (M1.3: nombres fijos en inglés).
-var slashCmds = []string{"/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/lang", "/title", "/quit"}
+var slashCmds = []string{"/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/lang", "/title", "/mouse", "/copy", "/quit"}
 
 // completeSlash completa con Tab el comando empezado (prefijo único o común).
 func completeSlash(input string) string {
@@ -493,6 +575,40 @@ func (m *Model) handleCommand(text string) bool {
 		return true
 	case "/quit":
 		return true
+	case "/mouse":
+		if len(parts) < 2 || (parts[1] != "on" && parts[1] != "off") {
+			m.addLine(T(m.lang, "mouse_usage"))
+			return true
+		}
+		m.mouseOn = parts[1] == "on"
+		saveMousePref(m.mouseOn)
+		zone.SetEnabled(m.mouseOn)
+		if m.program != nil {
+			if m.mouseOn {
+				m.program.Send(tea.EnableMouseCellMotion())
+			} else {
+				m.program.Send(tea.DisableMouse())
+			}
+		}
+		return true
+	case "/copy":
+		// M2.5: copia la última respuesta (portapapeles o aviso).
+		last := ""
+		for i := len(m.messages) - 1; i >= 0; i-- {
+			if !strings.HasPrefix(m.messages[i], "> ") && strings.TrimSpace(m.messages[i]) != "" {
+				last = m.messages[i]
+				break
+			}
+		}
+		if last == "" {
+			return true
+		}
+		if err := clipboard.WriteAll(last); err != nil {
+			m.addLine(T(m.lang, "err_line") + err.Error())
+			return true
+		}
+		m.addLine(F(m.lang, "copy_ok", map[string]string{"n": fmt.Sprint(len([]rune(last)))}))
+		return true
 	case "/lang":
 		return m.handleLang(parts)
 	case "/title":
@@ -549,6 +665,19 @@ func (m *Model) onEvent(ev Event) {
 	switch ev.Name {
 	case "hello":
 		m.addLine(T(m.lang, "connected"))
+		// M2.7: restaura panel + sesión recordada.
+		open, sid := m.client.GetUi()
+		m.panel.Open = open
+		m.relayout()
+		m.refreshPanel()
+		if sid != "" {
+			for _, it := range m.panel.Items {
+				if it.ID == sid {
+					m.openSession(sid)
+					break
+				}
+			}
+		}
 		m.setStatus()
 	case "turn.text":
 		if d, ok := ev.Data["delta"].(string); ok && len(m.messages) > 0 {
@@ -594,6 +723,7 @@ func (m *Model) onEvent(ev Event) {
 			m.sessName = Sanitize(n)
 		}
 		m.setStatus()
+		m.refreshPanel()
 	case "turn.error":
 		m.addLine(T(m.lang, "err_line") + str(ev, "mensaje"))
 		m.thinking = false
@@ -603,6 +733,7 @@ func (m *Model) onEvent(ev Event) {
 		m.thinking = false
 		m.turnID = ""
 		m.setStatus()
+		m.refreshPanel()
 	}
 }
 
@@ -622,6 +753,56 @@ func (m *Model) View() string {
 	box := lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(border).Padding(0, 1)
 	in := box.Render(m.input.View())
 	hints := lipgloss.NewStyle().Foreground(muted).Render(T(m.lang, "hints"))
+	extra := ""
+	if m.mouseOn {
+		extra = "\n" + lipgloss.NewStyle().Foreground(muted).Render(
+			runewidth.Truncate(T(m.lang, "mouse_hint"), m.chatW, ""))
+	}
 	st := lipgloss.NewStyle().Foreground(muted).Render(m.status)
-	return head + "\n" + body + dlg + "\n" + in + "\n" + hints + "\n" + st
+	chat := head + "\n" + body + dlg + "\n" + in + "\n" + hints + extra + "\n" + st
+	// M2: lateral al lado (ancho) o como hoja (estrecho). Scan envuelve
+	// las zonas de clic para el ratón.
+	if m.panel.Open && m.width >= MinFullWidth {
+		return zone.Scan(lipgloss.JoinHorizontal(lipgloss.Top, m.renderPanel(), chat))
+	}
+	if m.panel.Open {
+		// Hoja en ventana estrecha: cabecera + panel (salida con Esc/Ctrl+B).
+		head := lipgloss.NewStyle().Foreground(gold).Bold(true).Render("> NOIRACODER") +
+			"  " + lipgloss.NewStyle().Foreground(muted).Render(T(m.lang, "panel_hint_esc"))
+		return zone.Scan(head + "\n" + m.renderPanel())
+	}
+	return zone.Scan(chat)
+}
+
+// relayout ajusta viewport/entrada al ancho del chat (con o sin panel).
+func (m *Model) relayout() {
+	chatW := m.width
+	if m.panel.Open && m.width >= MinFullWidth {
+		chatW = m.width - PanelWidth - 1
+	}
+	if chatW < 20 {
+		chatW = 20
+	}
+	m.chatW = chatW
+	m.viewport.Width = chatW - 4
+	if m.viewport.Width < 10 {
+		m.viewport.Width = 10
+	}
+	ih := 3
+	if m.height < 18 {
+		ih = 1
+	}
+	m.input.SetHeight(ih)
+	extra := 1 // línea mouse_hint cuando el ratón está activo
+	if !m.mouseOn {
+		extra = 0
+	}
+	m.viewport.Height = m.height - (1 + ih + 2 + 1 + 1) - 1 - extra
+	if m.viewport.Height < 3 {
+		m.viewport.Height = 3
+	}
+	m.input.SetWidth(chatW - 6)
+	if m.input.Width() < 10 {
+		m.input.SetWidth(10)
+	}
 }

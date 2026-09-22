@@ -76,6 +76,38 @@ export class SessionStore {
     }
   }
 
+  /** M2.1: todas las sesiones de todos los proyectos (conmutador "todas"). */
+  static async listAll(): Promise<Array<SessionMeta & { project: string }>> {
+    const home = process.env.NOIRARC_HOME ?? homedir();
+    const root = join(home, ".noirarc", "sessions");
+    const out: Array<SessionMeta & { project: string }> = [];
+    let dirs: string[] = [];
+    try {
+      dirs = await readdir(root);
+    } catch {
+      return [];
+    }
+    for (const d of dirs) {
+      let files: string[] = [];
+      try {
+        files = await readdir(join(root, d));
+      } catch {
+        continue;
+      }
+      for (const f of files) {
+        if (!f.endsWith(".json")) continue;
+        try {
+          const raw = await readFile(join(root, d, f), "utf8");
+          const m = JSON.parse(raw) as SessionMeta;
+          if (m && m.id) out.push({ ...m, project: d });
+        } catch {
+          // skip malformed
+        }
+      }
+    }
+    return out.sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1));
+  }
+
   async create(level: string, cwd: string, title?: string): Promise<SessionMeta> {
     const meta: SessionMeta = {
       id: randomUUID(),

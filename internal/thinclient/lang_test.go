@@ -84,6 +84,7 @@ func TestFitStatus40(t *testing.T) {
 		sessName:  "Eine sehr lange Sitzungsbezeichnung zum Kürzen",
 		quotaPct:  8,
 		width:     40,
+		chatW:     40,
 	}
 	m.setStatus()
 	lines := strings.Split(m.status, "\n")
@@ -99,7 +100,7 @@ func TestFitStatus40(t *testing.T) {
 		t.Errorf("modo/cuota intactos: %q", m.status)
 	}
 	// CJK: ancho doble cuenta x2.
-	m2 := &Model{lang: "en", modelName: "m", mode: "b", sessName: "日本語テスト日本語", width: 40}
+	m2 := &Model{lang: "en", modelName: "m", mode: "b", sessName: "日本語テスト日本語", width: 40, chatW: 40}
 	SetCatalog(map[string]string{"st_model": "model", "st_mode": "mode", "st_session": "session"})
 	m2.setStatus()
 	if runewidth.StringWidth(m2.status) > 40 {

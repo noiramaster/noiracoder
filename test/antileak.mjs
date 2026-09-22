@@ -52,7 +52,7 @@ async function waitHealth() {
   }
   return false;
 }
-const H = { Authorization: `Bearer ${TOKEN}`, "X-Noira-Protocol": "1", "Content-Type": "application/json" };
+const H = { Authorization: `Bearer ${TOKEN}`, "X-Noira-Protocol": "2", "Content-Type": "application/json" };
 
 // Un SOLO SSE para las 7 preguntas (el servidor admite un único cliente;
 // abrir uno por pregunta daría 409). Los turnos van en serie.
@@ -89,7 +89,7 @@ function ssePump(reader) {
 }
 async function ask(question) {
   if (!sseReader) {
-    const sse = await fetch(`http://127.0.0.1:${PORT}/v1/events?protocol=1`, { headers: H });
+    const sse = await fetch(`http://127.0.0.1:${PORT}/v1/events?protocol=2`, { headers: H });
     if (sse.status !== 200) throw new Error("sse " + sse.status);
     sseReader = sse.body.getReader();
     ssePump(sseReader);

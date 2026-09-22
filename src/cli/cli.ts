@@ -258,17 +258,25 @@ export async function cliMain(argv: string[], meta?: { invokedAs?: string }): Pr
         // HITO 7: además se verifica que el PID reutilizado sea de verdad el
         // wrapper (node + noiracoder); si no, también se cierra.
         const ppid = process.ppid;
-        const parentIsWrapper = async (): Promise<boolean> => {
+        // NUNCA bloquea el loop (execFileSync congelaba el motor hasta 8 s
+        // y colgaba la pantalla): async + sin solapes.
+        let checking = false;
+        const parentIsWrapper = async (): Promise<boolean | null> => {
           if (process.platform === "win32") {
             try {
-              const { execFileSync } = await import("node:child_process");
-              const out = execFileSync(
-                "powershell",
-                ["-NoProfile", "-Command", `(Get-CimInstance Win32_Process -Filter "ProcessId=${ppid}").CommandLine`],
-                { timeout: 8000, stdio: ["ignore", "pipe", "ignore"] },
-              ).toString();
+              const { execFile } = await import("node:child_process");
+              const out = await new Promise<string>((resolve, reject) => {
+                execFile(
+                  "powershell",
+                  ["-NoProfile", "-Command", `(Get-CimInstance Win32_Process -Filter "ProcessId=${ppid}").CommandLine`],
+                  { timeout: 8000, windowsHide: true },
+                  (err: unknown, stdout: string | Buffer) => (err ? reject(err) : resolve(stdout.toString())),
+                );
+              });
               return /node/i.test(out) && /noiracoder/i.test(out);
-            } catch { /* cae al chequeo simple */ }
+            } catch {
+              return null; // CIM intermitente: no decidir, reintentar luego
+            }
           }
           try {
             process.kill(ppid, 0);
@@ -283,13 +291,15 @@ export async function cliMain(argv: string[], meta?: { invokedAs?: string }): Pr
         // El wrapper real NUNCA la fija.
         const noParentWatch = process.env.NOIRA_NO_PARENT_WATCH === "1";
         const watch = setInterval(() => {
-          if (noParentWatch) return;
+          if (noParentWatch || checking) return;
+          checking = true;
           void parentIsWrapper().then((alive) => {
-            if (!alive) {
+            checking = false;
+            if (alive === false) {
               log.warn("[thin] el wrapper murió; cerrando el motor (sin huérfanos).");
               void svc.close().finally(() => process.exit(0));
             }
-          });
+          }).catch(() => { checking = false; });
         }, 15000);
         (watch as unknown as { unref?: () => void }).unref?.();
         // Mantiene el proceso vivo hasta Ctrl+C.

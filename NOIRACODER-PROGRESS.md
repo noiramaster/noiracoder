@@ -258,6 +258,18 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
   `npm run test:memory-guard` 7/7): memoria enmarcada como DATOS en
   context.ts; aviso primera vez (seen-agents.json); turno trampa real no
   crea PWNED con confirms denegados.
+- [x] M1 GATE 2026-09-22 (sin publicar): build+typecheck, test:i18n 0,
+  test:i18n:screen 0, go+vet OK, adversarial 39/39, antileak 7/8+7/8
+  (timeouts Kilo, 0 fugas), memory-guard 7/7, titles 24/25 + redacción
+  verificada aparte, A2 pty 11/11. Tests a protocolo v2.
+- [x] M2c Panel+ratón Go (pty parcial + Go tests + HTTP): lateral 28 cols
+  con grupos Hoy/Ayer/Antes, Tab-foco, typeahead 500 ms (escribir vs actuar),
+  rename/pin/delete+confirm, /mouse on|off, /copy, /title, persistencia UI,
+  watchdog paterno async (no congela motor). pty: boot/grupos/rows/quit 11/11;
+  teclado fino en Go tests + PENDIENTE usuario en terminal real.
+- [x] Hallazgo pwned.txt (2026-09-22, NO es bypass): turno de prueba creó el
+  fichero vía tool `write` (allow-class por diseño, con undo). Sin salto de
+  confirmación ni whitelist. Fichero eliminado; documentado para H1.5.
 
 ## PENDIENTES DEL USUARIO
 - Regenerar clave OpenRouter (`noira login`) — la actual da 401.

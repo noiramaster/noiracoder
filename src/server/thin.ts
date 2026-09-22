@@ -517,7 +517,8 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
     // ── Sesiones ──
     if (req.method === "GET" && url.pathname === "/v1/sessions") {
       const { relTime, dayBucket, groupLabel } = await import("../i18n/screen.js");
-      const metas = await store.list();
+      const all = url.searchParams.get("all") === "1";
+      const metas = all ? await SessionStore.listAll() : await store.list();
       json(res, 200, {
         sesiones: metas.map((m) => ({
           id: m.id,
@@ -528,6 +529,7 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
           fija: m.pinned === true,
           activa: activeTurn?.sessionId === m.id,
           turnos: m.turns.length,
+          ...("project" in m ? { project: (m as { project: string }).project } : {}),
         })),
       });
       return;
