@@ -315,6 +315,24 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
 - [x] M3.6 Modo visible: build=verde, plan=amarillo en header + status.
 - [x] Tests: i18n-screen 0 fallos, adversarial 39/39, learn 17/17, Go panel OK.
 
+## M5 — FUNCIONES (completo, 2026-09-23)
+- [x] M5.1 MCP endpoints: `GET /v1/mcp/servers` + `GET /v1/mcp/tools` en motor,
+  `allServers()` en McpRegistry, Go `McpServers()` + `McpTools()`, comando
+  `/mcp` formateado con magenta. Keys `mcp_no_servers` 7 idiomas.
+- [x] M5.2 Parallel: `POST /v1/parallel` toggle + `GET /v1/parallel` status,
+  Go `ParallelToggle()`, comando `/parallel` con feedback. Keys `parallel_on/off`
+  7 idiomas. 102 keys × 7.
+
+## M6 — BANCO R2 (completo, 2026-09-23)
+- [x] Banco 25 tareas (5 nuevas: fix-par, fix-upper, feat-filtrar,
+  ref-rename-export, doc-json). Checks resilientes (content + require fallback).
+  Ronda: 10/25 (free model volátil, sin juicio LLM).
+
+## M7 — CALIDAD (completo, 2026-09-23)
+- [x] Verificación: build+typecheck OK, i18n-screen 0 (102 keys × 7),
+  adversarial 39/39, learn 17/17, memory-guard 7/7, Go panel tests OK.
+  antileak 7/8 (timeout Kilo, 0 fugas).
+
 ## Pendientes (no bloquean Hito 1)
 - `README.md:16` apunta a `https://noiracoder.noira.sh/install` (dominio externo,
   fuera del repo): revisar en Hito 5.
