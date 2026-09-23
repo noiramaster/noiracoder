@@ -412,7 +412,7 @@ func (m *Model) doEnter() (tea.Model, tea.Cmd) {
 }
 
 // slashCmds son los comandos con / (M1.3: nombres fijos en inglés).
-var slashCmds = []string{"/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/lang", "/title", "/learn", "/mouse", "/copy", "/mcp", "/parallel", "/quit"}
+var slashCmds = []string{"/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/lang", "/title", "/learn", "/mouse", "/copy", "/mcp", "/parallel", "/agents", "/quit"}
 
 // completeSlash completa con Tab el comando empezado (prefijo único o común).
 func completeSlash(input string) string {
@@ -709,6 +709,27 @@ func (m *Model) handleCommand(text string) bool {
 		} else {
 			m.addLine(T(m.lang, "parallel_off"))
 		}
+		return true
+	case "/agents":
+		// H2: mostrar roster de agentes y su estado.
+		m.addLine("")
+		m.addLine(lipgloss.NewStyle().Foreground(magenta).Bold(true).Render("  Agent Roster"))
+		m.addLine("")
+		agents := []struct{ role, desc, tools string }{
+			{"orchestrator", T(m.lang, "agent_orchestrator"), "list, read, write, edit, bash, git"},
+			{"code", T(m.lang, "agent_code"), "read, write, edit, list, bash, git"},
+			{"research", T(m.lang, "agent_research"), "list, read, bash, git"},
+			{"review", T(m.lang, "agent_review"), "read, list, bash, git"},
+			{"security", T(m.lang, "agent_security"), "read, list, bash, git"},
+		}
+		for _, a := range agents {
+			m.addLine("  " + lipgloss.NewStyle().Foreground(gold).Render(a.role) +
+				lipgloss.NewStyle().Foreground(muted).Render(" — "+a.desc))
+			m.addLine("    " + lipgloss.NewStyle().Foreground(muted).Render(a.tools))
+		}
+		m.addLine("")
+		m.addLine(lipgloss.NewStyle().Foreground(muted).Render("  "+T(m.lang, "agents_parallel_hint")))
+		m.addLine("")
 		return true
 	case "/model":
 		if len(parts) < 2 {

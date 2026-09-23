@@ -191,6 +191,9 @@ const GO_ALLOW = new Set([
   "  MCP Servers", " (%d tools)", "mcp/servers %d", "mcp/tools %d",
   // M5.2: parallel strings en Go
   "parallel %d",
+  // H2: agent roster strings en Go
+  "  Agent Roster", "list, read, write, edit, bash, git", "read, write, edit, list, bash, git",
+  "list, read, bash, git", "read, list, bash, git",
   // Valor por defecto pre-catálogo (inglés; el catálogo lo sustituye)
   "…[truncated]",
 ]);
