@@ -1,7 +1,7 @@
 /**
  * Noira TUI — minimal Claude/OpenCode style.
  * Sin cajas pesadas. Solo texto + 1 input abajo + status sutil.
- * Paleta: amarillo para > y highlights, magenta para noira, gray para muted.
+ * Paleta: amarillo para > y highlights, dorado para noira, gray para muted.
  */
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { render, Box, Text, useInput, useApp } from "ink";
@@ -14,7 +14,7 @@ import type { McpRegistry } from "../mcp/registry.js";
 import type { Level } from "../types.js";
 import type { AgentRole } from "../agents/roster.js";
 
-const C = { yellow: "#FBBF24" as const, green: "green" as const, red: "red" as const, magenta: "magenta" as const, dim: "gray" as const, white: "white" as const };
+const C = { yellow: "#FBBF24" as const, green: "green" as const, red: "red" as const, gold: "#FBBF24" as const, dim: "gray" as const, white: "white" as const };
 
 interface Msg { role: "user" | "assistant"; content: string; }
 
@@ -168,7 +168,7 @@ function App({ cwd, version, notice, mcp }: { cwd: string; version: string; noti
         React.createElement(Text, { color: C.dim }, "/help para comandos"),
       )]
     : msgs.map((m, i) => React.createElement(Box, { key: i, flexDirection: "column", paddingY: 1 },
-        React.createElement(Text, { color: m.role === "user" ? C.yellow : C.magenta, bold: true }, m.role === "user" ? "> tú" : "◆ noira"),
+        React.createElement(Text, { color: m.role === "user" ? C.yellow : C.gold, bold: true }, m.role === "user" ? "> tú" : "◆ noira"),
         React.createElement(Text, { wrap: "wrap" }, m.content),
       ));
 

@@ -65,7 +65,7 @@ src/
   skills/      10 skills Noira (code-review, testing, refactor, debug, planning, docs, git-flow, security, perf, lang-expert)
   sandbox/     bwrap/seatbelt + políticas + confirmaciones inteligentes
   server/      headless (misma API que el TUI)
-  tui/         TUI Ink (`nc` sin args en terminal) + TUI Go (`noira` en terminal, flujo OpenCode con thinking/tools/streaming) + sesiones con búsqueda, paleta Noira (negro #000, dorado #FBBF24, magenta #D63384)
+  tui/         TUI Ink (`nc` sin args en terminal) + TUI Go (`noira` en terminal, flujo OpenCode con thinking/tools/streaming) + sesiones con búsqueda, paleta Noira (negro #000, dorado #FBBF24)
   cli/         entrada terminal (noira)
 docs/
   landing/  landing desplegada en https://noiracoder.pages.dev (ver noiracoder-landing/)
@@ -101,7 +101,7 @@ Verificación cruzada solo en riesgo (`high`/`max` + sensible). Resto del tiempo
 
 Flujo OpenCode: burbuja usuario → thinking → tools colapsables → streaming → diff → resumen. Sesiones a la izquierda con búsqueda (`/`), `tab` para toggle, `ctrl+o` nivel, `/help` `/clear` `/model`.
 
-Paleta Noira: fondo negro #000, dorado #FBBF24, magenta #D63384, muted #666, JetBrains Mono.
+Paleta Noira: fondo negro #000, dorado #FBBF24, muted #666, JetBrains Mono.
 
 ### Skills
 

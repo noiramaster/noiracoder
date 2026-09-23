@@ -186,7 +186,7 @@ const GO_ALLOW = new Set([
   // M4.1: format strings de stats (latencia/score)
   "  %s  lat=%s  score=%.0f", "model/stats %d",
   // M3: colores de marca y textos de catálogo en Go
-  "#D63384", " %d%%", "  NOIRACODER — ", "  > NOIRACODER",
+  "#FBBF24", " %d%%", "  NOIRACODER — ", "  > NOIRACODER",
   // M5.1: MCP strings en Go
   "  MCP Servers", " (%d tools)", "mcp/servers %d", "mcp/tools %d",
   // M5.2: parallel strings en Go

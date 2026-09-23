@@ -12,7 +12,7 @@ No es editable por el modelo sin permiso explícito.
 - `npx noira` (TUI) / `npx noira "tarea"` / `npx noira login`
 
 ## Convenciones
-- Estilo NoiraX: negro #000 + amarillo #f9e2af + magenta #D63384
+- Estilo NoiraX: negro #000 + amarillo #f9e2af + dorado #FBBF24
 - Prefijos: > [ok] [error] [warn]; voz cálida pro, no seca
 - Memoria: AGENTS.md + .noirarc/memory/* + skills/ (SKILL.md)
 

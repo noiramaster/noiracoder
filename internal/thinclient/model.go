@@ -59,7 +59,7 @@ var (
 	green   = lipgloss.Color("#22c55e")
 	red     = lipgloss.Color("#ef4444")
 	yellow  = lipgloss.Color("#eab308")
-	magenta = lipgloss.Color("#D63384")
+	accent  = lipgloss.Color("#FBBF24")
 	muted   = lipgloss.Color("#666666")
 	border  = lipgloss.Color("#222222")
 )
@@ -117,7 +117,7 @@ func (m *Model) setStatus() {
 	// M3.3: status bar mejorada con separadores y barra de cuota visual.
 	modelStr := m.modelName
 	if m.modelName != "(router)" {
-		modelStr = lipgloss.NewStyle().Foreground(magenta).Render(m.modelName)
+		modelStr = lipgloss.NewStyle().Foreground(accent).Render(m.modelName)
 	}
 	parts := []string{
 		lipgloss.NewStyle().Foreground(muted).Render(T(m.lang, "st_model")) + ": " + modelStr,
@@ -508,10 +508,10 @@ func (m *Model) handleCommand(text string) bool {
 		m.addLine("")
 		m.addLine(lipgloss.NewStyle().Foreground(gold).Bold(true).Render("  NOIRACODER — " + T(m.lang, "help_title")))
 		m.addLine("")
-		m.addLine(lipgloss.NewStyle().Foreground(magenta).Bold(true).Render("  " + T(m.lang, "help_section_cmds")))
+		m.addLine(lipgloss.NewStyle().Foreground(accent).Bold(true).Render("  " + T(m.lang, "help_section_cmds")))
 		m.addLine("  " + T(m.lang, "help_cmds"))
 		m.addLine("")
-		m.addLine(lipgloss.NewStyle().Foreground(magenta).Bold(true).Render("  " + T(m.lang, "help_section_keys")))
+		m.addLine(lipgloss.NewStyle().Foreground(accent).Bold(true).Render("  " + T(m.lang, "help_section_keys")))
 		m.addLine("  " + T(m.lang, "help_keys"))
 		m.addLine("")
 		m.addLine(lipgloss.NewStyle().Foreground(muted).Render("  " + T(m.lang, "help_footer")))
@@ -686,7 +686,7 @@ func (m *Model) handleCommand(text string) bool {
 			m.addLine(T(m.lang, "mcp_no_servers"))
 			return true
 		}
-		m.addLine(lipgloss.NewStyle().Foreground(magenta).Bold(true).Render("  MCP Servers"))
+		m.addLine(lipgloss.NewStyle().Foreground(accent).Bold(true).Render("  MCP Servers"))
 		m.addLine("")
 		for _, s := range servers {
 			m.addLine("  " + lipgloss.NewStyle().Foreground(gold).Render(s.Name) +
@@ -713,7 +713,7 @@ func (m *Model) handleCommand(text string) bool {
 	case "/agents":
 		// H2: mostrar roster de agentes y su estado.
 		m.addLine("")
-		m.addLine(lipgloss.NewStyle().Foreground(magenta).Bold(true).Render("  Agent Roster"))
+		m.addLine(lipgloss.NewStyle().Foreground(accent).Bold(true).Render("  Agent Roster"))
 		m.addLine("")
 		agents := []struct{ role, desc, tools string }{
 			{"orchestrator", T(m.lang, "agent_orchestrator"), "list, read, write, edit, bash, git"},
@@ -890,10 +890,10 @@ func (m *Model) View() string {
 		return lipgloss.NewStyle().Foreground(red).Render("NOIRACODER: "+m.fatal+"\n") +
 			T(m.lang, "fatal_line") + "\n"
 	}
-	// M3.1: header con marca dorada + modelo en magenta si es manual.
+	// M3.1: header con marca dorada + modelo en accent si es manual.
 	modelLabel := m.modelName
 	if m.modelName != "(router)" {
-		modelLabel = lipgloss.NewStyle().Foreground(magenta).Bold(true).Render(m.modelName)
+		modelLabel = lipgloss.NewStyle().Foreground(accent).Bold(true).Render(m.modelName)
 	} else {
 		modelLabel = lipgloss.NewStyle().Foreground(muted).Render(m.modelName)
 	}

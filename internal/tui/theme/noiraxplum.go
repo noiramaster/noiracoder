@@ -12,22 +12,22 @@ type NoiraxplumTheme struct {
 
 // NewNoiraxplumTheme creates a new instance of the Noiraxplum theme.
 func NewNoiraxplumTheme() *NoiraxplumTheme {
-	// NoiraX palette — negro puro + amarillo/magenta (fiel a design-tokens.ts)
-	// background #000000, foreground #e0e0e0, accent #f9e2af (amarillo), magenta #D63384, muted #666666, border #222222
+	// NoiraX palette — negro puro + dorado (fiel a design-tokens.ts)
+	// background #000000, foreground #e0e0e0, accent #FBBF24 (dorado), muted #666666, border #222222
 	darkBg := "#000000"
 	darkBgSecondary := "#111111"
 	darkBgDarker := "#000000"
 	darkText := "#e0e0e0"
 	darkTextMuted := "#666666"
-	darkTextEmphasized := "#f9e2af"
-	darkPrimary := "#f9e2af"   // Yellow — Noira primary
-	darkSecondary := "#D63384" // Magenta — Noira secondary
-	darkAccent := "#f9e2af"    // Yellow accent
+	darkTextEmphasized := "#FBBF24"
+	darkPrimary := "#FBBF24"   // Gold — Noira primary
+	darkSecondary := "#FBBF24" // Gold — Noira secondary (was magenta)
+	darkAccent := "#FBBF24"    // Gold accent
 	darkRed := "#FF3B3B"       // Noira red
-	darkOrange := "#f9e2af"
-	darkGreen := "#f9e2af"
-	darkCyan := "#D63384"
-	darkYellow := "#f9e2af"
+	darkOrange := "#FBBF24"
+	darkGreen := "#FBBF24"
+	darkCyan := "#FBBF24"
+	darkYellow := "#FBBF24"
 	darkBorder := "#222222"
 	darkBorderDim := "#111111"
 

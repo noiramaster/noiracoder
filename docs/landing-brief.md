@@ -17,7 +17,7 @@ Eslogan alternativos:
 
 1. **Cuota casi ilimitada gratis** — 50+ modelos free rotando inteligente (OpenRouter + Zen + Groq + HF + todos los que existan). Un solo clic, nosotros gestionamos tus cuentas. 24h seguidas sin notar límites.
 2. **Memoria que aprende** — recuerda tu estilo, tu proyecto, tus decisiones. Cada día mejora contigo. AGENTS.md auto-evolutivo + notas con tags + sesión persistente.
-3. **TUI que enamora** — negro #000 + amarillo #f9e2af + magenta #D63384, flujo OpenCode (thinking, tools colapsables, streaming), sesiones con búsqueda, diff inline. Sobrio como Claude, con identidad Noira.
+3. **TUI que enamora** — negro #000 + amarillo #f9e2af + dorado #FBBF24, flujo OpenCode (thinking, tools colapsables, streaming), sesiones con búsqueda, diff inline. Sobrio como Claude, con identidad Noira.
 4. **Orquestación dinámica real** — equipo de sub-agentes (research → code → review → security) que se crean según la tarea, en paralelo donde se pueda. Plan con marcadores + resumen final.
 5. **Calidad sin concesiones** — todos los lenguajes perfectos vía skills por lenguaje, auto-fix hasta tests verdes, review interno, docs auto.
 
@@ -86,7 +86,7 @@ Comando: `noira` (marca). `nc`/`noiracoder` como alias.
 
 ## Notas para landing futura
 
-- Diseño: clonar orden NoiraX (negro #000 + amarillo #f9e2af + magenta #D63384 + JetBrains Mono + Inter), sin verde, sobrio premium.
+- Diseño: clonar orden NoiraX (negro #000 + amarillo #f9e2af + dorado #FBBF24 + JetBrains Mono + Inter), sin verde, sobrio premium.
 - Navegación: como OpenCode (flujos, chat, tools), no como NoiraX trading.
 - Prueba social: tras testeo real tuyo (días de uso), añadir track-record / demo GIF.
 - Legal: no auto-registro de cuentas, OAuth explícito por usuario (ToS safe).

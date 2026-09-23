@@ -301,7 +301,7 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
   Bench ronda 2: 14/20 (mejora +133% vs ronda 1).
 
 ## M3 — ASPECTO Y EXPERIENCIA (completo, 2026-09-23)
-- [x] M3.1 Marca visual: magenta #D63384 añadido como color de acento; modelo
+- [x] M3.1 Marca visual: dorado #FBBF24 como color de acento; modelo
   manual se muestra en magenta bold en header y status bar; modo build/plan
   con color distintivo (verde/build, amarillo/plan).
 - [x] M3.2 Boot message: al conectar, banner "> NOIRACODER ready." con hint
