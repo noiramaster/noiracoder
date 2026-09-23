@@ -254,6 +254,15 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
   test:i18n:screen 0, pty 56/56+52/52+6/6 → M2.
 - [x] Punto 3 anti-huérfanos (docs/evidence/orphan.md): killTree+handlers+
   cleanOrphans en wrapper; WatchParent en Go; pty 4 salidas 12/12.
+- [x] H1 APRENDIZAJE (núcleo, sin publicar): learn.ts (registro solo-metadatos,
+  stats incrementales, recompute con umbrales n≥6/margen 10pp, learned.json +
+  learned.md auditado) + wiring turnos (nivel efectivo, modelo, reintentos,
+  herramientas, undo) + endpoints learn/revert + Go /learn + levelExplicit.
+  `test/learn.mjs` 17/17 incl. adversaria de datos envenenados (policies
+  intacto, solo claves seguras, sin ficheros extra, sin imports de seguridad).
+- [x] H1.6 banco (`npm run bench`, 20 tareas, criterio automático): ronda 1
+  14/20 (docs/evidence/bench.md). Fallos honestos: modelo pequeño erra
+  schemas de tools ("text content parts...") o no actúa; sin juicio LLM.
 - [x] Punto 2 AGENTS (docs/evidence/memoria-guard.md,
   `npm run test:memory-guard` 7/7): memoria enmarcada como DATOS en
   context.ts; aviso primera vez (seen-agents.json); turno trampa real no

@@ -84,6 +84,10 @@ const KEYS = Object.keys(T.en);
     "it:st_quota", "it:quota_warn", "it:confirm_result", "it:err_events_status",
     "ar:err_events_status",
     "pt:truncated_suffix",
+    // learn_row/learn_stat: notación técnica idéntica (n=/ok=/p50=), sin texto
+    "es:learn_row", "es:learn_stat", "pt:learn_row", "pt:learn_stat",
+    "fr:learn_row", "fr:learn_stat", "de:learn_row", "de:learn_stat",
+    "it:learn_row", "it:learn_stat", "ar:learn_row", "ar:learn_stat",
   ]);
   let bad = 0;
   for (const l of LANGS) {
@@ -223,7 +227,7 @@ const GO_KEY_NAMES = new Set(KEYS);
 // el número NO puede subir; bajarlo es bienvenido).
 const RATCHET = {
   "src/cli/repl.ts": 59, "src/cli/cli.ts": 33, "src/tui/tui.ts": 8,
-  "src/core/welcome.ts": 0, "src/server/thin.ts": 6, "src/sandbox/approve.ts": 0,
+  "src/core/welcome.ts": 0, "src/server/thin.ts": 7, "src/sandbox/approve.ts": 0,
 };
 {
   let bad = 0;

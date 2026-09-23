@@ -37,7 +37,9 @@
     "test:adversarial": "npm run build && node test/adversarial.mjs",
     "test:antileak": "npm run build && node test/antileak.mjs",
     "test:memory-guard": "npm run build && node test/memory-guard.mjs",
-    "test:titles": "npm run build && node test/titles.mjs"
+    "test:titles": "npm run build && node test/titles.mjs",
+    "test:learn": "npm run build && node test/learn.mjs",
+    "bench": "npm run build && node test/bench.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",

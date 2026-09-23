@@ -29,6 +29,8 @@ export interface ThinServerOptions {
   port: number;
   log: Logger;
   level: Level;
+  /** H1: true si el usuario fijó --level (entonces no aplica regla aprendida). */
+  levelExplicit?: boolean;
   lang: string;
   authToken?: string;
   mcp?: McpRegistry;
@@ -159,6 +161,17 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
     // Modo Plan: TODO se deniega (además la política se endurece abajo).
     const planMode = mode === "plan";
 
+    // H1: nivel efectivo y registro (fuera del try para alcanzar el catch).
+    const { classifyTask, recordTurn, getLearned, resolveLevel } = await import("./learn.js");
+    const learned = await getLearned();
+    const task = classifyTask(message);
+    const effLevel = resolveLevel(task, opts.levelExplicit ? opts.level : null, learned, opts.level);
+    if (effLevel !== opts.level) opts.log.info(`[learn] nivel auto ${effLevel} para ${task} (regla con evidencia)`);
+    const t0 = Date.now();
+    let switches = 0;
+    let lastModel = preferredModel ?? "(router)";
+    const toolsUsed = new Set<string>();
+
     const remoteConfirm = async (msg: string): Promise<boolean> => {
       const detail = msg.split("\n")[0].slice(0, 500);
       if (planMode) {
@@ -199,8 +212,10 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
         ? { ...DEFAULT_POLICY, allowCommands: [] as string[] }
         : undefined;
 
+      // H1: nivel efectivo ya resuelto arriba (visible en catch).
+      const { recomputeRules } = await import("./learn.js");
       const result = await orchestrate(message, {
-        level: opts.level,
+        level: effLevel as typeof opts.level,
         cwd: process.cwd(),
         log: opts.log,
         confirm: remoteConfirm,
@@ -217,11 +232,14 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
         },
         onModelSwitch: (from, to, reason) => {
           touch();
+          switches++;
+          lastModel = to;
           send("model.switch", { turnId, de: from, a: to, motivo: reason });
         },
         onToolEvent: (ev) => {
           touch();
           if (ev.phase === "start") {
+            toolsUsed.add(ev.name);
             if (activeTurn?.id === turnId) activeTurn.lastToolStartAt = Date.now();
             send("turn.tool_start", { turnId, nombre: ev.name, detalle: ev.preview });
           } else {
@@ -257,17 +275,44 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
       send("turn.end", { turnId, motivo: "done" });
       // M2.8: título en 2º plano (no bloquea; 1 llamada + 1 regen; cuenta cuota).
       void maybeTitle(meta.id, message, sessionId);
+      // H1.1: registra el turno (metadatos, sin contenido) + recompute perezoso.
+      void recordTurn({
+        session: sessionId, task, level: effLevel, model: lastModel,
+        retries: switches, ms: Date.now() - t0, ok: true, tools: [...toolsUsed],
+      });
+      void maybeRecompute();
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       if (abort.signal.aborted || msg.includes("cancelado")) {
         send("turn.end", { turnId, motivo: "cancelled" });
+        void recordTurn({
+          session: sessionId, task, level: effLevel, model: lastModel,
+          retries: switches, ms: Date.now() - t0, ok: false, tools: [...toolsUsed],
+        });
       } else {
         send("turn.error", { turnId, mensaje: msg.slice(0, 500) });
         send("turn.end", { turnId, motivo: "error" });
+        void recordTurn({
+          session: sessionId, task, level: effLevel, model: lastModel,
+          retries: switches, ms: Date.now() - t0, ok: false, tools: [...toolsUsed],
+        });
       }
     } finally {
       if (activeTurn?.id === turnId) activeTurn = null;
     }
+  };
+
+  // H1.3: recompute perezoso cada ~20 turnos nuevos (nunca bloquea).
+  const maybeRecompute = async (): Promise<void> => {
+    try {
+      const { getLearned, recomputeRules } = await import("./learn.js");
+      const prev = await getLearned();
+      const { loadTurns } = await import("./learn.js");
+      const n = (await loadTurns()).length;
+      if (!prev || n - (prev.lastCount ?? 0) >= 20) {
+        await recomputeRules("auto");
+      }
+    } catch { /* aprender nunca rompe */ }
   };
 
   // Vigilante: turno sin eventos > 60 s → error + libera (nunca silencio).
@@ -690,9 +735,58 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
     if (req.method === "POST" && (url.pathname === "/v1/undo" || url.pathname === "/v1/redo")) {
       try {
         const r = url.pathname === "/v1/undo" ? await doUndo(process.cwd()) : await doRedo(process.cwd());
+        // H1.1: el deshecho es la señal de "no aceptado" (se une al analizar).
+        if (url.pathname === "/v1/undo" && r.ok) {
+          const { recordUndo } = await import("./learn.js");
+          const metas = await store.list();
+          const last = metas[0];
+          if (last) void recordUndo(last.id);
+        }
         json(res, 200, { ok: r.ok, detalle: r });
       } catch (e) {
         json(res, 500, { error: e instanceof Error ? e.message : String(e) });
+      }
+      return;
+    }
+
+    // ── H1.4: ver lo aprendido + revertir una regla ──
+    if (req.method === "GET" && url.pathname === "/v1/learn") {
+      const { getLearned, computeStats, loadTurns } = await import("./learn.js");
+      const rules = await getLearned();
+      const stats = computeStats(await loadTurns());
+      const summary: Record<string, { n: number; okPct: number; p50ms: number }> = {};
+      for (const [task, st] of Object.entries(stats)) {
+        summary[task] = { n: st.n, okPct: Math.round(st.okRate * 100), p50ms: st.p50ms };
+      }
+      json(res, 200, { rules, stats: summary });
+      return;
+    }
+    if (req.method === "POST" && url.pathname === "/v1/learn/revert") {
+      try {
+        const parsed = JSON.parse(await readBody(req)) as { task?: string };
+        const { getLearned } = await import("./learn.js");
+        const { readFile, writeFile, mkdir } = await import("node:fs/promises");
+        const { join } = await import("node:path");
+        const { homedir } = await import("node:os");
+        const home = process.env.NOIRARC_HOME ?? homedir();
+        const f = join(home, ".noirarc", "learn", "learned.json");
+        const rules = (await getLearned()) ?? { v: 1, updatedAt: "", lastCount: 0, defaultLevelByTask: {} };
+        const task = parsed.task ?? "";
+        if (rules.defaultLevelByTask[task]) {
+          delete rules.defaultLevelByTask[task];
+          rules.updatedAt = new Date().toISOString();
+          await mkdir(join(home, ".noirarc", "learn"), { recursive: true });
+          await writeFile(f, JSON.stringify(rules, null, 2) + "\n", "utf8");
+          const audit = join(home, ".noirarc", "memory", "learned.md");
+          try {
+            const prev = await readFile(audit, "utf8").catch(() => "");
+            await mkdir(join(home, ".noirarc", "memory"), { recursive: true });
+            await writeFile(audit, prev + `\n## ${rules.updatedAt} — revert manual de ${task}\n`, "utf8");
+          } catch { /* auditoría best-effort */ }
+        }
+        json(res, 200, { ok: true, rules });
+      } catch (e) {
+        json(res, 400, { error: e instanceof Error ? e.message : String(e) });
       }
       return;
     }

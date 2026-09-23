@@ -393,7 +393,7 @@ func (m *Model) doEnter() (tea.Model, tea.Cmd) {
 }
 
 // slashCmds son los comandos con / (M1.3: nombres fijos en inglés).
-var slashCmds = []string{"/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/lang", "/title", "/mouse", "/copy", "/quit"}
+var slashCmds = []string{"/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/lang", "/title", "/learn", "/mouse", "/copy", "/quit"}
 
 // completeSlash completa con Tab el comando empezado (prefijo único o común).
 func completeSlash(input string) string {
@@ -622,6 +622,29 @@ func (m *Model) handleCommand(text string) bool {
 			return true
 		}
 		m.addLine(msg)
+		return true
+	case "/learn":
+		if len(parts) >= 3 && parts[1] == "revert" {
+			msg, err := m.client.RevertLearn(parts[2])
+			if err != nil {
+				m.addLine(T(m.lang, "err_model") + err.Error())
+				return true
+			}
+			m.addLine(msg)
+			return true
+		}
+		if len(parts) == 2 && parts[1] != "revert" {
+			m.addLine(T(m.lang, "learn_usage"))
+			return true
+		}
+		out, err := m.client.Learn()
+		if err != nil {
+			m.addLine(T(m.lang, "err_model") + err.Error())
+			return true
+		}
+		for _, ln := range strings.Split(out, "\n") {
+			m.addLine(ln)
+		}
 		return true
 	case "/model":
 		if len(parts) < 2 {

@@ -388,6 +388,73 @@ func (c *Client) SetTitle(mode string) (string, error) {
 	return v.Msg, nil
 }
 
+// Learn trae reglas y resumen (GET /v1/learn, H1.4).
+func (c *Client) Learn() (string, error) {
+	st, b, err := c.req("GET", "/v1/learn", nil)
+	if err != nil {
+		return "", err
+	}
+	if st != 200 {
+		return "", fmt.Errorf("%s", F(c.Lang, "err_request",
+			map[string]string{"status": fmt.Sprint(st)}))
+	}
+	var v struct {
+		Rules *struct {
+			UpdatedAt string `json:"updatedAt"`
+			Rules     map[string]struct {
+				Level  string  `json:"level"`
+				N      int     `json:"n"`
+				OkRate float64 `json:"okRate"`
+			} `json:"defaultLevelByTask"`
+		} `json:"rules"`
+		Stats map[string]struct {
+			N     int `json:"n"`
+			OkPct int `json:"okPct"`
+			P50ms int `json:"p50ms"`
+		} `json:"stats"`
+	}
+	if err := json.Unmarshal(b, &v); err != nil {
+		return "", err
+	}
+	var sb strings.Builder
+	if v.Rules == nil || len(v.Rules.Rules) == 0 {
+		sb.WriteString(T(c.Lang, "learn_empty"))
+	} else {
+		first := true
+		for task, r := range v.Rules.Rules {
+			if !first {
+				sb.WriteString("\n")
+			}
+			first = false
+			sb.WriteString(F(c.Lang, "learn_row", map[string]string{
+				"task": task, "level": r.Level, "n": fmt.Sprint(r.N),
+				"pct": fmt.Sprint(int(r.OkRate*100+0.5)),
+			}))
+		}
+	}
+	sb.WriteString("\n")
+	for task, s := range v.Stats {
+		sb.WriteString(F(c.Lang, "learn_stat", map[string]string{
+			"task": task, "n": fmt.Sprint(s.N), "pct": fmt.Sprint(s.OkPct),
+			"ms": fmt.Sprint(s.P50ms),
+		}) + "\n")
+	}
+	return strings.TrimRight(sb.String(), "\n"), nil
+}
+
+// RevertLearn revierte una regla (POST /v1/learn/revert, H1.4).
+func (c *Client) RevertLearn(task string) (string, error) {
+	st, _, err := c.req("POST", "/v1/learn/revert", map[string]any{"task": task})
+	if err != nil {
+		return "", err
+	}
+	if st != 200 {
+		return "", fmt.Errorf("%s", F(c.Lang, "err_request",
+			map[string]string{"status": fmt.Sprint(st)}))
+	}
+	return F(c.Lang, "learn_reverted", map[string]string{"task": task}), nil
+}
+
 // Stream abre el SSE único y emite eventos hasta que se cierre o ctx cancele.
 // Llama onEvent por cada evento; heartbeat (:) se ignora.
 func (c *Client) Stream(onEvent func(Event), onError func(error)) {

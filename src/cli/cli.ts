@@ -26,6 +26,7 @@ export interface CliArgs {
   command: "run" | "login" | "serve" | "version" | "lang" | "connect";
   prompt: string;
   level: Level;
+  levelExplicit: boolean;
   lang: string | null;
   port: number;
   token?: string;
@@ -34,6 +35,7 @@ export interface CliArgs {
 
 export function parseArgs(argv: string[]): CliArgs {
   let level: Level = "medium";
+  let levelExplicit = false;
   let lang: string | null = null;
   let port = 3000;
   let token: string | undefined;
@@ -49,6 +51,7 @@ export function parseArgs(argv: string[]): CliArgs {
       case "-l":
       case "--level":
         level = (argv[++i] as Level) ?? "medium";
+        levelExplicit = true;
         break;
       case "--lang":
         lang = argv[++i] ?? null;
@@ -77,7 +80,7 @@ export function parseArgs(argv: string[]): CliArgs {
         break;
       case "--version":
       case "-v":
-        return { command: "version", prompt: "", level, lang, port, token, thin };
+        return { command: "version", prompt: "", level, levelExplicit, lang, port, token, thin };
       case "login":
         // Captura todo lo que sigue a login como positional (para --groq etc)
         positional.push(a);
@@ -101,9 +104,9 @@ export function parseArgs(argv: string[]): CliArgs {
     }
   }
 
-  if (command === "login") return { command, prompt: positional.join(" "), level, lang, port, token, thin };
-  if (lang) return { command: "lang", prompt: "", level, lang, port, token, thin };
-  return { command, prompt: positional.join(" "), level, lang, port, token, thin };
+  if (command === "login") return { command, prompt: positional.join(" "), level, levelExplicit, lang, port, token, thin };
+  if (lang) return { command: "lang", prompt: "", level, levelExplicit, lang, port, token, thin };
+  return { command, prompt: positional.join(" "), level, levelExplicit, lang, port, token, thin };
 }
 
 export function printHelp(): void {
@@ -251,7 +254,7 @@ export async function cliMain(argv: string[], meta?: { invokedAs?: string }): Pr
       if (args.thin) {
         // HITO 1: servidor delgado para la pantalla Go (PROTOCOL.md v1).
         const { startThinServer } = await import("../server/thin.js");
-        const svc = await startThinServer({ port: args.port, log, level: args.level, lang, authToken, mcp: mcp ?? undefined });
+        const svc = await startThinServer({ port: args.port, log, level: args.level, levelExplicit: args.levelExplicit, lang, authToken, mcp: mcp ?? undefined });
         log.raw(`[thin] token: ${authToken.slice(0, 8)}… (completo en NOIRA_SERVE_TOKEN si se fijó)`);
         // HITO 1.3: si el wrapper muere de golpe (cierre de ventana), el motor
         // se suicida para no dejar huérfanos.
