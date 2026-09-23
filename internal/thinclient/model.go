@@ -412,7 +412,7 @@ func (m *Model) doEnter() (tea.Model, tea.Cmd) {
 }
 
 // slashCmds son los comandos con / (M1.3: nombres fijos en inglés).
-var slashCmds = []string{"/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/lang", "/title", "/learn", "/mouse", "/copy", "/quit"}
+var slashCmds = []string{"/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/lang", "/title", "/learn", "/mouse", "/copy", "/mcp", "/quit"}
 
 // completeSlash completa con Tab el comando empezado (prefijo único o común).
 func completeSlash(input string) string {
@@ -674,6 +674,28 @@ func (m *Model) handleCommand(text string) bool {
 		for _, ln := range strings.Split(out, "\n") {
 			m.addLine(ln)
 		}
+		return true
+	case "/mcp":
+		// M5.1: listar servidores MCP conectados y sus tools.
+		servers, err := m.client.McpServers()
+		if err != nil {
+			m.addLine(T(m.lang, "err_model") + err.Error())
+			return true
+		}
+		if len(servers) == 0 {
+			m.addLine(T(m.lang, "mcp_no_servers"))
+			return true
+		}
+		m.addLine(lipgloss.NewStyle().Foreground(magenta).Bold(true).Render("  MCP Servers"))
+		m.addLine("")
+		for _, s := range servers {
+			m.addLine("  " + lipgloss.NewStyle().Foreground(gold).Render(s.Name) +
+				lipgloss.NewStyle().Foreground(muted).Render(fmt.Sprintf(" (%d tools)", len(s.Tools))))
+			for _, t := range s.Tools {
+				m.addLine("    " + lipgloss.NewStyle().Foreground(muted).Render("· "+t))
+			}
+		}
+		m.addLine("")
 		return true
 	case "/model":
 		if len(parts) < 2 {

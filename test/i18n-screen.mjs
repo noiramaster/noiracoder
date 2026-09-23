@@ -187,6 +187,8 @@ const GO_ALLOW = new Set([
   "  %s  lat=%s  score=%.0f", "model/stats %d",
   // M3: colores de marca y textos de catálogo en Go
   "#D63384", " %d%%", "  NOIRACODER — ", "  > NOIRACODER",
+  // M5.1: MCP strings en Go
+  "  MCP Servers", " (%d tools)", "mcp/servers %d", "mcp/tools %d",
   // Valor por defecto pre-catálogo (inglés; el catálogo lo sustituye)
   "…[truncated]",
 ]);

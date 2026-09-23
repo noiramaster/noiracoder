@@ -87,4 +87,9 @@ export class McpRegistry {
       s.client.close();
     }
   }
+
+  /** Returns all registered servers with their tools. */
+  allServers(): { name: string; tools: McpTool[] }[] {
+    return Array.from(this.servers.entries()).map(([name, s]) => ({ name, tools: s.tools }));
+  }
 }

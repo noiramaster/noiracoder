@@ -333,6 +333,55 @@ func (c *Client) ModelStats() (map[string]ModelStatsEntry, error) {
 	return resp.Stats, nil
 }
 
+// McpServer holds MCP server info (name + tool names).
+type McpServer struct {
+	Name  string   `json:"name"`
+	Tools []string `json:"tools"`
+}
+
+// McpServers returns connected MCP servers from the motor (GET /v1/mcp/servers).
+func (c *Client) McpServers() ([]McpServer, error) {
+	st, b, err := c.req("GET", "/v1/mcp/servers", nil)
+	if err != nil {
+		return nil, err
+	}
+	if st != 200 {
+		return nil, fmt.Errorf("mcp/servers %d", st)
+	}
+	var resp struct {
+		Servers []McpServer `json:"servers"`
+	}
+	if err := json.Unmarshal(b, &resp); err != nil {
+		return nil, err
+	}
+	return resp.Servers, nil
+}
+
+// McpTool holds MCP tool info.
+type McpTool struct {
+	Name        string  `json:"name"`
+	Server      string  `json:"server"`
+	Description *string `json:"description"`
+}
+
+// McpTools returns all available MCP tools (GET /v1/mcp/tools).
+func (c *Client) McpTools() ([]McpTool, error) {
+	st, b, err := c.req("GET", "/v1/mcp/tools", nil)
+	if err != nil {
+		return nil, err
+	}
+	if st != 200 {
+		return nil, fmt.Errorf("mcp/tools %d", st)
+	}
+	var resp struct {
+		Tools []McpTool `json:"tools"`
+	}
+	if err := json.Unmarshal(b, &resp); err != nil {
+		return nil, err
+	}
+	return resp.Tools, nil
+}
+
 // LangInfo es un idioma de interfaz (código + nombre nativo, del motor).
 type LangInfo struct {
 	Code   string `json:"code"`

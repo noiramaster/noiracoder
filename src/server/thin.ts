@@ -534,6 +534,37 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
       return;
     }
 
+    // ── MCP: listar servidores y tools (M5.1) ──
+    if (req.method === "GET" && url.pathname === "/v1/mcp/servers") {
+      try {
+        const servers: { name: string; tools: string[] }[] = [];
+        if (opts.mcp) {
+          for (const srv of opts.mcp.allServers()) {
+            servers.push({ name: srv.name, tools: srv.tools.map((t) => t.name) });
+          }
+        }
+        json(res, 200, { servers });
+      } catch (e) {
+        json(res, 500, { error: e instanceof Error ? e.message : String(e) });
+      }
+      return;
+    }
+    if (req.method === "GET" && url.pathname === "/v1/mcp/tools") {
+      try {
+        const tools: { name: string; server: string; description?: string }[] = [];
+        if (opts.mcp) {
+          for (const t of opts.mcp.callAll()) {
+            const parts = t.name.split("__");
+            tools.push({ name: t.name, server: parts[1] ?? "?", description: t.description });
+          }
+        }
+        json(res, 200, { tools });
+      } catch (e) {
+        json(res, 500, { error: e instanceof Error ? e.message : String(e) });
+      }
+      return;
+    }
+
     // ── Idioma UI + respuestas (M1.5) ──
     if (req.method === "GET" && url.pathname === "/v1/langs") {
       const { LanguageSelector } = await import("../i18n/index.js");
