@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NoiraCoder: Undo, Redo y Snapshots automáticos en la terminal | NOIRACODER</title>
+<meta name="description" content="Descubre cómo NoiraCoder simplifica el control de versiones en tiempo real con undo, redo y snapshots automáticos.">
+<link rel="canonical" href="https://noiracoder.pages.dev/blog/2026-09-23-undo-redo-snapshots-automaticos.html">
+<meta property="og:title" content="NoiraCoder: Undo, Redo y Snapshots automáticos en la terminal — NOIRACODER">
+<meta property="og:description" content="Descubre cómo NoiraCoder simplifica el control de versiones en tiempo real con undo, redo y snapshots automáticos.">
+<meta property="og:site_name" content="NOIRACODER">
+<meta property="og:url" content="https://noiracoder.pages.dev/blog/2026-09-23-undo-redo-snapshots-automaticos.html">
+<meta property="og:type" content="article">
+<meta name="robots" content="index, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<script src="/i18n.js" defer></script>
+<script src="/copy.js" defer></script>
+<script>var NOIRA_POST = {"date":"2026-09-23","title_es":"NoiraCoder: Undo, Redo y Snapshots automáticos en la terminal","excerpt_es":"Descubre cómo NoiraCoder simplifica el control de versiones en tiempo real con undo, redo y snapshots automáticos.","body_es":"<p>NoiraCoder es un agente de código que se ejecuta directamente en la terminal, ofreciendo una experiencia de desarrollo fluida y segura. Entre sus funcionalidades más poderosas están los mecanismos de <strong>undo</strong>, <strong>redo</strong> y la generación de <strong>snapshots automáticos</strong>, que permiten revertir cambios y preservar el estado del proyecto sin salir del entorno de línea de comandos.</p><h2>Undo y Redo integrados</h2><p>Con un simple <code>nc undo</code> o <code>nc redo</code>, NoiraCoder restaura el archivo al último estado guardado o reaplica la última modificación deshecha. Estos comandos operan a nivel de bloque de código, lo que significa que solo se revierten los cambios relevantes, evitando la pérdida de trabajo no relacionado.</p><pre><code># Ejemplo rápido\necho \"console.log('Hola');\" > app.js\nnc undo   # vuelve al contenido anterior\necho \"console.log('Mundo');\" >> app.js\nnc redo   # reaplica el cambio deshecho</code></pre><h2>Snapshots automáticos</h2><p>Cada vez que guardas un archivo, NoiraCoder crea de forma invisible un snapshot del estado completo del proyecto. Estos snapshots se almacenan en un directorio interno y pueden recuperarse en cualquier momento mediante <code>nc snapshot list</code> y <code>nc snapshot restore &lt;id&gt;</code>. La generación automática elimina la necesidad de commits manuales para pruebas rápidas o experimentos.</p><p>Gracias a esta combinación de undo/redo y snapshots, los desarrolladores pueden experimentar sin miedo, sabiendo que siempre pueden volver atrás o avanzar a una versión previa con un solo comando.</p>","title_en":"Automatic Undo‑Redo Snapshots in NoiraCoder: A Terminal Coding Companion","excerpt_en":"NoiraCoder now captures automatic snapshots, giving developers seamless undo‑redo capabilities directly from the terminal.","body_en":"<p>NoiraCoder, the AI‑powered terminal coding agent, has taken a big step forward by introducing automatic snapshots that record every change you make to a file. This feature empowers you to travel back and forth in your editing history without leaving the command line, making experimentation safe and fast.</p><h2>How Automatic Snapshots Work</h2><p>Each time NoiraCoder modifies a file—whether it inserts a function, refactors a variable, or applies a lint fix—it creates a hidden snapshot in a dedicated <code>.noiracoder/snapshots</code> directory. The snapshots are timestamped and stored as lightweight diffs, so they consume minimal disk space. You can list available points with the <code>noiracoder snapshots list</code> command.</p><pre><code>noiracoder snapshots list\n# Output example\n2024-09-23T14:12:05Z  snapshot-001.diff\n2024-09-23T14:15:42Z  snapshot-002.diff</code></pre><h2>Integrating Undo‑Redo into Your Workflow</h2><p>To revert to a previous state, simply run <code>noiracoder undo &lt;timestamp|id&gt;</code>. If you change your mind, <code>noiracoder redo &lt;timestamp|id&gt;</code> restores the later version. Because the snapshots are incremental, undo and redo are virtually instantaneous, even for large projects.</p><p>For power users, NoiraCoder supports batch undo/redo via range selectors, allowing you to roll back a series of edits in one command. This makes it easy to test different implementations of a feature without manually managing Git branches or stashing changes.</p>","title_pt":"NoiraCoder: Undo, Redo e Snapshots Automáticos no Terminal","excerpt_pt":"Descubra como o NoiraCoder traz undo, redo e snapshots automáticos para garantir segurança e produtividade ao programar diretamente no terminal.","body_pt":"<p>NoiraCoder chegou para transformar a experiência de desenvolvimento em linha de comando, oferecendo recursos avançados de controle de versão local sem a necessidade de ferramentas externas. Entre as novidades mais esperadas estão o suporte nativo a undo, redo e snapshots automáticos, que permitem recuperar rapidamente alterações indesejadas e preservar o estado do código em intervalos regulares.</p><h2>Undo e Redo em tempo real</h2><p>Com um simples <code>nc undo</code> ou <code>nc redo</code>, o agente restaura a última modificação ou refaz a operação revertida, respectivamente. O mecanismo funciona em nível de buffer, capturando cada edição feita no editor embutido do NoiraCoder, o que elimina a necessidade de commits manuais ou de abrir um editor externo para desfazer mudanças.</p><h2>Snapshots automáticos: segurança sem esforço</h2><p>O NoiraCoder cria snapshots automáticos a cada 5 minutos ou ao detectar um ponto de interrupção crítico (por exemplo, ao salvar um arquivo). Esses snapshots são armazenados em um diretório oculto <code>.nc_snapshots</code> e podem ser listados com <code>nc snapshots list</code>. Para restaurar um estado anterior basta escolher o identificador desejado: <code>nc snapshots restore 2026-09-23_15-30-00</code>.</p><pre><code># Exemplo de fluxo de trabalho\n$ nc edit main.py\n# ...edita o código...\n$ nc undo          # desfaz a última edição\n$ nc redo          # refaz a edição desfeita\n$ nc snapshots list\n2026-09-23_15-30-00  main.py\n2026-09-23_15-35-00  utils.py\n$ nc snapshots restore 2026-09-23_15-30-00\nSnapshot restaurado com sucesso.</code></pre><p>Esses recursos reduzem drasticamente o risco de perda de trabalho e aumentam a confiança ao experimentar novas abordagens, tornando o NoiraCoder uma ferramenta indispensável para desenvolvedores que vivem no terminal.</p>","title_fr":"NoiraCoder : snapshots automatiques pour undo/redo en terminal","excerpt_fr":"Découvrez comment NoiraCoder gère les annulations, les rétablissements et les snapshots automatiques pour un flux de travail ininterrompu.","body_fr":"<p>NoiraCoder est un agent de code qui s’intègre directement dans votre terminal, offrant une expérience de développement fluide et réactive. Parmi ses nombreuses fonctionnalités, le système d’undo/redo combiné aux snapshots automatiques garantit que chaque modification peut être récupérée sans effort.</p><h2>Undo/Redo intégrés</h2><p>Chaque édition de fichier est enregistrée dans une pile d’opérations. En appuyant sur <code>Ctrl+Z</code> ou <code>Ctrl+Y</code>, NoiraCoder parcourt cette pile, annulant ou rétablissant les changements exactement comme dans un IDE graphique, mais sans quitter le terminal.</p><h2>Snapshots automatiques</h2><p>En plus des actions d’annulation classiques, NoiraCoder crée des snapshots complets à intervalles réguliers et à chaque sauvegarde importante. Ces snapshots sont stockés dans un répertoire <code>.noiracoder/snapshots</code> et peuvent être restaurés avec la commande <code>noiracoder snapshot restore &lt;id&gt;</code>. Le processus est entièrement transparent et ne ralentit pas le travail quotidien.</p><p>Grâce à cette combinaison puissante, les développeurs peuvent expérimenter, refactoriser ou même introduire des bugs temporaires en toute confiance, sachant que chaque état du projet est sauvegardé et récupérable en un instant.</p>","title_de":"Automatisierte Undo/Redo‑Snapshots in NoiraCoder – Nie wieder Codeverlust","excerpt_de":"Mit NoiraCoder erhalten Sie automatische Snapshots, die Undo und Redo in der Terminalumgebung revolutionieren.","body_de":"<p>NoiraCoder ist ein leistungsstarker Agent, der direkt im Terminal arbeitet und Entwicklern hilft, ihren Code effizient zu verwalten. Eine seiner herausragenden Funktionen sind die automatischen Undo‑Redo‑Snapshots, die kontinuierlich den Zustand Ihrer Dateien sichern.</p><h2>Wie funktionieren automatische Snapshots?</h2><p>Jedes Mal, wenn Sie eine Datei speichern, erstellt NoiraCoder im Hintergrund einen Snapshot des aktuellen Zustands. Diese Snapshots werden in einer leichtgewichtigen Datenbank abgelegt, sodass Sie jederzeit zu einem früheren Stand zurückkehren können, ohne manuell Commits oder Versionskontrolle zu verwenden.</p><pre><code># Beispiel: Undo des letzten Snapshots\nnoiracoder undo\n# Beispiel: Redo des zuletzt verworfenen Snapshots\nnoiracoder redo</code></pre><h2>Best Practices und Integration</h2><p>Um das volle Potenzial auszuschöpfen, empfiehlt es sich, die Snapshot‑Intervall‑Einstellungen an Ihr Arbeitsrhythmus anzupassen. In den Konfigurationsdateien können Sie festlegen, nach wie vielen Änderungen ein neuer Snapshot erstellt wird, und sogar bestimmte Dateitypen von der Sicherung ausschließen.</p>","title_it":"NoiraCoder: Undo‑Redo e Snapshots Automatici per il Codice in Terminale","excerpt_it":"Scopri come NoiraCoder gestisce in modo intelligente undo‑redo e snapshot automatici per proteggere il tuo lavoro.","body_it":"<p>NoiraCoder è l'agente di codice che vive nella tua terminale, progettato per offrire un'esperienza di sviluppo fluida e sicura. Una delle sue funzionalità più apprezzate è la gestione avanzata di undo‑redo combinata con snapshot automatici, che ti permette di tornare indietro nel tempo senza mai perdere una riga di codice.</p><h2>Undo‑Redo senza limiti</h2><p>Grazie a un algoritmo di differenziazione a livello di buffer, NoiraCoder registra ogni modifica in tempo reale. Non ci sono limiti di profondità: puoi annullare o ripristinare qualsiasi operazione, anche quelle effettuate settimane fa, semplicemente navigando nella cronologia dei comandi.</p><h2>Snapshots automatici: il tuo backup continuo</h2><p>Ogni volta che salvi un file o chiudi una sessione, NoiraCoder crea uno snapshot automatico. Questi snapshot sono compressi e archiviati in una directory dedicata, consentendo di recuperare versioni precedenti con un semplice comando <code>nocode snapshot list</code> seguito da <code>nocode snapshot restore &lt;id&gt;</code>.</p><p>Il sistema è configurabile: puoi impostare la frequenza di creazione degli snapshot, il numero massimo di versioni da mantenere e persino sincronizzare i backup con servizi cloud come Dropbox o GitHub per una protezione extra.</p><p>In sintesi, con NoiraCoder non devi più temere di perdere il tuo lavoro. Undo‑redo illimitato e snapshot automatici ti offrono la tranquillità di sapere che ogni modifica è tracciata e recuperabile, rendendo la tua esperienza di programmazione più produttiva e serena.</p>","title_ar":"NoiraCoder: إدارة التراجع والإعادة واللقطات التلقائية في الطرفية","excerpt_ar":"اكتشف كيف يسهّل NoiraCoder عمليات التراجع والإعادة مع لقطات تلقائية لحفظ حالة الشيفرة.","body_ar":"<p>يُعد NoiraCoder الوكيل الذكي لتشغيل الشيفرات داخل الطرفية، حيث يجمع بين قوة سطر الأوامر وسهولة الاستخدام الحديثة. من أهم ميزاته القدرة على التراجع والإعادة بسلاسة، بالإضافة إلى إنشاء لقطات (Snapshots) تلقائية تحافظ على تاريخ التعديلات.</p><h2>التراجع والإعادة (Undo/Redo)</h2><p>باستخدام أوامر بسيطة مثل <code>nc undo</code> و<code>nc redo</code>، يمكن للمطور الرجوع إلى الحالة السابقة أو إعادة التغييرات بسرعة. لا يحتاج المستخدم إلى حفظ ملفات مؤقتة يدوياً؛ فالوكيل يتعامل مع سجل التغييرات داخلياً.</p><pre><code># التراجع خطوة واحدة\nnc undo\n# إعادة آخر خطوة تم التراجع عنها\nnc redo</code></pre><h2>اللقطات التلقائية (Snapshots)</h2><p>كلما تم حفظ ملف أو تنفيذ أمر رئيسي، ينشئ NoiraCoder لقطة تلقائية تُخزن في مجلد <code>.nc_snapshots</code>. هذه اللقطات تسمح بالعودة إلى أي نقطة زمنية عبر أمر <code>nc snapshot revert &lt;معرف&gt;</code>، مما يضمن عدم فقدان أي تعديل مهم.</p><p>بفضل هذه الأدوات، يصبح العمل على المشاريع الكبيرة أكثر أماناً وسرعة، حيث يمكن للمبرمج التركيز على الإبداع دون القلق من الأخطاء غير القابلة للاسترجاع.</p>"};</script>
+</head>
+<body>
+<header class="site-header"><div class="wrap-head">
+  <a href="/" class="logo">&gt; NOIRACODER</a>
+  <nav class="main-nav">
+    <a class="navlink" href="/docs/skills.html" data-i18n="nav.skills">Skills</a>
+    <a class="navlink" href="/docs/tutoriales.html" data-i18n="nav.tutorials">Tutoriales</a>
+    <a class="navlink" href="/blog/" data-i18n="nav.blog">Blog</a>
+    <a class="navlink" href="/contacto.html" data-i18n="nav.contact">Contacto</a>
+    <a class="navlink" href="/docs/tutoriales.html" data-i18n="nav.login">Entrar</a>
+    <a class="btn-signup" href="/#instalar" data-i18n="nav.signup">Empezar</a>
+    <div class="langswitch"><button aria-label="language">[<span class="cur">EN</span> ▾]</button><div class="menu">
+      <button data-lang="en">EN</button><button data-lang="es">ES</button><button data-lang="pt">PT</button><button data-lang="fr">FR</button><button data-lang="de">DE</button><button data-lang="it">IT</button><button data-lang="ar">AR</button>
+    </div></div>
+  </nav>
+  <div class="mobile-only">
+    <div class="langswitch"><button aria-label="language">[<span class="cur">EN</span> ▾]</button><div class="menu">
+      <button data-lang="en">EN</button><button data-lang="es">ES</button><button data-lang="pt">PT</button><button data-lang="fr">FR</button><button data-lang="de">DE</button><button data-lang="it">IT</button><button data-lang="ar">AR</button>
+    </div></div>
+    <button class="menu-btn" data-menu-btn>[=]</button>
+  </div>
+</div>
+<div class="mobile-menu" data-mobile-menu>
+  <a href="/docs/skills.html" data-i18n="nav.skills">Skills</a>
+  <a href="/docs/tutoriales.html" data-i18n="nav.tutorials">Tutoriales</a>
+  <a href="/blog/" data-i18n="nav.blog">Blog</a>
+  <a href="/contacto.html" data-i18n="nav.contact">Contacto</a>
+  <a href="/docs/tutoriales.html" data-i18n="nav.login">Entrar</a>
+  <a href="/#instalar" data-i18n="nav.signup">Empezar</a>
+</div></header>
+<main class="wrap-page">
+  <div class="mono" style="font-size:.75rem;color:var(--muted)">Blog · 2026-09-23 · 4 min</div>
+  <h1 class="mono" style="font-size:1.875rem;font-weight:700;margin:.75rem 0 1rem" id="post-title"></h1>
+  <article class="post-body" id="post-body"></article>
+  <p style="margin-top:2rem"><a class="link-accent" href="/">← Volver</a> · <a class="link-accent" href="/blog/">Todos</a></p>
+</main>
+<footer class="site-footer">
+  <div class="cols">
+    <div><h4 class="brand">&gt; NOIRACODER</h4><p class="brandp" data-i18n="footer.brand">…</p></div>
+    <div><h4 data-i18n="footer.products">Ecosistema</h4><ul>
+      <li><a href="https://noiramaster.pages.dev/" target="_blank" rel="noopener">Noiramaster</a></li>
+    </ul></div>
+    <div><h4 data-i18n="footer.resources">Recursos</h4><ul>
+      <li><a href="/blog/" data-i18n="nav.blog">Blog</a></li>
+      <li><a href="/sobre.html" data-i18n="nav.about">Sobre NoiraCoder</a></li>
+      <li><a href="/legal.html" data-i18n="nav.legal">Legal</a></li>
+      <li><a href="/terminos.html" data-i18n="nav.terms">Términos</a></li>
+      <li><a href="/privacidad.html" data-i18n="nav.privacy">Privacidad</a></li>
+    </ul></div>
+    <div><h4 data-i18n="footer.community">Comunidad</h4><div class="social">
+      <a href="https://x.com/noiramaster" target="_blank" rel="noopener" aria-label="X"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+      <a href="https://www.instagram.com/noiramaster/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0z"/></svg></a>
+      <a href="https://www.reddit.com/user/AddendumIll3987/" target="_blank" rel="noopener" aria-label="Reddit"><svg viewBox="0 0 24 24"><path d="M12 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 01-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 01.042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 014.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 01.14-.197.35.35 0 01.238-.042l2.906.617a1.214 1.214 0 011.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249z"/></svg></a>
+    </div></div>
+    <div><h4 data-i18n="footer.languages">Idiomas</h4><div class="langrow">
+      <button data-lang="es">ES</button><button data-lang="en">EN</button><button data-lang="pt">PT</button><button data-lang="fr">FR</button><button data-lang="de">DE</button><button data-lang="it">IT</button><button data-lang="ar">AR</button>
+    </div></div>
+  </div>
+  <div class="bottombar"><p>&gt; Noira © <span class="year">2026</span> · <span data-i18n="footer.copyright">Todos los derechos reservados.</span></p></div>
+</footer>
+<script>
+document.querySelectorAll('.year').forEach(function (e) { e.textContent = new Date().getFullYear(); });
+document.addEventListener('DOMContentLoaded', function () {
+  renderPost();
+});
+document.addEventListener('noira-lang', function () {
+  renderPost();
+});
+function renderPost() {
+  var lang = (typeof noiraGetLang === 'function') ? noiraGetLang() : 'en';
+  var title = NOIRA_POST['title_' + lang] || NOIRA_POST.title_en || NOIRA_POST.title_es;
+  var body = NOIRA_POST['body_' + lang] || NOIRA_POST.body_en || NOIRA_POST.body_es;
+  document.getElementById('post-title').textContent = title;
+  document.getElementById('post-body').innerHTML = body;
+  document.title = (title + ' | NOIRACODER');
+}
+</script>
+</body>
+</html>

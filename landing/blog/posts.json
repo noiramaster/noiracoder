@@ -1,5 +1,25 @@
 [
   {
+    "slug": "undo-redo-snapshots-automaticos",
+    "file": "2026-09-23-undo-redo-snapshots-automaticos.html",
+    "date": "2026-09-23",
+    "category": "noiracoder",
+    "title_es": "NoiraCoder: Undo, Redo y Snapshots automáticos en la terminal",
+    "title_en": "Automatic Undo‑Redo Snapshots in NoiraCoder: A Terminal Coding Companion",
+    "title_pt": "NoiraCoder: Undo, Redo e Snapshots Automáticos no Terminal",
+    "title_fr": "NoiraCoder : snapshots automatiques pour undo/redo en terminal",
+    "title_de": "Automatisierte Undo/Redo‑Snapshots in NoiraCoder – Nie wieder Codeverlust",
+    "title_it": "NoiraCoder: Undo‑Redo e Snapshots Automatici per il Codice in Terminale",
+    "title_ar": "NoiraCoder: إدارة التراجع والإعادة واللقطات التلقائية في الطرفية",
+    "excerpt_es": "Descubre cómo NoiraCoder simplifica el control de versiones en tiempo real con undo, redo y snapshots automáticos.",
+    "excerpt_en": "NoiraCoder now captures automatic snapshots, giving developers seamless undo‑redo capabilities directly from the terminal.",
+    "excerpt_pt": "Descubra como o NoiraCoder traz undo, redo e snapshots automáticos para garantir segurança e produtividade ao programar diretamente no terminal.",
+    "excerpt_fr": "Découvrez comment NoiraCoder gère les annulations, les rétablissements et les snapshots automatiques pour un flux de travail ininterrompu.",
+    "excerpt_de": "Mit NoiraCoder erhalten Sie automatische Snapshots, die Undo und Redo in der Terminalumgebung revolutionieren.",
+    "excerpt_it": "Scopri come NoiraCoder gestisce in modo intelligente undo‑redo e snapshot automatici per proteggere il tuo lavoro.",
+    "excerpt_ar": "اكتشف كيف يسهّل NoiraCoder عمليات التراجع والإعادة مع لقطات تلقائية لحفظ حالة الشيفرة."
+  },
+  {
     "slug": "conectar-openrouter-groq-zen",
     "file": "2026-09-22-conectar-openrouter-groq-zen.html",
     "date": "2026-09-22",
