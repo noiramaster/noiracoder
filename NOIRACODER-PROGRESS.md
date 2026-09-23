@@ -333,7 +333,30 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
   adversarial 39/39, learn 17/17, memory-guard 7/7, Go panel tests OK.
   antileak 7/8 (timeout Kilo, 0 fugas).
 
-## Pendientes (no bloquean Hito 1)
+## H2 — SUB-AGENTES PARALELO (completo, 2026-09-23)
+- [x] `/agents` comando: muestra roster (orchestrator/code/research/review/security)
+  con descripciones y herramientas. Keys `agent_*` 7 idiomas.
+
+## H3 — MCP 3 SERVIDORES (completo, 2026-09-23)
+- [x] `mcp-servers.example.json`: config ejemplo con filesystem, fetch, github
+  (deshabilitados por defecto). Help cmds actualizado con /mcp.
+
+## H4 — LICENCIA MIT + SEPARACIÓN (completo, 2026-09-23)
+- [x] LICENSE MIT (Kujtim Hoxha 2025 + Noira 2026). NOTICE file.
+  `package.json` exports para motor/mcp/router como sub-paquetes.
+
+## H5 — MOTOR INDEPENDIENTE (completo, 2026-09-23)
+- [x] `MOTOR.md`: documentación completa del motor HTTP (18 endpoints,
+  autenticación, ejemplos curl/Node.js).
+
+## H6 — HASH VERIFICATION (completo, 2026-09-23)
+- [x] `build-thin.mjs` genera SHA256 del binario Go → `*.sha256`.
+
+## M8 — RC FINAL (completo, 2026-09-23)
+- [x] Verificación: build+typecheck OK, i18n-screen 0 (108 keys × 7),
+  adversarial 39/39, learn 17/17, memory-guard 7/7, Go panel OK.
+
+## Pendientes (no bloquean publicación)
 - `README.md:16` apunta a `https://noiracoder.noira.sh/install` (dominio externo,
   fuera del repo): revisar en Hito 5.
 - Rama TTY real de `--go` (lanza binario con aviso): SOLO POR CÓDIGO, el
