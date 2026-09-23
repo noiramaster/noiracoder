@@ -287,6 +287,19 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
 - [ ] 2.5 Batería adversaria T1–T5 + 48 E2E.
 - [ ] 2.6 Riesgo residual env-token.
 
+## M4 — VELOCIDAD (parcial, 2026-09-23)
+- [x] M4.1 Latencia por intento + fast-default: `AdaptiveRanker` almacena EMA de
+  latencia por role→model; `order()` usa latencia como tiebreak. Orchestrator
+  mide `Date.now()` por turno y pasa `latencyMs` a `recordSuccess`. Endpoint
+  `GET /v1/model/stats` expone latencia y score. Go `/model stats` comando.
+  `adaptive.json` ahora incluye campo `latencies`.
+- [x] M4.2 Eco inmediato + pensando + vigilante silencio: `turn.echo` (<1ms),
+  `turn.thinking` (100ms), `turn.silence` (30s). Timers se limpian en
+  `clearTimers()` + abort signal. Go handler para los 3 eventos.
+  `test/i18n-screen.mjs` 0 fallos (94 keys × 7 langs).
+- [x] M4.3 `docs/evidence/perf.md`: metodología, rondas, latencia observada.
+  Bench ronda 2: 14/20 (mejora +133% vs ronda 1).
+
 ## Pendientes (no bloquean Hito 1)
 - `README.md:16` apunta a `https://noiracoder.noira.sh/install` (dominio externo,
   fuera del repo): revisar en Hito 5.

@@ -56,13 +56,15 @@ export interface AgentLoopOptions {
   /** Next candidate after a retryable failure; null/undefined = give up. */
   nextModel?: () => FallbackDecision | null;
   /** Called when the working model succeeds, so the ranker can learn. */
-  onModelSuccess?: (model: string) => void;
+  onModelSuccess?: (model: string, latencyMs?: number) => void;
   /** Called when a model fails retryably (before switching). */
   onModelError?: (model: string, kind: "transient" | "quota" | "auth") => void;
   /** HITO 1 (cliente fino): aviso de rotación visible en la pantalla. */
   onModelSwitch?: (from: string, to: string, reason: "auth" | "quota" | "routing" | "transient") => void;
   /** HITO 1: cancelación cooperativa del turno (POST /v1/cancel). */
   signal?: AbortSignal;
+  /** Timestamp (Date.now()) when the turn started, for latency tracking. */
+  turnStartedAt?: number;
 }
 
 export async function runAgentLoop(opts: AgentLoopOptions): Promise<LoopResult> {
@@ -190,7 +192,7 @@ export async function runAgentLoop(opts: AgentLoopOptions): Promise<LoopResult> 
     }
 
     // Record which model actually produced this step as a success.
-    opts.onModelSuccess?.(model);
+    opts.onModelSuccess?.(model, opts.turnStartedAt ? Date.now() - opts.turnStartedAt : undefined);
 
     steps++;
     if (!resp.toolCalls || resp.toolCalls.length === 0) {

@@ -206,8 +206,8 @@ export function buildRouter(opts: {
     limits: () => limits,
     usedCandidates,
     /** Tell the adaptive ranker a model succeeded for a role. No-op if no ranker. */
-    recordSuccess(role: keyof RolePolicy, model: string) {
-      if (opts.adaptive) void opts.adaptive.recordSuccess(role, model);
+    recordSuccess(role: keyof RolePolicy, model: string, latencyMs?: number) {
+      if (opts.adaptive) void opts.adaptive.recordSuccess(role, model, latencyMs);
       // Shared bucket accounting: an OpenRouter free call spends the account budget.
       if (opts.sharedQuota) {
         const info = opts.modelsById.get(model);

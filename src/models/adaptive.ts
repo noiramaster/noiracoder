@@ -21,6 +21,8 @@ export type AdaptiveRole = "orchestrator" | "code" | "research" | "review" | "se
 interface AdaptiveData {
   scores: Record<string, Record<string, number>>;
   cooldowns: Record<string, number>;
+  /** Exponential moving average latency (ms) per role→model. */
+  latencies: Record<string, Record<string, number>>;
   until: string;
 }
 
@@ -34,6 +36,7 @@ const ERROR_COOLDOWN_MS = 5 * 60 * 1000; // soft penalty on transient errors
 export class AdaptiveRanker {
   private scores: Record<string, Record<string, number>> = {};
   private cooldowns: Record<string, number> = {};
+  private latencies: Record<string, Record<string, number>> = {};
   private loaded = false;
   private file: string;
 
@@ -47,6 +50,7 @@ export class AdaptiveRanker {
       const d = JSON.parse(raw) as Partial<AdaptiveData>;
       this.scores = d.scores ?? {};
       this.cooldowns = d.cooldowns ?? {};
+      this.latencies = d.latencies ?? {};
       // Drop stale cooldowns immediately so we never hang on a dead model.
       const now = Date.now();
       for (const [m, until] of Object.entries(this.cooldowns)) {
@@ -62,7 +66,7 @@ export class AdaptiveRanker {
   async persist(): Promise<void> {
     try {
       await mkdir(dirname(this.file), { recursive: true });
-      await writeFile(this.file, JSON.stringify({ scores: this.scores, cooldowns: this.cooldowns, until: new Date().toISOString() }, null, 2), "utf8");
+      await writeFile(this.file, JSON.stringify({ scores: this.scores, cooldowns: this.cooldowns, latencies: this.latencies, until: new Date().toISOString() }, null, 2), "utf8");
     } catch {
       // non-fatal
     }
@@ -78,7 +82,8 @@ export class AdaptiveRanker {
 
   /**
    * Ranks candidates for a role: skip anything on cooldown, then order by
-   * learned score (higher first), preserving catalog-preference order as tiebreak.
+   * learned score (higher first), with latency as tiebreak (faster preferred).
+   * Preserves catalog-preference order as final tiebreak.
    */
   order(role: string, candidates: string[]): string[] {
     const now = Date.now();
@@ -87,6 +92,10 @@ export class AdaptiveRanker {
       const sa = this.scoreOf(role, a);
       const sb = this.scoreOf(role, b);
       if (sa !== sb) return sb - sa;
+      // Tiebreak: faster historical latency wins.
+      const la = this.latencies[role]?.[a] ?? Infinity;
+      const lb = this.latencies[role]?.[b] ?? Infinity;
+      if (la !== lb) return la - lb;
       const ia = candidates.indexOf(a);
       const ib = candidates.indexOf(b);
       return ia - ib;
@@ -94,11 +103,17 @@ export class AdaptiveRanker {
   }
 
   /** Called when a model produced a good result for a role. */
-  async recordSuccess(role: string, model: string): Promise<void> {
+  async recordSuccess(role: string, model: string, latencyMs?: number): Promise<void> {
     this.ensureRole(role);
     const cur = this.scoreOf(role, model);
     // Bounded inflate; clamp to avoid unbounded dominance.
     this.scores[role][model] = Math.min(10, cur + 1);
+    // Update EMA latency (alpha=0.3 gives weight to recent observations).
+    if (latencyMs !== undefined && latencyMs > 0 && latencyMs < 300_000) {
+      const prev = this.latencies[role]?.[model];
+      this.latencies[role] ??= {};
+      this.latencies[role][model] = prev !== undefined ? prev * 0.7 + latencyMs * 0.3 : latencyMs;
+    }
     await this.persist();
   }
 
@@ -123,6 +138,30 @@ export class AdaptiveRanker {
 
   roles(): AdaptiveRole[] {
     return ACTIVE_ROLES;
+  }
+
+  /** Average latency (ms) for a model across all roles, or null if no data. */
+  avgLatency(model: string): number | null {
+    let sum = 0, n = 0;
+    for (const role of ACTIVE_ROLES) {
+      const v = this.latencies[role]?.[model];
+      if (v !== undefined) { sum += v; n++; }
+    }
+    return n > 0 ? sum / n : null;
+  }
+
+  /** Score for a specific role+model, or 0 if no data. */
+  score(role: string, model: string): number {
+    return this.scoreOf(role, model);
+  }
+
+  /** All models seen across all roles. */
+  allModels(): string[] {
+    const s = new Set<string>();
+    for (const role of ACTIVE_ROLES) {
+      for (const m of Object.keys(this.scores[role] ?? {})) s.add(m);
+    }
+    return [...s];
   }
 
   isLoaded(): boolean {

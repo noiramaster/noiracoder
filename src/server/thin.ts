@@ -149,6 +149,8 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
   const runTurn = async (turnId: string, sessionId: string, message: string, mode: string) => {
     const abort = new AbortController();
     activeTurn = { id: turnId, sessionId, abort, lastEventAt: Date.now(), lastToolStartAt: 0 };
+    // M4.2: timers se inicializan en el try; catch los limpia si existen.
+    let clearTimers: () => void = () => {};
     // HITO 4.7: aviso de primer uso (una vez por equipo, 7 idiomas).
     try {
       const { freeWarningOnce } = await import("../i18n/index.js");
@@ -208,6 +210,33 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
       }
       await store.append(meta, "user", message);
 
+      // M4.2: eco inmediato — el cliente ve su mensaje al instante.
+      send("turn.echo", { turnId, message });
+
+      // M4.2: indicador "pensando" si la primera respuesta tarda >100ms.
+      const thinkingTimer = setTimeout(() => {
+        if (activeTurn?.id === turnId) send("turn.thinking", { turnId });
+      }, 100);
+      (thinkingTimer as unknown as { unref?: () => void }).unref?.();
+
+      // M4.2: vigilante de silencio — avisa si 30s sin ningún token.
+      let silenceFired = false;
+      const silenceTimer = setTimeout(() => {
+        if (activeTurn?.id === turnId && !silenceFired) {
+          silenceFired = true;
+          send("turn.silence", { turnId, ms: 30000, hint: "el modelo puede estar saturado o en cola" });
+        }
+      }, 30000);
+      (silenceTimer as unknown as { unref?: () => void }).unref?.();
+
+      clearTimers = () => {
+        clearTimeout(thinkingTimer);
+        clearTimeout(silenceTimer);
+      };
+
+      // Limpia timers si el watchdog aborta el turno.
+      abort.signal.addEventListener("abort", () => clearTimers(), { once: true });
+
       const policy = planMode
         ? { ...DEFAULT_POLICY, allowCommands: [] as string[] }
         : undefined;
@@ -228,6 +257,7 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
         onToken: (d) => {
           touch();
           fullText += d;
+          silenceFired = true; // M4.2: primer token →cancela vigilante de silencio.
           send("turn.text", { turnId, delta: d });
         },
         onModelSwitch: (from, to, reason) => {
@@ -272,6 +302,7 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
       });
       await store.append(meta, "assistant", result.output || "(sin salida)");
       send("session.updated", { id: meta.id, nombre: meta.title });
+      clearTimers();
       send("turn.end", { turnId, motivo: "done" });
       // M2.8: título en 2º plano (no bloquea; 1 llamada + 1 regen; cuenta cuota).
       void maybeTitle(meta.id, message, sessionId);
@@ -284,6 +315,7 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       if (abort.signal.aborted || msg.includes("cancelado")) {
+        clearTimers();
         send("turn.end", { turnId, motivo: "cancelled" });
         void recordTurn({
           session: sessionId, task, level: effLevel, model: lastModel,
@@ -291,6 +323,7 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
         });
       } else {
         send("turn.error", { turnId, mensaje: msg.slice(0, 500) });
+        clearTimers();
         send("turn.end", { turnId, motivo: "error" });
         void recordTurn({
           session: sessionId, task, level: effLevel, model: lastModel,
@@ -475,6 +508,28 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
         json(res, 200, { ok: true, preferido: preferredModel });
       } catch (e) {
         json(res, 400, { error: e instanceof Error ? e.message : String(e) });
+      }
+      return;
+    }
+
+    // ── Latencia y scores por modelo (M4.1) ──
+    if (req.method === "GET" && url.pathname === "/v1/model/stats") {
+      try {
+        const { AdaptiveRanker } = await import("../models/adaptive.js");
+        const ranker = new AdaptiveRanker();
+        await ranker.load();
+        const stats: Record<string, { avgLatencyMs: number | null; score: number }> = {};
+        for (const m of ranker.allModels()) {
+          let maxScore = 0;
+          for (const role of ranker.roles()) {
+            const s = ranker.score(role, m);
+            if (s > maxScore) maxScore = s;
+          }
+          stats[m] = { avgLatencyMs: ranker.avgLatency(m), score: maxScore };
+        }
+        json(res, 200, { stats });
+      } catch (e) {
+        json(res, 500, { error: e instanceof Error ? e.message : String(e) });
       }
       return;
     }

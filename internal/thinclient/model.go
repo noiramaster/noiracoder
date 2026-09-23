@@ -651,6 +651,26 @@ func (m *Model) handleCommand(text string) bool {
 			m.addLine(F(m.lang, "model_usage", map[string]string{"model": m.modelName}))
 			return true
 		}
+		if parts[1] == "stats" {
+			stats, err := m.client.ModelStats()
+			if err != nil {
+				m.addLine(T(m.lang, "err_model") + err.Error())
+				return true
+			}
+			if len(stats) == 0 {
+				m.addLine(T(m.lang, "model_stats_empty"))
+				return true
+			}
+			m.addLine(T(m.lang, "model_stats_header"))
+			for id, s := range stats {
+				lat := "—"
+				if s.AvgLatencyMs != nil {
+					lat = fmt.Sprintf("%.0fms", *s.AvgLatencyMs)
+				}
+				m.addLine(fmt.Sprintf("  %s  lat=%s  score=%.0f", id, lat, s.Score))
+			}
+			return true
+		}
 		if err := m.client.SetModel(parts[1]); err != nil {
 			m.addLine(T(m.lang, "err_model") + err.Error())
 			return true
@@ -702,6 +722,21 @@ func (m *Model) onEvent(ev Event) {
 			}
 		}
 		m.setStatus()
+	case "turn.echo":
+		// M4.2: eco inmediato del mensaje del usuario.
+		if msg := str(ev, "message"); msg != "" {
+			m.messages = append(m.messages, "> "+Sanitize(msg))
+			m.viewport.SetContent(strings.Join(m.messages, "\n"))
+			m.viewport.GotoBottom()
+		}
+	case "turn.thinking":
+		// M4.2: indicador de que el modelo está procesando.
+		m.addLine(T(m.lang, "turn_thinking"))
+	case "turn.silence":
+		// M4.2: aviso de silencio prolongado.
+		m.addLine(F(m.lang, "turn_silence", map[string]string{
+			"hint": str(ev, "hint"), "ms": fmt.Sprintf("%v", ev.Data["ms"]),
+		}))
 	case "turn.text":
 		if d, ok := ev.Data["delta"].(string); ok && len(m.messages) > 0 {
 			last := len(m.messages) - 1

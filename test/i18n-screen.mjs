@@ -183,6 +183,8 @@ const GO_ALLOW = new Set([
   "> NOIRACODER",
   // Fragmentos printf sin texto (el texto viaja en la clave)
   "i18n %d: %s", "%s: %w",
+  // M4.1: format strings de stats (latencia/score)
+  "  %s  lat=%s  score=%.0f", "model/stats %d",
   // Valor por defecto pre-catálogo (inglés; el catálogo lo sustituye)
   "…[truncated]",
 ]);

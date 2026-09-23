@@ -309,6 +309,30 @@ func (c *Client) SetModel(id string) error {
 	return nil
 }
 
+// ModelStatsEntry holds per-model latency/score data.
+type ModelStatsEntry struct {
+	AvgLatencyMs *float64 `json:"avgLatencyMs"`
+	Score        float64  `json:"score"`
+}
+
+// ModelStats returns latency/score stats from the motor (GET /v1/model/stats).
+func (c *Client) ModelStats() (map[string]ModelStatsEntry, error) {
+	st, b, err := c.req("GET", "/v1/model/stats", nil)
+	if err != nil {
+		return nil, err
+	}
+	if st != 200 {
+		return nil, fmt.Errorf("model/stats %d", st)
+	}
+	var resp struct {
+		Stats map[string]ModelStatsEntry `json:"stats"`
+	}
+	if err := json.Unmarshal(b, &resp); err != nil {
+		return nil, err
+	}
+	return resp.Stats, nil
+}
+
 // LangInfo es un idioma de interfaz (código + nombre nativo, del motor).
 type LangInfo struct {
 	Code   string `json:"code"`

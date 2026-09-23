@@ -279,8 +279,8 @@ export async function orchestrate(
       opts.onModelErrorExt?.(m, kind);
     };
   const noteSuccess = (role: "orchestrator" | "code" | "research" | "review" | "security" | "cheap") =>
-    (m: string) => {
-      router.recordSuccess(role, m);
+    (m: string, latencyMs?: number) => {
+      router.recordSuccess(role, m, latencyMs);
       netFails.delete(providerOf(m) ?? "");
     };
 
@@ -316,6 +316,7 @@ export async function orchestrate(
     nextModel: () => nextAlive("orchestrator", orchBaseModel),
     onModelSuccess: noteSuccess("orchestrator"),
     onModelError: onErr("orchestrator"),
+    turnStartedAt: Date.now(),
   });
 
   // Si la tarea es trivial (pocos steps y sin necesidad de más agentes), corta aquí
@@ -373,6 +374,7 @@ export async function orchestrate(
       nextModel: () => nextAlive(role, model),
       onModelSuccess: noteSuccess(role),
       onModelError: onErr(role),
+      turnStartedAt: Date.now(),
     });
     return { role, content: result.content, steps: result.steps };
   };
