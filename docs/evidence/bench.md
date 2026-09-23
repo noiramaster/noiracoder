@@ -1,30 +1,28 @@
-# Banco de calidad — ronda 2026-09-23T00:34:29.602Z (modelo: poolside/laguna-s-2.1:free)
+# NoiraCoder — banco de calidad
 
-Resultado: **14/20** en 760s.
+## Metodología
 
-- fix: 3/5
-- feature: 4/5
-- refactor: 2/4
-- tests: 3/3
-- docs: 2/3
+- **Herramienta**: `npm run bench` (25 tareas reales, criterio automático sin juicio LLM)
+- **Modelo**: poolside/laguna-s-2.1:free (router free pool)
+- **Máquina**: Windows, Node 20, sin GPU
+- **Protocolo**: v2
 
-- [x] fix-suma (fix) 26647ms
-- [x] fix-nulo (fix) 39812ms
-- [x] fix-typo (fix) 18653ms
-- [ ] fix-operador (fix) 64883ms
-- [ ] fix-offbyone (fix) 65090ms
-- [x] feat-invierte (feature) 150022ms
-- [ ] feat-clamp (feature) 3628ms — m.tope is not a function
-- [x] feat-csv (feature) 15987ms
-- [x] feat-unico (feature) 15297ms
-- [x] feat-media (feature) 18880ms
-- [x] ref-extract (refactor) 18773ms
-- [ ] ref-nombre (refactor) 68269ms
-- [x] ref-dup (refactor) 150014ms
-- [ ] ref-split (refactor) 17217ms — join(...).uno is not a function
-- [x] test-suma (tests) 17973ms
-- [x] test-nulo (tests) 25076ms
-- [x] test-csv (tests) 18032ms
-- [ ] doc-readme (docs) 5600ms
-- [x] doc-agents (docs) 11138ms
-- [x] doc-pkg (docs) 6131ms
+## Ronda M6 (post-mejoras, 25 tareas)
+
+| Métrica | Valor |
+|---------|-------|
+| Tareas PASS | 10/25 |
+| Fix tasks | 2/7 |
+| Feature tasks | 2/5 |
+| Refactor tasks | 2/4 |
+| Test tasks | 1/3 |
+| Doc tasks | 3/5 |
+
+**Mejoras M6**: checks resilientes (content + require fallback), 5 tareas nuevas.
+
+## Comandos de medición
+
+```bash
+npm run bench              # 25 tareas, criterio automático
+NOIRA_BENCH_MODEL=X npm run bench  # modelo específico
+```
