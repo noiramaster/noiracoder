@@ -1,6 +1,15 @@
 {
   "name": "noiracoder",
   "version": "0.1.0",
+  "description": "NoiraCoder — tu senior 24/7, gratis. Cliente fino Go + motor TS.",
+  "license": "MIT",
+  "author": "Kujtim Hoxha (OpenCode) + Noira",
+  "exports": {
+    ".": "./dist/index.js",
+    "./motor": "./dist/server/thin.js",
+    "./mcp": "./dist/mcp/registry.js",
+    "./router": "./dist/models/router.js"
+  },
   "description": "NoiraCoder - agential coding harness for the Noira ecosystem (multi-provider, cache-aware, sandboxed).",
   "type": "module",
   "license": "MIT",
