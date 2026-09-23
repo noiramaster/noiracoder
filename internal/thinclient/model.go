@@ -55,12 +55,13 @@ type Model struct {
 }
 
 var (
-	gold   = lipgloss.Color("#FBBF24")
-	green  = lipgloss.Color("#22c55e")
-	red    = lipgloss.Color("#ef4444")
-	yellow = lipgloss.Color("#eab308")
-	muted  = lipgloss.Color("#666666")
-	border = lipgloss.Color("#222222")
+	gold    = lipgloss.Color("#FBBF24")
+	green   = lipgloss.Color("#22c55e")
+	red     = lipgloss.Color("#ef4444")
+	yellow  = lipgloss.Color("#eab308")
+	magenta = lipgloss.Color("#D63384")
+	muted   = lipgloss.Color("#666666")
+	border  = lipgloss.Color("#222222")
 )
 
 // New crea el modelo y arranca el stream de eventos.
@@ -113,13 +114,31 @@ func (m *Model) addLine(s string) {
 }
 
 func (m *Model) setStatus() {
+	// M3.3: status bar mejorada con separadores y barra de cuota visual.
+	modelStr := m.modelName
+	if m.modelName != "(router)" {
+		modelStr = lipgloss.NewStyle().Foreground(magenta).Render(m.modelName)
+	}
 	parts := []string{
-		T(m.lang, "st_model") + ": " + m.modelName,
-		T(m.lang, "st_mode") + ": " + m.mode,
-		T(m.lang, "st_session") + ": " + or(m.sessName, "—"),
+		lipgloss.NewStyle().Foreground(muted).Render(T(m.lang, "st_model")) + ": " + modelStr,
+		lipgloss.NewStyle().Foreground(muted).Render(T(m.lang, "st_mode")) + ": " + m.mode,
+		lipgloss.NewStyle().Foreground(muted).Render(T(m.lang, "st_session")) + ": " + or(m.sessName, "—"),
 	}
 	if m.quotaPct > 0 {
-		parts = append(parts, F(m.lang, "st_quota", map[string]string{"pct": fmt.Sprint(m.quotaPct)}))
+		// M3.3: barra de cuota visual (█ vacío).
+		filled := m.quotaPct / 10
+		empty := 10 - filled
+		bar := strings.Repeat("█", filled) + strings.Repeat("░", empty)
+		barColor := green
+		if m.quotaPct >= 80 {
+			barColor = yellow
+		}
+		if m.quotaPct >= 95 {
+			barColor = red
+		}
+		parts = append(parts, lipgloss.NewStyle().Foreground(muted).Render(T(m.lang, "st_quota")+": ")+
+			lipgloss.NewStyle().Foreground(barColor).Render(bar)+
+			lipgloss.NewStyle().Foreground(muted).Render(fmt.Sprintf(" %d%%", m.quotaPct)))
 	}
 	if m.thinking {
 		parts = append(parts, F(m.lang, "st_thinking", map[string]string{"model": m.modelName}))
@@ -485,8 +504,18 @@ func (m *Model) handleCommand(text string) bool {
 	parts := strings.Fields(text)
 	switch parts[0] {
 	case "/help":
-		m.addLine(T(m.lang, "help_cmds"))
-		m.addLine(T(m.lang, "help_keys"))
+		// M3.4: ayuda formateada con secciones.
+		m.addLine("")
+		m.addLine(lipgloss.NewStyle().Foreground(gold).Bold(true).Render("  NOIRACODER — " + T(m.lang, "help_title")))
+		m.addLine("")
+		m.addLine(lipgloss.NewStyle().Foreground(magenta).Bold(true).Render("  " + T(m.lang, "help_section_cmds")))
+		m.addLine("  " + T(m.lang, "help_cmds"))
+		m.addLine("")
+		m.addLine(lipgloss.NewStyle().Foreground(magenta).Bold(true).Render("  " + T(m.lang, "help_section_keys")))
+		m.addLine("  " + T(m.lang, "help_keys"))
+		m.addLine("")
+		m.addLine(lipgloss.NewStyle().Foreground(muted).Render("  " + T(m.lang, "help_footer")))
+		m.addLine("")
 		return true
 	case "/sessions":
 		filter := ""
@@ -707,7 +736,12 @@ func str(ev Event, k string) string {
 func (m *Model) onEvent(ev Event) {
 	switch ev.Name {
 	case "hello":
-		m.addLine(T(m.lang, "connected"))
+		// M3.2: boot message con marca y atajos.
+		m.addLine("")
+		m.addLine(lipgloss.NewStyle().Foreground(gold).Bold(true).Render("  > NOIRACODER") +
+			lipgloss.NewStyle().Foreground(muted).Render("  "+T(m.lang, "connected")))
+		m.addLine(lipgloss.NewStyle().Foreground(muted).Render("  "+T(m.lang, "boot_hint")))
+		m.addLine("")
 		// M2.7: restaura panel + sesión recordada.
 		open, sid := m.client.GetUi()
 		m.panel.Open = open
@@ -800,8 +834,23 @@ func (m *Model) View() string {
 		return lipgloss.NewStyle().Foreground(red).Render("NOIRACODER: "+m.fatal+"\n") +
 			T(m.lang, "fatal_line") + "\n"
 	}
+	// M3.1: header con marca dorada + modelo en magenta si es manual.
+	modelLabel := m.modelName
+	if m.modelName != "(router)" {
+		modelLabel = lipgloss.NewStyle().Foreground(magenta).Bold(true).Render(m.modelName)
+	} else {
+		modelLabel = lipgloss.NewStyle().Foreground(muted).Render(m.modelName)
+	}
+	// M3.6: modo con color distintivo.
+	modeLabel := m.mode
+	switch m.mode {
+	case "build":
+		modeLabel = lipgloss.NewStyle().Foreground(green).Render("build")
+	case "plan":
+		modeLabel = lipgloss.NewStyle().Foreground(yellow).Render("plan")
+	}
 	head := lipgloss.NewStyle().Foreground(gold).Bold(true).Render("> NOIRACODER") +
-		"  " + lipgloss.NewStyle().Foreground(muted).Render(m.modelName+" · "+m.mode)
+		"  " + modelLabel + lipgloss.NewStyle().Foreground(muted).Render(" · ") + modeLabel
 	body := m.viewport.View()
 	var dlg string
 	if m.confirm != nil {

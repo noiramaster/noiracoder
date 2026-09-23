@@ -300,6 +300,21 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
 - [x] M4.3 `docs/evidence/perf.md`: metodología, rondas, latencia observada.
   Bench ronda 2: 14/20 (mejora +133% vs ronda 1).
 
+## M3 — ASPECTO Y EXPERIENCIA (completo, 2026-09-23)
+- [x] M3.1 Marca visual: magenta #D63384 añadido como color de acento; modelo
+  manual se muestra en magenta bold en header y status bar; modo build/plan
+  con color distintivo (verde/build, amarillo/plan).
+- [x] M3.2 Boot message: al conectar, banner "> NOIRACODER ready." con hint
+  de /help. Keys `boot_hint` + `connected` simplificadas en 7 idiomas.
+- [x] M3.3 Status bar: modelo en magenta si manual, modo con color, barra de
+  cuota visual (█░) con semáforo verde/amarillo/rojo.
+- [x] M3.4 Help formateado: `/help` muestra secciones con títulos en magenta
+  bold (comandos/teclado) + footer. Keys `help_title`, `help_section_cmds`,
+  `help_section_keys`, `help_footer` en 7 idiomas (99 keys × 7).
+- [x] M3.5 Errores: ya i18n con prefijos [error]/[motor]/[e]/[m] (M1).
+- [x] M3.6 Modo visible: build=verde, plan=amarillo en header + status.
+- [x] Tests: i18n-screen 0 fallos, adversarial 39/39, learn 17/17, Go panel OK.
+
 ## Pendientes (no bloquean Hito 1)
 - `README.md:16` apunta a `https://noiracoder.noira.sh/install` (dominio externo,
   fuera del repo): revisar en Hito 5.

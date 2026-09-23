@@ -185,6 +185,8 @@ const GO_ALLOW = new Set([
   "i18n %d: %s", "%s: %w",
   // M4.1: format strings de stats (latencia/score)
   "  %s  lat=%s  score=%.0f", "model/stats %d",
+  // M3: colores de marca y textos de catálogo en Go
+  "#D63384", " %d%%", "  NOIRACODER — ", "  > NOIRACODER",
   // Valor por defecto pre-catálogo (inglés; el catálogo lo sustituye)
   "…[truncated]",
 ]);
