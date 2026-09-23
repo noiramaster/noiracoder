@@ -1,0 +1,41 @@
+{
+  "name": "noiracoder",
+  "displayName": "NoiraCoder",
+  "description": "AI coding assistant powered by NoiraCoder motor",
+  "version": "0.1.0",
+  "publisher": "noira",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Other"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      { "command": "noiracoder.start", "title": "NoiraCoder: Start Motor" },
+      { "command": "noiracoder.sessions", "title": "NoiraCoder: Show Sessions" },
+      { "command": "noiracoder.ask", "title": "NoiraCoder: Ask AI" }
+    ],
+    "viewsContainers": {
+      "activitybar": [{ "id": "noiracoder", "title": "NoiraCoder", "icon": "$(robot)" }]
+    },
+    "views": {
+      "noiracoder": [{ "id": "noiracoder.sessions", "name": "Sessions", "type": "webview" }]
+    },
+    "configuration": {
+      "title": "NoiraCoder",
+      "properties": {
+        "noiracoder.port": { "type": "number", "default": 3800, "description": "Motor port" },
+        "noiracoder.token": { "type": "string", "default": "", "description": "Serve token" },
+        "noiracoder.autoStart": { "type": "boolean", "default": false, "description": "Auto-start motor" }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "tsc -p tsconfig.json",
+    "watch": "tsc -watch -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.0"
+  }
+}
