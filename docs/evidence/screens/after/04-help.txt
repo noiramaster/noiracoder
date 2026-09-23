@@ -1,0 +1,10 @@
+
+  NOIRACODER — ayuda
+
+  comandos
+  Comandos: /sessions [filtro] · /resume <n|id> · /new · /plan · /build · /model <id> · /lang · /title · /learn · /mcp · /parallel · /agents · /quit
+
+  teclado
+  Teclas: Enter enviar · ↑↓ historial · Ctrl+C cancela el turno (otra vez para salir)
+
+  escribe /help para ver esto de nuevo · Esc para cerrar el panel

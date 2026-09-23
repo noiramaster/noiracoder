@@ -1,0 +1,9 @@
+> Di hola mundo
+
+[undefined] {}
+[hello] {"protocol":2,"motor":"node-ts","modelo":"(router)"}
+[turn.echo] {"turnId":"0c82c3ac-c851-480f-8a47-86d381c981d7","message":"Di hola mundo"}
+[model.quota] {"turnId":"0c82c3ac-c851-480f-8a47-86d381c981d7","proveedor":"gratis-combinada","usadoPct":0,"aviso":null}
+[turn.thinking] {"turnId":"0c82c3ac-c851-480f-8a47-86d381c981d7"}
+[session.updated] {"id":"043903e1-7da4-4538-8989-e73cfd488689","nombre":"Di hola mundo"}
+[turn.end] {"turnId":"0c82c3ac-c851-480f-8a47-86d381c981d7","motivo":"done"}

@@ -1,0 +1,15 @@
+
+  Agent Roster
+
+  orchestrator — coordina sub-agentes, ejecuta tareas triviales directamente.
+    list, read, write, edit, bash, git
+  code — edita archivos, ejecuta bash y git.
+    read, write, edit, list, bash, git
+  research — busca en web y lee documentación.
+    list, read, bash, git
+  review — revisa cambios, corre tests, valida.
+    read, list, bash, git
+  security — revisión obligatoria para cambios de alto riesgo.
+    read, list, bash, git
+
+  usa /parallel para ejecutar security + review en paralelo.
