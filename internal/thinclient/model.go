@@ -412,7 +412,7 @@ func (m *Model) doEnter() (tea.Model, tea.Cmd) {
 }
 
 // slashCmds son los comandos con / (M1.3: nombres fijos en inglés).
-var slashCmds = []string{"/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/lang", "/title", "/learn", "/mouse", "/copy", "/mcp", "/quit"}
+var slashCmds = []string{"/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/lang", "/title", "/learn", "/mouse", "/copy", "/mcp", "/parallel", "/quit"}
 
 // completeSlash completa con Tab el comando empezado (prefijo único o común).
 func completeSlash(input string) string {
@@ -696,6 +696,19 @@ func (m *Model) handleCommand(text string) bool {
 			}
 		}
 		m.addLine("")
+		return true
+	case "/parallel":
+		// M5.2: toggle modo paralelo (checks de hoja en paralelo).
+		on, err := m.client.ParallelToggle()
+		if err != nil {
+			m.addLine(T(m.lang, "err_model") + err.Error())
+			return true
+		}
+		if on {
+			m.addLine(T(m.lang, "parallel_on"))
+		} else {
+			m.addLine(T(m.lang, "parallel_off"))
+		}
 		return true
 	case "/model":
 		if len(parts) < 2 {

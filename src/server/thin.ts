@@ -565,6 +565,28 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
       return;
     }
 
+    // ── Parallel toggle (M5.2) ──
+    if (req.method === "POST" && url.pathname === "/v1/parallel") {
+      try {
+        const { setParallelEnabled, isParallelEnabled } = await import("../core/parallel.js");
+        const next = !isParallelEnabled();
+        setParallelEnabled(next);
+        json(res, 200, { parallel: next });
+      } catch (e) {
+        json(res, 500, { error: e instanceof Error ? e.message : String(e) });
+      }
+      return;
+    }
+    if (req.method === "GET" && url.pathname === "/v1/parallel") {
+      try {
+        const { isParallelEnabled } = await import("../core/parallel.js");
+        json(res, 200, { parallel: isParallelEnabled() });
+      } catch (e) {
+        json(res, 500, { error: e instanceof Error ? e.message : String(e) });
+      }
+      return;
+    }
+
     // ── Idioma UI + respuestas (M1.5) ──
     if (req.method === "GET" && url.pathname === "/v1/langs") {
       const { LanguageSelector } = await import("../i18n/index.js");

@@ -189,6 +189,8 @@ const GO_ALLOW = new Set([
   "#D63384", " %d%%", "  NOIRACODER — ", "  > NOIRACODER",
   // M5.1: MCP strings en Go
   "  MCP Servers", " (%d tools)", "mcp/servers %d", "mcp/tools %d",
+  // M5.2: parallel strings en Go
+  "parallel %d",
   // Valor por defecto pre-catálogo (inglés; el catálogo lo sustituye)
   "…[truncated]",
 ]);

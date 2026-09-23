@@ -382,6 +382,24 @@ func (c *Client) McpTools() ([]McpTool, error) {
 	return resp.Tools, nil
 }
 
+// ParallelToggle toggles the parallel mode (POST /v1/parallel).
+func (c *Client) ParallelToggle() (bool, error) {
+	st, b, err := c.req("POST", "/v1/parallel", nil)
+	if err != nil {
+		return false, err
+	}
+	if st != 200 {
+		return false, fmt.Errorf("parallel %d", st)
+	}
+	var resp struct {
+		Parallel bool `json:"parallel"`
+	}
+	if err := json.Unmarshal(b, &resp); err != nil {
+		return false, err
+	}
+	return resp.Parallel, nil
+}
+
 // LangInfo es un idioma de interfaz (código + nombre nativo, del motor).
 type LangInfo struct {
 	Code   string `json:"code"`
