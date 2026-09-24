@@ -1,5 +1,25 @@
 [
   {
+    "slug": "mcp-servidores-reales",
+    "file": "2026-09-24-mcp-servidores-reales.html",
+    "date": "2026-09-24",
+    "category": "noiracoder",
+    "title_es": "NoiraCoder y la gestión de servidores reales con mcp-servidores-reales",
+    "title_en": "Exploring NoiraCoder: Managing Real-World MCP Servers from the Terminal",
+    "title_pt": "NoiraCoder e o Desafio dos MCP: Servidores Reais na Linha de Comando",
+    "title_fr": "NoiraCoder : l’agent de code en terminal pour gérer les serveurs réels avec MCP",
+    "title_de": "NoiraCoder: Der Terminal‑Code‑Agent für mcp-servidores-reales",
+    "title_it": "NoiraCoder e la gestione di mcp-servidores-reales",
+    "title_ar": "NoiraCoder: تشغيل خوادم MCP الحقيقية من سطر الأوامر",
+    "excerpt_es": "Descubre cómo NoiraCoder simplifica la administración de servidores reales usando el módulo mcp-servidores-reales.",
+    "excerpt_en": "Discover how NoiraCoder streamlines development, deployment, and monitoring of real MCP servers directly from your command line.",
+    "excerpt_pt": "Descubra como o NoiraCoder simplifica a gestão de servidores reais usando MCP direto no terminal.",
+    "excerpt_fr": "NoiraCoder simplifie l’administration des serveurs réels grâce à l’intégration du protocole MCP.",
+    "excerpt_de": "NoiraCoder erleichtert die Verwaltung und Entwicklung von echten MCP‑Servern direkt im Terminal.",
+    "excerpt_it": "Scopri come NoiraCoder semplifica l'amministrazione dei server reali MCP direttamente dal terminale.",
+    "excerpt_ar": "NoiraCoder يتيح لك إدارة خوادم MCP الواقعية بسهولة عبر الطرفية."
+  },
+  {
     "slug": "undo-redo-snapshots-automaticos",
     "file": "2026-09-23-undo-redo-snapshots-automaticos.html",
     "date": "2026-09-23",
