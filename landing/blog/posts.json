@@ -1,5 +1,25 @@
 [
   {
+    "slug": "deploy-vercel-con-confirmacion",
+    "file": "2026-09-25-deploy-vercel-con-confirmacion.html",
+    "date": "2026-09-25",
+    "category": "noiracoder",
+    "title_es": "Deploy en Vercel con Confirmación usando NoiraCoder",
+    "title_en": "Deploying to Vercel with Confirmation Using NoiraCoder",
+    "title_pt": "Deploy no Vercel com confirmação usando NoiraCoder",
+    "title_fr": "Déployer sur Vercel avec confirmation grâce à NoiraCoder",
+    "title_de": "NoiraCoder: Automatisiertes Vercel-Deployment mit Bestätigung im Terminal",
+    "title_it": "Deploy su Vercel con conferma automatica usando NoiraCoder",
+    "title_ar": "نشر مشروع على Vercel مع تأكيد باستخدام NoiraCoder",
+    "excerpt_es": "Aprende a desplegar tu proyecto en Vercel desde la terminal con NoiraCoder y una confirmación explícita.",
+    "excerpt_en": "Learn how NoiraCoder streamlines Vercel deployments while adding a safety confirmation step.",
+    "excerpt_pt": "Aprenda a automatizar o deploy no Vercel com confirmação interativa usando o agente de código NoiraCoder.",
+    "excerpt_fr": "NoiraCoder vous permet de déployer vos projets sur Vercel depuis le terminal tout en ajoutant une étape de confirmation pour éviter les erreurs.",
+    "excerpt_de": "Erfahren Sie, wie NoiraCoder ein Vercel-Deployment ausführt und dabei eine Bestätigung vom Nutzer einholt.",
+    "excerpt_it": "Scopri come NoiraCoder automatizza il deploy su Vercel richiedendo una conferma finale.",
+    "excerpt_ar": "دليل سريع لاستخدام NoiraCoder لنشر تطبيقك على Vercel مع خطوة تأكيد قبل النشر."
+  },
+  {
     "slug": "mcp-servidores-reales",
     "file": "2026-09-24-mcp-servidores-reales.html",
     "date": "2026-09-24",
