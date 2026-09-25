@@ -1,0 +1,10 @@
+{
+  "endpoint": "/health",
+  "description": "Health check endpoint response",
+  "response": {
+    "ok": true,
+    "app": "noiracoder",
+    "protocol": 2,
+    "engine": "node-ts"
+  }
+}

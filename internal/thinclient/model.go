@@ -27,31 +27,54 @@ type confirmState struct {
 	sessID string
 }
 
+// H10: opciones seleccionables
+type optionItem struct {
+	Key         string
+	Label       string
+	Recommended bool
+}
+
+type optionsState struct {
+	id     string
+	prompt string
+	items  []optionItem
+	idx    int // cursor para flechas
+}
+
+// H8: connect state — waiting for API key input after provider selection
+type connectState struct {
+	serviceID string
+	serviceName string
+	keyURL    string
+}
+
 type Model struct {
-	client    *Client
-	lang      string
-	viewport  viewport.Model
-	input     textarea.Model
-	messages  []string
-	status    string
-	modelName string
-	mode      string
-	quotaPct  int
-	sessionID string
-	sessName  string
-	turnID    string
-	thinking  bool
-	confirm   *confirmState
-	fatal     string
-	history   []string
-	histIdx   int
-	width     int
-	height    int
-	chatW     int
-	program   *tea.Program
-	panel     Panel
-	mouseOn   bool
-	renaming  bool
+	client      *Client
+	lang        string
+	viewport    viewport.Model
+	input       textarea.Model
+	messages    []string
+	status      string
+	modelName   string
+	mode        string
+	quotaPct    int
+	sessionID   string
+	sessName    string
+	turnID      string
+	thinking    bool
+	confirm     *confirmState
+	options     *optionsState // H10
+	fatal       string
+	history     []string
+	histIdx     int
+	width       int
+	height      int
+	chatW       int
+	program     *tea.Program
+	panel       Panel
+	mouseOn     bool
+	renaming    bool
+	connectMode *connectState // H8: waiting for API key input
 }
 
 var (
@@ -207,6 +230,14 @@ func or(a, b string) string {
 	return b
 }
 
+// maskKey masks an API key for display (e.g., "ghp_abc...xyz").
+func maskKey(key string) string {
+	if len(key) <= 8 {
+		return "****"
+	}
+	return key[:4] + "..." + key[len(key)-4:]
+}
+
 func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
@@ -314,6 +345,74 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			return m, nil
 		}
+		// H10: opciones seleccionables — teclado
+		if m.options != nil {
+			s := msg.String()
+			switch {
+			case s == "up", s == "up.Up":
+				if m.options.idx > 0 {
+					m.options.idx--
+				}
+				return m, nil
+			case s == "down", s == "down.Down":
+				if m.options.idx < len(m.options.items)-1 {
+					m.options.idx++
+				}
+				return m, nil
+			case s == "enter":
+				o := m.options
+				m.options = nil
+				if o.idx >= 0 && o.idx < len(o.items) {
+					item := o.items[o.idx]
+					go func() {
+						_ = m.client.Options(o.id, item.Key)
+					}()
+					// H8: if this is the connect form, enter connect mode
+					if o.id == "connect-form" {
+						m.connectMode = &connectState{
+							serviceID:   item.Key,
+							serviceName: item.Label,
+						}
+						m.addLine("")
+						m.addLine(lipgloss.NewStyle().Foreground(accent).Render("  " + T(m.lang, "connect_prompt_key")))
+						m.addLine("")
+					}
+				}
+				return m, nil
+			case s == "esc":
+				o := m.options
+				m.options = nil
+				go func() {
+					_ = m.client.Options(o.id, "")
+				}()
+				return m, nil
+			default:
+				// Número directo: 1-9
+				if len(s) == 1 && s[0] >= '1' && s[0] <= '9' {
+					idx := int(s[0] - '1')
+					if idx < len(m.options.items) {
+						o := m.options
+						m.options = nil
+						item := o.items[idx]
+						go func() {
+							_ = m.client.Options(o.id, item.Key)
+						}()
+						// H8: if this is the connect form, enter connect mode
+						if o.id == "connect-form" {
+							m.connectMode = &connectState{
+								serviceID:   item.Key,
+								serviceName: item.Label,
+							}
+							m.addLine("")
+							m.addLine(lipgloss.NewStyle().Foreground(accent).Render("  " + T(m.lang, "connect_prompt_key")))
+							m.addLine("")
+						}
+						return m, nil
+					}
+				}
+				return m, nil
+			}
+		}
 		switch msg.Type {
 		case tea.KeyCtrlC:
 			if m.turnID != "" {
@@ -393,6 +492,31 @@ func (m *Model) doEnter() (tea.Model, tea.Cmd) {
 		return m, nil
 	}
 	m.input.Reset()
+
+	// H8: connect mode — validate + store API key, don't create session
+	if m.connectMode != nil {
+		cm := m.connectMode
+		m.connectMode = nil
+		m.addLine("> " + maskKey(text))
+		m.thinking = true
+		m.setStatus()
+		go func() {
+			ok, errMsg := m.client.Connect(cm.serviceID, text)
+			m.thinking = false
+			if ok {
+				m.addLine(lipgloss.NewStyle().Foreground(gold).Render("  ✓ " + cm.serviceName + " " + T(m.lang, "connect_ok")))
+			} else {
+				m.addLine(lipgloss.NewStyle().Foreground(red).Render("  ✗ " + T(m.lang, "connect_fail") + ": " + errMsg))
+				m.addLine(lipgloss.NewStyle().Foreground(muted).Render("  " + T(m.lang, "connect_retry")))
+			}
+			m.setStatus()
+			if m.program != nil {
+				m.program.Send(tea.ClearScreen())
+			}
+		}()
+		return m, nil
+	}
+
 	m.history = append(m.history, text)
 	if len(m.history) > 200 {
 		m.history = m.history[len(m.history)-200:]
@@ -412,7 +536,7 @@ func (m *Model) doEnter() (tea.Model, tea.Cmd) {
 }
 
 // slashCmds son los comandos con / (M1.3: nombres fijos en inglés).
-var slashCmds = []string{"/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/lang", "/title", "/learn", "/mouse", "/copy", "/mcp", "/parallel", "/agents", "/quit"}
+var slashCmds = []string{"/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/lang", "/title", "/learn", "/mouse", "/copy", "/mcp", "/parallel", "/agents", "/connections", "/connect", "/explain", "/quit"}
 
 // completeSlash completa con Tab el comando empezado (prefijo único o común).
 func completeSlash(input string) string {
@@ -602,6 +726,87 @@ func (m *Model) handleCommand(text string) bool {
 		m.addLine(T(m.lang, "build_on"))
 		m.setStatus()
 		return true
+	case "/connections":
+		conns, err := m.client.Connections()
+		if err != nil {
+			m.addLine(T(m.lang, "err_model") + err.Error())
+			return true
+		}
+		m.addLine("")
+		m.addLine(lipgloss.NewStyle().Foreground(gold).Bold(true).Render("  " + "Connections"))
+		m.addLine("")
+		for _, c := range conns {
+			mark := lipgloss.NewStyle().Foreground(muted).Render("[ ]")
+			if c.Connected {
+				mark = lipgloss.NewStyle().Foreground(green).Render("[✓]")
+			}
+			m.addLine("  " + mark + " " + c.Name + " — " + lipgloss.NewStyle().Foreground(muted).Render(c.Note))
+		}
+		m.addLine("")
+		m.addLine(lipgloss.NewStyle().Foreground(muted).Render("  " + "Use: noira login --groq <key>  /  noira login --zen <key>"))
+		m.addLine("")
+		return true
+	case "/connect":
+		// H8: formulario de conexión — muestra opciones con enlaces y campo para pegar
+		conns, err := m.client.Connections()
+		if err != nil {
+			m.addLine(T(m.lang, "err_model") + err.Error())
+			return true
+		}
+		m.addLine("")
+		m.addLine(lipgloss.NewStyle().Foreground(gold).Bold(true).Render("  " + T(m.lang, "connect_title")))
+		m.addLine("")
+		// Top providers that are most commonly used
+		topProviders := map[string]bool{"openrouter": true, "github_token": true, "cloudflare_api_token": true}
+		optsList := []optionItem{}
+		for _, c := range conns {
+			status := lipgloss.NewStyle().Foreground(muted).Render("(disconnected)")
+			if c.Connected {
+				status = lipgloss.NewStyle().Foreground(green).Render("(connected)")
+			}
+			m.addLine("  " + status + " " + c.Name)
+			m.addLine("    " + lipgloss.NewStyle().Foreground(muted).Render(c.Note))
+			if c.ID != "kilo" {
+				m.addLine("    " + lipgloss.NewStyle().Foreground(accent).Render(T(m.lang, "connect_get_key")))
+				isTop := topProviders[c.ID] || topProviders[c.ID+"_token"]
+				optsList = append(optsList, optionItem{Key: c.ID, Label: c.Name, Recommended: isTop && !c.Connected})
+			}
+			m.addLine("")
+		}
+		// Si hay opciones pendientes, usar H10 options
+		if len(optsList) > 0 {
+			m.addLine(lipgloss.NewStyle().Foreground(muted).Render("  " + T(m.lang, "connect_prompt")))
+			m.options = &optionsState{
+				id:     "connect-form",
+				prompt: T(m.lang, "connect_select"),
+				items:  optsList,
+				idx:    0,
+			}
+		}
+		m.addLine("")
+		return true
+	case "/explain":
+		sid := m.sessionID
+		if len(parts) > 1 {
+			sid = parts[1]
+		}
+		if sid == "" {
+			m.addLine("No hay sesión activa. Usa /explain <session-id>")
+			return true
+		}
+		explain, err := m.client.Explain(sid)
+		if err != nil {
+			m.addLine(T(m.lang, "err_model") + err.Error())
+			return true
+		}
+		m.addLine("")
+		m.addLine(lipgloss.NewStyle().Foreground(gold).Bold(true).Render("  " + "Explain"))
+		m.addLine("")
+		m.addLine("  " + lipgloss.NewStyle().Foreground(muted).Render("pregunta:") + " " + explain.Pregunta)
+		m.addLine("  " + lipgloss.NewStyle().Foreground(muted).Render("respuesta:") + " " + explain.Respuesta)
+		m.addLine("  " + lipgloss.NewStyle().Foreground(muted).Render("turnos:") + " " + fmt.Sprint(explain.Turnos))
+		m.addLine("")
+		return true
 	case "/quit":
 		return true
 	case "/mouse":
@@ -765,7 +970,20 @@ func (m *Model) handleCommand(text string) bool {
 		m.setStatus()
 		return true
 	}
-	m.addLine(T(m.lang, "unknown_cmd"))
+	// H9: unknown command — suggest similar commands
+	input := parts[0]
+	similar := []string{}
+	known := []string{"/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/lang", "/title", "/learn", "/mouse", "/copy", "/mcp", "/parallel", "/agents", "/connections", "/explain", "/quit"}
+	for _, k := range known {
+		if strings.HasPrefix(k, input) || strings.Contains(k, input) {
+			similar = append(similar, k)
+		}
+	}
+	if len(similar) > 0 {
+		m.addLine(F(m.lang, "unknown_cmd", map[string]string{"cmd": input}) + " " + strings.Join(similar, ", "))
+	} else {
+		m.addLine(F(m.lang, "unknown_cmd", map[string]string{"cmd": input}) + " — " + T(m.lang, "help_cmds"))
+	}
 	return true
 }
 
@@ -793,11 +1011,22 @@ func (m *Model) onEvent(ev Event) {
 	switch ev.Name {
 	case "hello":
 		// M3.2: boot message con marca y atajos.
+		m.modelName = str(ev, "modelo")
+		if m.modelName == "" || m.modelName == "(router)" {
+			m.modelName = str(ev, "level")
+		}
 		m.addLine("")
 		m.addLine(lipgloss.NewStyle().Foreground(gold).Bold(true).Render("  > NOIRACODER") +
-			lipgloss.NewStyle().Foreground(muted).Render("  "+T(m.lang, "connected")))
-		m.addLine(lipgloss.NewStyle().Foreground(muted).Render("  "+T(m.lang, "boot_hint")))
+			lipgloss.NewStyle().Foreground(muted).Render("  "+T(m.lang, "boot_hint")))
+		// M3.3: líneas de bienvenida
 		m.addLine("")
+		m.addLine(lipgloss.NewStyle().Foreground(accent).Render("  " + T(m.lang, "welcome_line1")))
+		m.addLine(lipgloss.NewStyle().Foreground(muted).Render("  " + T(m.lang, "welcome_line2")))
+		m.addLine(lipgloss.NewStyle().Foreground(muted).Render("  " + T(m.lang, "welcome_line3")))
+		m.addLine(lipgloss.NewStyle().Foreground(muted).Render("  " + T(m.lang, "welcome_line4")))
+		m.addLine("")
+		m.setStatus()
+		m.refreshPanel()
 		// M2.7: restaura panel + sesión recordada.
 		open, sid := m.client.GetUi()
 		m.panel.Open = open
@@ -846,6 +1075,22 @@ func (m *Model) onEvent(ev Event) {
 		m.setStatus()
 	case "confirm.request":
 		m.confirm = &confirmState{id: str(ev, "confirmId"), detail: str(ev, "detalle")}
+	case "options.request":
+		items := []optionItem{}
+		if arr, ok := ev.Data["opciones"].([]interface{}); ok {
+			for _, v := range arr {
+				if obj, ok := v.(map[string]interface{}); ok {
+					items = append(items, optionItem{
+						Key:         obj["key"].(string),
+						Label:       obj["label"].(string),
+						Recommended: obj["recommended"] == true,
+					})
+				}
+			}
+		}
+		m.options = &optionsState{id: str(ev, "optionsId"), prompt: str(ev, "prompt"), items: items, idx: 0}
+	case "options.result":
+		m.addLine(F(m.lang, "confirm_result", map[string]string{"reason": str(ev, "choice") + ": " + str(ev, "motivo")}))
 	case "model.quota":
 		if v, ok := ev.Data["usadoPct"].(float64); ok {
 			m.quotaPct = int(v)
@@ -912,6 +1157,30 @@ func (m *Model) View() string {
 	if m.confirm != nil {
 		box := lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(yellow).Padding(0, 1)
 		dlg = "\n" + box.Render(T(m.lang, "confirm_q")+"\n"+m.confirm.detail+"\n\n"+T(m.lang, "confirm_yn")) + "\n"
+	}
+	// H10: opciones seleccionables — diálogo
+	if m.options != nil {
+		box := lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(yellow).Padding(0, 1)
+		lines := []string{}
+		if m.options.prompt != "" {
+			lines = append(lines, m.options.prompt)
+		} else {
+			lines = append(lines, T(m.lang, "options_title"))
+		}
+		for i, item := range m.options.items {
+			prefix := "  "
+			if i == m.options.idx {
+				prefix = "> "
+			}
+			suffix := ""
+			if item.Recommended {
+				suffix = " " + T(m.lang, "options_recommended")
+			}
+			lines = append(lines, prefix+fmt.Sprintf("%d", i+1)+". "+item.Label+suffix)
+		}
+		lines = append(lines, "")
+		lines = append(lines, T(m.lang, "options_hint"))
+		dlg = "\n" + box.Render(strings.Join(lines, "\n")) + "\n"
 	}
 	box := lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(border).Padding(0, 1)
 	in := box.Render(m.input.View())

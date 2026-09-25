@@ -1,35 +1,35 @@
-# Banco de calidad — ronda 2026-09-23T13:42:43.015Z (modelo: poolside/laguna-s-2.1:free)
+# Banco de calidad — ronda 2026-09-23T20:53:31.829Z (modelo: router)
 
-Resultado: **7/25** en 2299s.
+Resultado: **8/25** en 560s.
 
-- fix: 1/7
+- fix: 3/7
 - feature: 1/6
-- refactor: 3/5
+- refactor: 2/5
 - tests: 1/3
 - docs: 1/4
 
-- [ ] fix-suma (fix) 64945ms
-- [x] fix-nulo (fix) 19295ms
-- [ ] fix-typo (fix) 65729ms
-- [ ] fix-operador (fix) 65046ms
-- [ ] fix-offbyone (fix) 65032ms
-- [x] feat-invierte (feature) 150016ms
-- [ ] feat-clamp (feature) 150017ms
-- [ ] feat-csv (feature) 65209ms
-- [ ] feat-unico (feature) 65030ms — m.unicos is not a function
-- [ ] feat-media (feature) 65029ms — m.media is not a function
-- [x] ref-extract (refactor) 147826ms
-- [x] ref-nombre (refactor) 17566ms
-- [x] ref-dup (refactor) 64729ms
-- [ ] ref-split (refactor) 150026ms — join(...).uno is not a function
-- [ ] test-suma (tests) 150016ms
-- [x] test-nulo (tests) 150019ms
-- [ ] test-csv (tests) 65252ms
-- [x] doc-readme (docs) 150026ms
-- [ ] doc-agents (docs) 65094ms
-- [ ] doc-pkg (docs) 65035ms
-- [ ] fix-par (fix) 150016ms
-- [ ] fix-upper (fix) 150020ms
-- [ ] feat-filtrar (feature) 65187ms
-- [ ] ref-rename-export (refactor) 65029ms
-- [ ] doc-json (docs) 65056ms
+- [ ] fix-suma (fix) 1511ms
+- [x] fix-nulo (fix) 15430ms
+- [ ] fix-typo (fix) 916ms
+- [x] fix-operador (fix) 20140ms
+- [ ] fix-offbyone (fix) 12436ms
+- [ ] feat-invierte (feature) 851ms
+- [ ] feat-clamp (feature) 4530ms
+- [ ] feat-csv (feature) 841ms
+- [x] feat-unico (feature) 150016ms
+- [ ] feat-media (feature) 476ms — m.media is not a function
+- [ ] ref-extract (refactor) 772ms — m.doble is not a function
+- [x] ref-nombre (refactor) 20764ms
+- [x] ref-dup (refactor) 34063ms
+- [ ] ref-split (refactor) 150018ms — join(...).uno is not a function
+- [x] test-suma (tests) 31949ms
+- [ ] test-nulo (tests) 26473ms
+- [ ] test-csv (tests) 943ms
+- [ ] doc-readme (docs) 999ms
+- [ ] doc-agents (docs) 13725ms
+- [ ] doc-pkg (docs) 1275ms
+- [x] fix-par (fix) 23184ms
+- [ ] fix-upper (fix) 6861ms
+- [ ] feat-filtrar (feature) 6080ms
+- [ ] ref-rename-export (refactor) 3747ms
+- [x] doc-json (docs) 26170ms

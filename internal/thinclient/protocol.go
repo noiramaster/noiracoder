@@ -167,10 +167,92 @@ func (c *Client) Confirm(confirmID string, approved bool) error {
 	return nil
 }
 
+// H10: Options responde a una petición de opciones seleccionables.
+func (c *Client) Options(optionsID string, choice string) error {
+	st, b, err := c.req("POST", "/v1/options", map[string]any{
+		"optionsId": optionsID, "choice": choice,
+	})
+	if err != nil {
+		return err
+	}
+	if st != 200 {
+		return fmt.Errorf("options error %d: %s", st, strings.TrimSpace(string(b)))
+	}
+	return nil
+}
+
 // Cancel cancela el turno en curso.
 func (c *Client) Cancel(turnID string) error {
 	_, _, err := c.req("POST", "/v1/cancel", map[string]any{"turnId": turnID})
 	return err
+}
+
+// H8: Connections devuelve el estado de conexión de cada proveedor.
+type ProviderConnection struct {
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	Note      string `json:"note"`
+	Connected bool   `json:"connected"`
+}
+
+func (c *Client) Connections() ([]ProviderConnection, error) {
+	st, b, err := c.req("GET", "/v1/connections", nil)
+	if err != nil {
+		return nil, err
+	}
+	if st != 200 {
+		return nil, fmt.Errorf("connections %d", st)
+	}
+	var resp struct {
+		Providers []ProviderConnection `json:"providers"`
+	}
+	if err := json.Unmarshal(b, &resp); err != nil {
+		return nil, err
+	}
+	return resp.Providers, nil
+}
+
+// H8: Connect valida y almacena una credencial para un servicio.
+func (c *Client) Connect(serviceID string, value string) (bool, string) {
+	st, b, err := c.req("POST", "/v1/connect", map[string]any{
+		"serviceId": serviceID, "value": value,
+	})
+	if err != nil {
+		return false, err.Error()
+	}
+	var resp struct {
+		Ok    bool   `json:"ok"`
+		Error string `json:"error,omitempty"`
+	}
+	if err := json.Unmarshal(b, &resp); err != nil {
+		return false, string(b)
+	}
+	if st != 200 {
+		return false, resp.Error
+	}
+	return resp.Ok, ""
+}
+
+// H9: Explain devuelve el resumen del último turno de una sesión.
+type ExplainResult struct {
+	Pregunta string `json:"pregunta"`
+	Respuesta string `json:"respuesta"`
+	Turnos   int    `json:"turnos"`
+}
+
+func (c *Client) Explain(sessionID string) (*ExplainResult, error) {
+	st, b, err := c.req("POST", "/v1/explain", map[string]any{"sessionId": sessionID})
+	if err != nil {
+		return nil, err
+	}
+	if st != 200 {
+		return nil, fmt.Errorf("explain %d", st)
+	}
+	var resp ExplainResult
+	if err := json.Unmarshal(b, &resp); err != nil {
+		return nil, err
+	}
+	return &resp, nil
 }
 
 // Session resume de /v1/sessions.

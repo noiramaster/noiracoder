@@ -1,0 +1,283 @@
+[?9001h[?1004h[?25l[2J[m[H]0;Windows PowerShell[?25h> Pantalla Go (cliente fino del motor).
+[?25l[?1049h[2J[?2004h[?1002h[?1006h[?1003;1006h[H[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K[100C[38;2;251;191;36m[1m[H> NOIRACODER[m  [38;2;102;102;102mEsc volver[38;2;34;34;34m
+╭────────────────────────────╮
+│   [m+ Nueva sesión[11X[38;2;34;34;34m[11C│
+│ [m[proyecto][17X[38;2;34;34;34m[17C│
+│ [m────────────────────────── [38;2;34;34;34m│
+│ [m(sin sesiones guardadas)   [38;2;34;34;34m│
+│ [38;2;102;102;102m· ↑↓ mover[17X[38;2;34;34;34m[17C│
+│ [38;2;102;102;102m· Enter abrir[14X[38;2;34;34;34m[14C│
+│ [38;2;102;102;102m· escribir filtra[10X[38;2;34;34;34m[10C│
+│ [38;2;102;102;102m· r renombrar[14X[38;2;34;34;34m[14C│
+│ [38;2;102;102;102m· f fijar[18X[38;2;34;34;34m[18C│
+│ [38;2;102;102;102m· d borrar[17X[38;2;34;34;34m[17C│
+│ [38;2;102;102;102m· Tab chat[17X[38;2;34;34;34m[17C│
+│ [38;2;102;102;102m· Ctrl+B ocultar[11X[38;2;34;34;34m[11C│
+╰────────────────────────────╯[m[38;2;34;34;34m[H╭────────────────────────────╮[38;2;251;191;36m[1m> NOIRACODER[m  [38;2;251;191;36m[1mmedium[38;2;102;102;102m[22m · [38;2;34;197;94mbuild[K[38;2;34;34;34m
+│   [m+ Nueva sesión[11X[38;2;34;34;34m[11C│[K
+│ [m[proyecto][17X[38;2;34;34;34m[17C│  [m> NOIRACODER  escribe /help para ver comandos · Enter enviar · ↑↓   [38;2;34;34;34m
+│ [m────────────────────────── [38;2;34;34;34m│[K
+│ [m(sin sesiones guardadas)   [38;2;34;34;34m│  [mPide lo que quieras: arreglar un bug, añadir funcionalidad, expli   [38;2;34;34;34m
+│ [38;2;102;102;102m· ↑↓ mover[17X[38;2;34;34;34m[17C│  [mRecuerdo contexto entre sesiones. Empieza a escribir o prueba: /h   [38;2;34;34;34m
+│ [38;2;102;102;102m· Enter abrir[14X[38;2;34;34;34m[14C│  [mIdioma detectado: Español · Nivel: low[K[38;2;34;34;34m
+│ [38;2;102;102;102m· escribir filtra[10X[38;2;34;34;34m[10C│  [mTip: /connect para añadir claves API y ampliar cuota[K[38;2;34;34;34m
+│ [38;2;102;102;102m· r renombrar[14X[38;2;34;34;34m[14C│[K
+│ [38;2;102;102;102m· f fijar[18X[38;2;34;34;34m[18C│[K
+│ [38;2;102;102;102m· d borrar[17X[38;2;34;34;34m[17C│[K
+│ [38;2;102;102;102m· Tab chat[17X[38;2;34;34;34m[17C│[K
+│ [38;2;102;102;102m· Ctrl+B ocultar[11X[38;2;34;34;34m[11C│[K
+╰────────────────────────────╯[K[m
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[30X[38;2;34;34;34m[30C╭───────────────────────────────────────────────────────────────────╮ [m
+[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m
+[30X[38;2;34;34;34m[30C│ [37m┃[65X[38;2;34;34;34m[65C│ [m
+[30X[38;2;34;34;34m[30C│ [37m┃[65X[38;2;34;34;34m[65C│ [m
+[30X[38;2;34;34;34m[30C╰───────────────────────────────────────────────────────────────────╯ [m
+[30X[38;2;102;102;102m[30CEnter enviar · ↑↓ historial · Ctrl+C cancela turno/sale · /help comand[m
+[30X[38;2;102;102;102m[30CMayús+arrastrar selecciona · /copy última respuesta · /mouse off      [m
+[30X[38;2;102;102;102m[30Cmodelo: medium · modo[m: build[K
+                              [30X[38;2;102;102;102msesión: —                                                             [30;162H[m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 /conn[7m [27m[53X[m[53C [38;2;34;34;34m│ [m
+[30X[38;2;34;34;34m[30C│ [37m┃[65X[38;2;34;34;34m[65C│ [m
+[30X[38;2;34;34;34m[30C│ [37m┃[65X[38;2;34;34;34m[65C│ [m[H                                  Obtén una clave gratis en el enlace de arriba, luego pégala aqu   
+[K
+                                Selecciona un proveedor para conectar:[K
+[K
+[30X[38;2;234;179;8m[30C╭─────────────────────────────────────────────────────────────────────[m
+[30X[38;2;234;179;8m[30C│ [m¿Qué proveedor quieres conectar?[K
+[30X[38;2;234;179;8m[30C│ [m> 1. OpenRouter (recomendada)[K
+[30X[38;2;234;179;8m[30C│   [m2. Groq[K
+[30X[38;2;234;179;8m[30C│   [m3. Zen[K
+[30X[38;2;234;179;8m[30C│   [m4. GitHub (recomendada)[K
+[30X[38;2;234;179;8m[30C│   [m5. GitLab[K
+[30X[38;2;234;179;8m[30C│   [m6. Cloudflare (recomendada)[K
+[30X[38;2;234;179;8m[30C│   [m7. npm[K
+[30X[38;2;234;179;8m[30C│   [m8. Vercel[K
+[30X[38;2;234;179;8m[30C│   [m9. Docker Hub[K
+[30X[38;2;234;179;8m[30C│   [m10. Netlify[K
+[30X[38;2;234;179;8m[30C│   [m11. PyPI[K
+[30X[38;2;234;179;8m[30C│[K[m
+[30X[38;2;234;179;8m[30C│ [mpulsa un número, usa flechas+Enter, haz clic, o escribe tu propia re
+[30X[38;2;234;179;8m[30C╰─────────────────────────────────────────────────────────────────────[m
+[K
+[30X[38;2;34;34;34m[30C╭───────────────────────────────────────────────────────────────────╮ [m
+[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m
+[30X[38;2;34;34;34m[30C│ [37m┃[65X[38;2;34;34;34m[65C│ [m
+[30X[38;2;34;34;34m[30C│ [37m┃[65X[38;2;34;34;34m[65C│ [m
+[30X[38;2;34;34;34m[30C╰───────────────────────────────────────────────────────────────────╯ [m
+[30X[38;2;102;102;102m[30CEnter enviar · ↑↓ historial · Ctrl+C cancela turno/sale · /help comand[m
+[30X[38;2;102;102;102m[30CMayús+arrastrar selecciona · /copy última respuesta · /mouse off      [m
+[30X[38;2;102;102;102m[30Cmodelo: medium · modo[m: build[K
+                              [30X[38;2;102;102;102msesión: —                                                             [30;162H[m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m[38;2;34;34;34m[H╭────────────────────────────╮[38;2;251;191;36m[1m> NOIRACODER[m  [38;2;251;191;36m[1mmedium[38;2;102;102;102m[22m · [38;2;34;197;94mbuild[K[38;2;34;34;34m
+│   [m+ Nueva sesión[11X[38;2;34;34;34m[11C│    [mdeploy[K[38;2;34;34;34m
+│ [m[proyecto][17X[38;2;34;34;34m[17C│    [mObtén una clave gratis en el enlace de arriba, luego pégala aqu   [38;2;34;34;34m
+│ [m────────────────────────── [38;2;34;34;34m│[K
+│ [m(sin sesiones guardadas)   [38;2;34;34;34m│  [m(disconnected) Docker Hub[K[38;2;34;34;34m
+│ [38;2;102;102;102m· ↑↓ mover[17X[38;2;34;34;34m[17C│    [mdocker push[K[38;2;34;34;34m
+│ [38;2;102;102;102m· Enter abrir[14X[38;2;34;34;34m[14C│    [mObtén una clave gratis en el enlace de arriba, luego pégala aqu   [38;2;34;34;34m
+│ [38;2;102;102;102m· escribir filtra[10X[38;2;34;34;34m[10C│[K
+│ [38;2;102;102;102m· r renombrar[14X[38;2;34;34;34m[14C│  [m(disconnected) Netlify[K[38;2;34;34;34m
+│ [38;2;102;102;102m· f fijar[18X[38;2;34;34;34m[18C│    [mdeploy[K[38;2;34;34;34m
+│ [38;2;102;102;102m· d borrar[17X[38;2;34;34;34m[17C│    [mObtén una clave gratis en el enlace de arriba, luego pégala aqu   [38;2;34;34;34m
+│ [38;2;102;102;102m· Tab chat[17X[38;2;34;34;34m[17C│[K
+│ [38;2;102;102;102m· Ctrl+B ocultar[11X[38;2;34;34;34m[11C│  [m(disconnected) PyPI[K[38;2;34;34;34m
+╰────────────────────────────╯    [mtwine upload[K
+                                  Obtén una clave gratis en el enlace de arriba, luego pégala aqu   
+[K
+                                Selecciona un proveedor para conectar:[K
+[K
+[K
+                                Pega tu clave API y pulsa Enter:[K
+[K
+[30X[38;2;34;34;34m[30C╭───────────────────────────────────────────────────────────────────╮ [m
+[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m
+[30X[38;2;34;34;34m[30C│ [37m┃[65X[38;2;34;34;34m[65C│ [m
+[30X[38;2;34;34;34m[30C│ [37m┃[65X[38;2;34;34;34m[65C│ [m
+[30X[38;2;34;34;34m[30C╰───────────────────────────────────────────────────────────────────╯ [m
+[30X[38;2;102;102;102m[30CEnter enviar · ↑↓ historial · Ctrl+C cancela turno/sale · /help comand[m
+[30X[38;2;102;102;102m[30CMayús+arrastrar selecciona · /copy última respuesta · /mouse off      [m
+[30X[38;2;102;102;102m[30Cmodelo: medium · modo[m: build[K
+                              [30X[38;2;102;102;102msesión: —                                                             [30;162H[m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 ghp_f[7m [27m[53X[m[53C [38;2;34;34;34m│ [m
+[30X[38;2;34;34;34m[30C│ [37m┃[65X[38;2;34;34;34m[65C│ [m
+[30X[38;2;34;34;34m[30C│ [37m┃[65X[38;2;34;34;34m[65C│ [m[38;2;34;34;34m[2;1H│   [m+ Nueva sesión[11X[38;2;34;34;34m[11C│  [m(disconnected) Vercel[K[38;2;34;34;34m
+│ [m[proyecto][17X[38;2;34;34;34m[17C│    [mdeploy[K[38;2;34;34;34m
+│ [m────────────────────────── [38;2;34;34;34m│    [mObtén una clave gratis en el enlace de arriba, luego pégala aqu   [38;2;34;34;34m
+│ [m(sin sesiones guardadas)   [38;2;34;34;34m│[K
+│ [38;2;102;102;102m· ↑↓ mover[17X[38;2;34;34;34m[17C│  [m(disconnected) Docker Hub[K[38;2;34;34;34m
+│ [38;2;102;102;102m· Enter abrir[14X[38;2;34;34;34m[14C│    [mdocker push[K[38;2;34;34;34m
+│ [38;2;102;102;102m· escribir filtra[10X[38;2;34;34;34m[10C│    [mObtén una clave gratis en el enlace de arriba, luego pégala aqu   [38;2;34;34;34m
+│ [38;2;102;102;102m· r renombrar[14X[38;2;34;34;34m[14C│[K
+│ [38;2;102;102;102m· f fijar[18X[38;2;34;34;34m[18C│  [m(disconnected) Netlify[K[38;2;34;34;34m
+│ [38;2;102;102;102m· d borrar[17X[38;2;34;34;34m[17C│    [mdeploy[K[38;2;34;34;34m
+│ [38;2;102;102;102m· Tab chat[17X[38;2;34;34;34m[17C│    [mObtén una clave gratis en el enlace de arriba, luego pégala aqu   [38;2;34;34;34m
+│ [38;2;102;102;102m· Ctrl+B ocultar[11X[38;2;34;34;34m[11C│[K
+╰────────────────────────────╯  [m(disconnected) PyPI[K
+                                  twine upload[K
+                                  Obtén una clave gratis en el enlace de arriba, luego pégala aqu   
+[K
+                                Selecciona un proveedor para conectar:[K[20;1H[K
+                                Pega tu clave API y pulsa Enter:[K[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 ghp_fake_i[7m [27m[48X[m[48C [38;2;34;34;34m│ [m[38;2;34;34;34m[2;1H│   [m+ Nueva sesión[11X[38;2;34;34;34m[11C│    [mdeploy[K[38;2;34;34;34m
+│ [m[proyecto][17X[38;2;34;34;34m[17C│    [mObtén una clave gratis en el enlace de arriba, luego pégala aqu   [38;2;34;34;34m
+│ [m────────────────────────── [38;2;34;34;34m│[K
+│ [m(sin sesiones guardadas)   [38;2;34;34;34m│  [m(disconnected) Docker Hub[K[38;2;34;34;34m
+│ [38;2;102;102;102m· ↑↓ mover[17X[38;2;34;34;34m[17C│    [mdocker push[K[38;2;34;34;34m
+│ [38;2;102;102;102m· Enter abrir[14X[38;2;34;34;34m[14C│    [mObtén una clave gratis en el enlace de arriba, luego pégala aqu   [38;2;34;34;34m
+│ [38;2;102;102;102m· escribir filtra[10X[38;2;34;34;34m[10C│[K
+│ [38;2;102;102;102m· r renombrar[14X[38;2;34;34;34m[14C│  [m(disconnected) Netlify[K[38;2;34;34;34m
+│ [38;2;102;102;102m· f fijar[18X[38;2;34;34;34m[18C│    [mdeploy[K[38;2;34;34;34m
+│ [38;2;102;102;102m· d borrar[17X[38;2;34;34;34m[17C│    [mObtén una clave gratis en el enlace de arriba, luego pégala aqu   [38;2;34;34;34m
+│ [38;2;102;102;102m· Tab chat[17X[38;2;34;34;34m[17C│[K
+│ [38;2;102;102;102m· Ctrl+B ocultar[11X[38;2;34;34;34m[11C│  [m(disconnected) PyPI[K[38;2;34;34;34m
+╰────────────────────────────╯    [mtwine upload[K
+                                  Obtén una clave gratis en el enlace de arriba, luego pégala aqu   
+[K
+                                Selecciona un proveedor para conectar:[K
+[K[20;1H                                Pega tu clave API y pulsa Enter:[K
+[K[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 ghp_fake_invalid_[7m [27m[41X[m[41C [38;2;34;34;34m│ [m[38;2;34;34;34m[2;1H│   [m+ Nueva sesión[11X[38;2;34;34;34m[11C│  [m(disconnected) Vercel[K[38;2;34;34;34m
+│ [m[proyecto][17X[38;2;34;34;34m[17C│    [mdeploy[K[38;2;34;34;34m
+│ [m────────────────────────── [38;2;34;34;34m│    [mObtén una clave gratis en el enlace de arriba, luego pégala aqu   [38;2;34;34;34m
+│ [m(sin sesiones guardadas)   [38;2;34;34;34m│[K
+│ [38;2;102;102;102m· ↑↓ mover[17X[38;2;34;34;34m[17C│  [m(disconnected) Docker Hub[K[38;2;34;34;34m
+│ [38;2;102;102;102m· Enter abrir[14X[38;2;34;34;34m[14C│    [mdocker push[K[38;2;34;34;34m
+│ [38;2;102;102;102m· escribir filtra[10X[38;2;34;34;34m[10C│    [mObtén una clave gratis en el enlace de arriba, luego pégala aqu   [38;2;34;34;34m
+│ [38;2;102;102;102m· r renombrar[14X[38;2;34;34;34m[14C│[K
+│ [38;2;102;102;102m· f fijar[18X[38;2;34;34;34m[18C│  [m(disconnected) Netlify[K[38;2;34;34;34m
+│ [38;2;102;102;102m· d borrar[17X[38;2;34;34;34m[17C│    [mdeploy[K[38;2;34;34;34m
+│ [38;2;102;102;102m· Tab chat[17X[38;2;34;34;34m[17C│    [mObtén una clave gratis en el enlace de arriba, luego pégala aqu   [38;2;34;34;34m
+│ [38;2;102;102;102m· Ctrl+B ocultar[11X[38;2;34;34;34m[11C│[K
+╰────────────────────────────╯  [m(disconnected) PyPI[K
+                                  twine upload[K
+                                  Obtén una clave gratis en el enlace de arriba, luego pégala aqu   
+[K
+                                Selecciona un proveedor para conectar:[K[20;1H[K
+                                Pega tu clave API y pulsa Enter:[K[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 ghp_fake_invalid_key_1234[7m [27m[33X[m[33C [38;2;34;34;34m│ [m[38;2;34;34;34m[2;1H│   [m+ Nueva sesión[11X[38;2;34;34;34m[11C│    [mObtén una clave gratis en el enlace de arriba, luego pégala aqu   [38;2;34;34;34m
+│ [m[proyecto][17X[38;2;34;34;34m[17C│[K
+│ [m────────────────────────── [38;2;34;34;34m│  [m(disconnected) Docker Hub[K[38;2;34;34;34m
+│ [m(sin sesiones guardadas)   [38;2;34;34;34m│    [mdocker push[K[38;2;34;34;34m
+│ [38;2;102;102;102m· ↑↓ mover[17X[38;2;34;34;34m[17C│    [mObtén una clave gratis en el enlace de arriba, luego pégala aqu   [38;2;34;34;34m
+│ [38;2;102;102;102m· Enter abrir[14X[38;2;34;34;34m[14C│[K
+│ [38;2;102;102;102m· escribir filtra[10X[38;2;34;34;34m[10C│  [m(disconnected) Netlify[K[38;2;34;34;34m
+│ [38;2;102;102;102m· r renombrar[14X[38;2;34;34;34m[14C│    [mdeploy[K[38;2;34;34;34m
+│ [38;2;102;102;102m· f fijar[18X[38;2;34;34;34m[18C│    [mObtén una clave gratis en el enlace de arriba, luego pégala aqu   [38;2;34;34;34m
+│ [38;2;102;102;102m· d borrar[17X[38;2;34;34;34m[17C│[K
+│ [38;2;102;102;102m· Tab chat[17X[38;2;34;34;34m[17C│  [m(disconnected) PyPI[K[38;2;34;34;34m
+│ [38;2;102;102;102m· Ctrl+B ocultar[11X[38;2;34;34;34m[11C│    [mtwine upload[K[38;2;34;34;34m
+╰────────────────────────────╯    [mObtén una clave gratis en el enlace de arriba, luego pégala aqu   
+[K
+                                Selecciona un proveedor para conectar:[K[18;1H[K
+                                Pega tu clave API y pulsa Enter:[K[21;1H                              > ghp_...7890[K[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m
+[30X[38;2;34;34;34m[30C│ [37m┃[65X[38;2;34;34;34m[65C│ [m
+[30X[38;2;34;34;34m[30C│ [37m┃[65X[38;2;34;34;34m[65C│ [m[30;1H                              [30X[38;2;102;102;102msesión: — · pensando… (medium)                                        [30;141H[m[2J[H[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K[100C[38;2;34;34;34m[H╭────────────────────────────╮[38;2;251;191;36m[1m> NOIRACODER[m  [38;2;251;191;36m[1mmedium[38;2;102;102;102m[22m · [38;2;34;197;94mbuild[K[38;2;34;34;34m
+│   [m+ Nueva sesión[11X[38;2;34;34;34m[11C│  [m(disconnected) Docker Hub[K[38;2;34;34;34m
+│ [m[proyecto][17X[38;2;34;34;34m[17C│    [mdocker push[K[38;2;34;34;34m
+│ [m────────────────────────── [38;2;34;34;34m│    [mObtén una clave gratis en el enlace de arriba, luego pégala aqu   [38;2;34;34;34m
+│ [m(sin sesiones guardadas)   [38;2;34;34;34m│[K
+│ [38;2;102;102;102m· ↑↓ mover[17X[38;2;34;34;34m[17C│  [m(disconnected) Netlify[K[38;2;34;34;34m
+│ [38;2;102;102;102m· Enter abrir[14X[38;2;34;34;34m[14C│    [mdeploy[K[38;2;34;34;34m
+│ [38;2;102;102;102m· escribir filtra[10X[38;2;34;34;34m[10C│    [mObtén una clave gratis en el enlace de arriba, luego pégala aqu   [38;2;34;34;34m
+│ [38;2;102;102;102m· r renombrar[14X[38;2;34;34;34m[14C│[K
+│ [38;2;102;102;102m· f fijar[18X[38;2;34;34;34m[18C│  [m(disconnected) PyPI[K[38;2;34;34;34m
+│ [38;2;102;102;102m· d borrar[17X[38;2;34;34;34m[17C│    [mtwine upload[K[38;2;34;34;34m
+│ [38;2;102;102;102m· Tab chat[17X[38;2;34;34;34m[17C│    [mObtén una clave gratis en el enlace de arriba, luego pégala aqu   [38;2;34;34;34m
+│ [38;2;102;102;102m· Ctrl+B ocultar[11X[38;2;34;34;34m[11C│[K
+╰────────────────────────────╯  [mSelecciona un proveedor para conectar:[K
+[K
+[K
+                                Pega tu clave API y pulsa Enter:[K
+[K
+                              > ghp_...7890[K
+                                ✗ Error de conexión: Token inválido (HTTP 401)[K
+                                Intenta con una clave válida, o pulsa Esc para cancelar.[K
+[30X[38;2;34;34;34m[30C╭───────────────────────────────────────────────────────────────────╮ [m
+[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m
+[30X[38;2;34;34;34m[30C│ [37m┃[65X[38;2;34;34;34m[65C│ [m
+[30X[38;2;34;34;34m[30C│ [37m┃[65X[38;2;34;34;34m[65C│ [m
+[30X[38;2;34;34;34m[30C╰───────────────────────────────────────────────────────────────────╯ [m
+[30X[38;2;102;102;102m[30CEnter enviar · ↑↓ historial · Ctrl+C cancela turno/sale · /help comand[m
+[30X[38;2;102;102;102m[30CMayús+arrastrar selecciona · /copy última respuesta · /mouse off      [m
+                              [30X[38;2;102;102;102mmodelo: medium · modo[m: build · sesión: —                              
+[K[100C[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 /s[7m [27m[56X[m[56C [38;2;34;34;34m│ [m
+[30X[38;2;34;34;34m[30C│ [37m┃[65X[38;2;34;34;34m[65C│ [m
+[30X[38;2;34;34;34m[30C│ [37m┃[65X[38;2;34;34;34m[65C│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 /sessions[7m [27m[49X[m[49C [38;2;34;34;34m│ [m[38;2;34;34;34m[2;1H│   [m+ Nueva sesión[11X[38;2;34;34;34m[11C│    [mdocker push[K[38;2;34;34;34m
+│ [m[proyecto][17X[38;2;34;34;34m[17C│    [mObtén una clave gratis en el enlace de arriba, luego pégala aqu   [38;2;34;34;34m
+│ [m────────────────────────── [38;2;34;34;34m│[K
+│ [m(sin sesiones guardadas)   [38;2;34;34;34m│  [m(disconnected) Netlify[K[38;2;34;34;34m
+│ [38;2;102;102;102m· ↑↓ mover[17X[38;2;34;34;34m[17C│    [mdeploy[K[38;2;34;34;34m
+│ [38;2;102;102;102m· Enter abrir[14X[38;2;34;34;34m[14C│    [mObtén una clave gratis en el enlace de arriba, luego pégala aqu   [38;2;34;34;34m
+│ [38;2;102;102;102m· escribir filtra[10X[38;2;34;34;34m[10C│[K
+│ [38;2;102;102;102m· r renombrar[14X[38;2;34;34;34m[14C│  [m(disconnected) PyPI[K[38;2;34;34;34m
+│ [38;2;102;102;102m· f fijar[18X[38;2;34;34;34m[18C│    [mtwine upload[K[38;2;34;34;34m
+│ [38;2;102;102;102m· d borrar[17X[38;2;34;34;34m[17C│    [mObtén una clave gratis en el enlace de arriba, luego pégala aqu   [38;2;34;34;34m
+│ [38;2;102;102;102m· Tab chat[17X[38;2;34;34;34m[17C│[K
+│ [38;2;102;102;102m· Ctrl+B ocultar[11X[38;2;34;34;34m[11C│  [mSelecciona un proveedor para conectar:[K[38;2;34;34;34m
+╰────────────────────────────╯[K[m[16;1H                                Pega tu clave API y pulsa Enter:[K
+[K
+                              > ghp_...7890[K
+                                ✗ Error de conexión: Token inválido (HTTP 401)[K
+                                Intenta con una clave válida, o pulsa Esc para cancelar.[K
+                              (sin sesiones guardadas)[K[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m
+[30X[38;2;34;34;34m[30C│ [37m┃[65X[38;2;34;34;34m[65C│ [m
+[30X[38;2;34;34;34m[30C│ [37m┃[65X[38;2;34;34;34m[65C│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m

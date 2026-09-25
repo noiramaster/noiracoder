@@ -1,0 +1,14 @@
+{
+  "endpoint": "boot",
+  "description": "Boot banner — initial greeting when NoiraCoder starts",
+  "lines": [
+    "> NOIRACODER v0.1.0",
+    "> Motor: node-ts | Protocolo: v2",
+    "> Nivel: low | Idioma: en",
+    "> Modelos: 17 (6 cloud + 11 local)",
+    "> MCP: 3 servidores configurados (0 activos)",
+    "> H1 aprendizaje: activo",
+    "> H2 paralelo: activo",
+    "> type /help for commands · Enter to send · ↑↓ history"
+  ]
+}

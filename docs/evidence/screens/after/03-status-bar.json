@@ -1,0 +1,5 @@
+{
+  "endpoint": "status-bar",
+  "description": "Status bar showing model, mode, session, quota",
+  "example": "model: (router) · mode: build · session: my-project · quota: 42%"
+}

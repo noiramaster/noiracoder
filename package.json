@@ -1,25 +1,17 @@
 {
   "name": "noiracoder",
   "version": "0.1.0",
-  "description": "NoiraCoder — tu senior 24/7, gratis. Cliente fino Go + motor TS.",
+  "description": "NoiraCoder - agential coding harness for the Noira ecosystem (multi-provider, cache-aware, sandboxed).",
   "license": "MIT",
   "author": "Kujtim Hoxha (OpenCode) + Noira",
   "exports": {
-    ".": "./dist/index.js",
-    "./motor": "./dist/server/thin.js",
-    "./mcp": "./dist/mcp/registry.js",
-    "./router": "./dist/models/router.js"
+    ".": "./dist/index.js"
   },
-  "description": "NoiraCoder - agential coding harness for the Noira ecosystem (multi-provider, cache-aware, sandboxed).",
   "type": "module",
-  "license": "MIT",
   "bin": {
     "noiracoder": "bin/noiracoder.mjs",
     "noira": "bin/noiracoder.mjs",
     "nc": "bin/noiracoder.mjs"
-  },
-  "exports": {
-    ".": "./dist/index.js"
   },
   "files": [
     "dist",
@@ -53,9 +45,12 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",
     "ink": "^7.1.1",
-    "react": "^19.2.8"
+    "react": "^19.2.8",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@modelcontextprotocol/server-everything": "^2026.8.31",
+    "@modelcontextprotocol/server-filesystem": "^2026.8.31",
     "@types/node": "^22.0.0",
     "@types/react": "^19.2.18",
     "typescript": "^5.6.0"

@@ -1,0 +1,11 @@
+{
+  "endpoint": "/v1/events (SSE)",
+  "description": "Turn streaming events: text tokens, tool calls, model switches",
+  "events": [
+    "turn.echo",
+    "turn.text",
+    "turn.tool_start",
+    "turn.tool_end",
+    "turn.end"
+  ]
+}

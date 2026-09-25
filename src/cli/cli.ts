@@ -172,14 +172,21 @@ export async function cliMain(argv: string[], meta?: { invokedAs?: string }): Pr
     case "login": {
       // `noira login --groq <key>` → guarda directo sin OAuth
       const loginArgs = args.prompt; // contiene "login --groq <key> ..." si hubo flags
-      const providerMap: Record<string, string> = { "--groq": "groq", "--cerebras": "cerebras", "--mistral": "mistral", "--github": "github", "--nvidia": "nvidia", "--cohere": "cohere", "--zen": "zen", "--huggingface": "huggingface", "--hf": "huggingface", "--vercel": "vercel" };
+      const providerMap: Record<string, string> = { "--groq": "groq", "--cerebras": "cerebras", "--mistral": "mistral", "--github": "github", "--nvidia": "nvidia", "--cohere": "cohere", "--zen": "zen", "--huggingface": "huggingface", "--hf": "huggingface", "--vercel": "vercel", "--cloudflare": "cloudflare", "--npm": "npm_token", "--gitlab": "gitlab_token", "--bitbucket": "bitbucket_password", "--docker": "docker_token", "--pypi": "pypi_token", "--netlify": "netlify_token", "--rubygems": "rubygems_key" };
       for (const [flag, key] of Object.entries(providerMap)) {
         const idx = loginArgs.indexOf(flag);
         if (idx !== -1) {
           const after = loginArgs.slice(idx + flag.length).trim().split(/\s+/)[0];
           if (after && after.length > 8 && !after.startsWith("--")) {
-            await storeKey(key, after);
-            log.ok(`[ok] ${key} guardado en ~/.noirarc/keys.json`);
+            // Use credentials.ts for new services, keys.ts for legacy providers
+            const isCredService = ["npm_token", "gitlab_token", "bitbucket_password", "docker_token", "pypi_token", "netlify_token", "rubygems_key"].includes(key);
+            if (isCredService) {
+              const { storeCredential } = await import("../auth/credentials.js");
+              await storeCredential(key, after);
+            } else {
+              await storeKey(key, after);
+            }
+            log.ok(`[ok] ${key} guardado en ~/.noirarc/`);
             return 0;
           } else {
             log.error(`Falta key para ${flag}: noira login ${flag} <tu-key>`);

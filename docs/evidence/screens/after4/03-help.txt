@@ -1,0 +1,95 @@
+[?9001h[?1004h[?25l[2J[m[H]0;Windows PowerShell[?25h> Pantalla Go (cliente fino del motor).
+[?25l[?1049h[2J[?2004h[?1002h[?1006h[?1003;1006h[H[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K[100C[38;2;251;191;36m[1m[H> NOIRACODER[m  [38;2;102;102;102mEsc volver[38;2;34;34;34m
+╭────────────────────────────╮
+│   [m+ Nueva sesión[11X[38;2;34;34;34m[11C│
+│ [m[proyecto][17X[38;2;34;34;34m[17C│
+│ [m────────────────────────── [38;2;34;34;34m│
+│ [m(sin sesiones guardadas)   [38;2;34;34;34m│
+│ [38;2;102;102;102m· ↑↓ mover[17X[38;2;34;34;34m[17C│
+│ [38;2;102;102;102m· Enter abrir[14X[38;2;34;34;34m[14C│
+│ [38;2;102;102;102m· escribir filtra[10X[38;2;34;34;34m[10C│
+│ [38;2;102;102;102m· r renombrar[14X[38;2;34;34;34m[14C│
+│ [38;2;102;102;102m· f fijar[18X[38;2;34;34;34m[18C│
+│ [38;2;102;102;102m· d borrar[17X[38;2;34;34;34m[17C│
+│ [38;2;102;102;102m· Tab chat[17X[38;2;34;34;34m[17C│
+│ [38;2;102;102;102m· Ctrl+B ocultar[11X[38;2;34;34;34m[11C│
+╰────────────────────────────╯[m[38;2;251;191;36m[1m[H> NOIRACODER[m  [38;2;102;102;102mEsc volver[K[38;2;34;34;34m
+╭────────────────────────────╮[K
+│   [m+ Nueva sesión[11X[38;2;34;34;34m[11C│[K
+│ [m[proyecto][17X[38;2;34;34;34m[17C│[K
+│ [m────────────────────────── [38;2;34;34;34m│[K
+│ [m[1mHoy[22m[24X[38;2;34;34;34m[24C│[K
+│   [mghp_fake_test_k… hace …  [38;2;34;34;34m│[K
+│ [38;2;102;102;102m· ↑↓ mover[17X[38;2;34;34;34m[17C│[K
+│ [38;2;102;102;102m· Enter abrir[14X[38;2;34;34;34m[14C│[K
+│ [38;2;102;102;102m· escribir filtra[10X[38;2;34;34;34m[10C│[K
+│ [38;2;102;102;102m· r renombrar[14X[38;2;34;34;34m[14C│[K
+│ [38;2;102;102;102m· f fijar[18X[38;2;34;34;34m[18C│[K
+│ [38;2;102;102;102m· d borrar[17X[38;2;34;34;34m[17C│[K
+│ [38;2;102;102;102m· Tab chat[17X[38;2;34;34;34m[17C│[K
+│ [38;2;102;102;102m· Ctrl+B ocultar[11X[38;2;34;34;34m[11C│[K
+╰────────────────────────────╯[K[70C[m[38;2;34;34;34m[H╭────────────────────────────╮[38;2;251;191;36m[1m> NOIRACODER[m  [38;2;251;191;36m[1mmedium[38;2;102;102;102m[22m · [38;2;34;197;94mbuild[K[38;2;34;34;34m
+│   [m+ Nueva sesión[11X[38;2;34;34;34m[11C│[K
+│ [m[proyecto][17X[38;2;34;34;34m[17C│  [m> NOIRACODER  escribe /help para ver comandos · Enter enviar · ↑↓   [38;2;34;34;34m
+│ [m────────────────────────── [38;2;34;34;34m│[K
+│ [m[1mHoy[22m[24X[38;2;34;34;34m[24C│  [mPide lo que quieras: arreglar un bug, añadir funcionalidad, expli   [38;2;34;34;34m
+│   [mghp_fake_test_k… hace …  [38;2;34;34;34m│  [mRecuerdo contexto entre sesiones. Empieza a escribir o prueba: /h   [38;2;34;34;34m
+│ [38;2;102;102;102m· ↑↓ mover[17X[38;2;34;34;34m[17C│  [mIdioma detectado: Español · Nivel: low[K[38;2;34;34;34m
+│ [38;2;102;102;102m· Enter abrir[14X[38;2;34;34;34m[14C│  [mTip: /connect para añadir claves API y ampliar cuota[K[38;2;34;34;34m
+│ [38;2;102;102;102m· escribir filtra[10X[38;2;34;34;34m[10C│[K
+│ [38;2;102;102;102m· r renombrar[14X[38;2;34;34;34m[14C│[K
+│ [38;2;102;102;102m· f fijar[18X[38;2;34;34;34m[18C│[K
+│ [38;2;102;102;102m· d borrar[17X[38;2;34;34;34m[17C│[K
+│ [38;2;102;102;102m· Tab chat[17X[38;2;34;34;34m[17C│[K
+│ [38;2;102;102;102m· Ctrl+B ocultar[11X[38;2;34;34;34m[11C│[K
+╰────────────────────────────╯[K[m
+[K
+[K
+[K
+[K
+[K
+[K
+[30X[38;2;34;34;34m[30C╭───────────────────────────────────────────────────────────────────╮ [m
+[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m
+[30X[38;2;34;34;34m[30C│ [37m┃[65X[38;2;34;34;34m[65C│ [m
+[30X[38;2;34;34;34m[30C│ [37m┃[65X[38;2;34;34;34m[65C│ [m
+[30X[38;2;34;34;34m[30C╰───────────────────────────────────────────────────────────────────╯ [m
+[30X[38;2;102;102;102m[30CEnter enviar · ↑↓ historial · Ctrl+C cancela turno/sale · /help comand[m
+[30X[38;2;102;102;102m[30CMayús+arrastrar selecciona · /copy última respuesta · /mouse off      [m
+[30X[38;2;102;102;102m[30Cmodelo: medium · modo[m: build[K
+                              [30X[38;2;102;102;102msesión: —                                                             [30;162H[m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 /hel[7m [27m[54X[m[54C [38;2;34;34;34m│ [m
+[30X[38;2;34;34;34m[30C│ [37m┃[65X[38;2;34;34;34m[65C│ [m
+[30X[38;2;34;34;34m[30C│ [37m┃[65X[38;2;34;34;34m[65C│ [m[38;2;34;34;34m[11;1H│ [38;2;102;102;102m· f fijar[18X[38;2;34;34;34m[18C│  [mNOIRACODER — ayuda[K[38;2;34;34;34m[13;1H│ [38;2;102;102;102m· Tab chat[17X[38;2;34;34;34m[17C│  [mcomandos[K[38;2;34;34;34m
+│ [38;2;102;102;102m· Ctrl+B ocultar[11X[38;2;34;34;34m[11C│  [mComandos: /sessions [filtro] · /resume <n|id> · /new · /plan · /b   [16;1H                                teclado[K
+                                Teclas: Enter enviar · ↑↓ historial · Ctrl+C cancela el turno (ot   [19;1H                                escribe /help para ver esto de nuevo · Esc para cerrar el panel     [23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m
+[30X[38;2;34;34;34m[30C│ [37m┃[65X[38;2;34;34;34m[65C│ [m
+[30X[38;2;34;34;34m[30C│ [37m┃[65X[38;2;34;34;34m[65C│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m[23;1H[30X[38;2;34;34;34m[30C│ [37m[40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m      [38;2;34;34;34m│ [m

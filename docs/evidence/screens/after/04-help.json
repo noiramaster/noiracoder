@@ -1,0 +1,8 @@
+{
+  "endpoint": "/help",
+  "description": "Help screen showing available commands and keys",
+  "sections": {
+    "commands": "/help /sessions /resume /new /plan /build /model /lang /title /learn /mouse /copy /mcp /parallel /agents /quit",
+    "keys": "Ctrl+C cancel/quit · Tab autocomplete · ↑↓ history · Esc dismiss"
+  }
+}

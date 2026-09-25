@@ -18,6 +18,8 @@ export interface ToolCallContext {
   confirmDestructive: boolean;
   /** Interactive confirm callback (safety). */
   confirm: (msg: string) => Promise<boolean>;
+  /** H10: selectable options callback (credentials, choices). */
+  options?: (optsList: Array<{ key: string; label: string; recommended?: boolean }>, prompt: string) => Promise<string>;
   /** Sensitive-path detector for policy. */
   isSensitive?: (path: string) => boolean;
   log: import("../core/logger.js").Logger;

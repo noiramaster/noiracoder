@@ -42,6 +42,13 @@ interface PendingConfirm {
   timer: NodeJS.Timeout;
 }
 
+/** H10: opciones seleccionables */
+interface PendingOptions {
+  resolve: (choice: string) => void;
+  settled: boolean;
+  timer: NodeJS.Timeout;
+}
+
 interface ActiveTurn {
   id: string;
   sessionId: string;
@@ -60,6 +67,8 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
   let preferredModel: string | undefined;
   let titleAuto = true; // M2.8: /title auto|off
   const pendingConfirms = new Map<string, PendingConfirm>();
+  const pendingOptions = new Map<string, PendingOptions>(); // H10
+  let consecutiveFailures = 0; // H9: 3-failure detection
 
   const send = (event: string, data: unknown) => {
     if (!sse || sse.writableEnded) return false;
@@ -146,6 +155,21 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
     return true;
   };
 
+  /** H10: resuelve una opción seleccionable por el usuario. */
+  const resolveOptions = (id: string, choice: string, why: string) => {
+    const p = pendingOptions.get(id);
+    if (!p || p.settled) {
+      opts.log.warn(`[thin] options tardía/duplicada ignorada: ${id} (${why})`);
+      return false;
+    }
+    p.settled = true;
+    clearTimeout(p.timer);
+    pendingOptions.delete(id);
+    send("options.result", { optionsId: id, choice, motivo: why });
+    p.resolve(choice);
+    return true;
+  };
+
   const runTurn = async (turnId: string, sessionId: string, message: string, mode: string) => {
     const abort = new AbortController();
     activeTurn = { id: turnId, sessionId, abort, lastEventAt: Date.now(), lastToolStartAt: 0 };
@@ -199,6 +223,30 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
       });
     };
 
+    /** H10: opciones seleccionables — envía SSE y espera elección del usuario. */
+    const remoteOptions = async (optsList: Array<{ key: string; label: string; recommended?: boolean }>, prompt: string): Promise<string> => {
+      if (planMode) {
+        const oid = randomUUID();
+        send("options.request", { optionsId: oid, opciones: optsList, prompt, timeoutMs: 0 });
+        const fallback = optsList[0]?.key ?? "";
+        send("options.result", { optionsId: oid, choice: fallback, motivo: "modo plan (primera opción)" });
+        return fallback;
+      }
+      if (!sse || sse.writableEnded) {
+        opts.log.warn(`[thin] options sin cliente → primera opción`);
+        return optsList[0]?.key ?? "";
+      }
+      const optionsId = randomUUID();
+      send("options.request", { optionsId, opciones: optsList, prompt, timeoutMs: CONFIRM_TIMEOUT_MS });
+      return new Promise<string>((resolve) => {
+        const timer = setTimeout(() => {
+          resolveOptions(optionsId, optsList[0]?.key ?? "", "timeout 120s");
+        }, CONFIRM_TIMEOUT_MS);
+        (timer as unknown as { unref?: () => void }).unref?.();
+        pendingOptions.set(optionsId, { resolve, settled: false, timer });
+      });
+    };
+
     try {
       const metas = await store.list();
       const meta = metas.find((m) => m.id === sessionId);
@@ -248,6 +296,7 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
         cwd: process.cwd(),
         log: opts.log,
         confirm: remoteConfirm,
+        options: remoteOptions,
         freeOnly: true,
         lang: opts.lang,
         mcp: opts.mcp,
@@ -304,6 +353,14 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
       send("session.updated", { id: meta.id, nombre: meta.title });
       clearTimers();
       send("turn.end", { turnId, motivo: "done" });
+      consecutiveFailures = 0; // H9: reset on success
+      // H9: resumen de tarea — muestra qué hizo el modelo
+      const summaryParts: string[] = [];
+      if (toolsUsed.size > 0) summaryParts.push(`tools: ${[...toolsUsed].join(", ")}`);
+      if (switches > 0) summaryParts.push(`switches: ${switches}`);
+      summaryParts.push(`model: ${lastModel}`);
+      summaryParts.push(`time: ${((Date.now() - t0) / 1000).toFixed(1)}s`);
+      send("turn.summary", { turnId, resumen: summaryParts.join(" | ") });
       // M2.8: título en 2º plano (no bloquea; 1 llamada + 1 regen; cuenta cuota).
       void maybeTitle(meta.id, message, sessionId);
       // H1.1: registra el turno (metadatos, sin contenido) + recompute perezoso.
@@ -325,6 +382,12 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
         send("turn.error", { turnId, mensaje: msg.slice(0, 500) });
         clearTimers();
         send("turn.end", { turnId, motivo: "error" });
+        consecutiveFailures++;
+        // H9: 3-failure detection — sugiere cambiar modelo
+        if (consecutiveFailures >= 3) {
+          send("turn.text", { turnId, delta: `\n[hint] ${consecutiveFailures} fallos consecutivos. Prueba: /model <otro>` });
+          opts.log.warn(`[thin] ${consecutiveFailures} fallos consecutivos — sugiriendo cambio de modelo`);
+        }
         void recordTurn({
           session: sessionId, task, level: effLevel, model: lastModel,
           retries: switches, ms: Date.now() - t0, ok: false, tools: [...toolsUsed],
@@ -387,11 +450,23 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
 
     // ── Estado (lo usa el wrapper para detectar pantallas colgadas) ──
     if (req.method === "GET" && url.pathname === "/v1/status") {
+      // H9: detección de proyecto
+      const cwd = process.cwd();
+      let projectType = "unknown";
+      const { existsSync: exists } = await import("node:fs");
+      if (exists(`${cwd}/package.json`)) projectType = "node";
+      else if (exists(`${cwd}/go.mod`)) projectType = "go";
+      else if (exists(`${cwd}/Cargo.toml`)) projectType = "rust";
+      else if (exists(`${cwd}/pyproject.toml`) || exists(`${cwd}/setup.py`)) projectType = "python";
+      else if (exists(`${cwd}/pom.xml`)) projectType = "java";
+      else if (exists(`${cwd}/Gemfile`)) projectType = "ruby";
+
       json(res, 200, {
         ok: true,
         protocol: THIN_PROTOCOL,
         clientes: sse && !sse.writableEnded ? 1 : 0,
         turnoActivo: activeTurn !== null,
+        proyecto: projectType,
       });
       return;
     }
@@ -419,7 +494,7 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
       });
       res.write(": conectado\n\n");
       sse = res;
-      send("hello", { protocol: THIN_PROTOCOL, motor: "node-ts", modelo: preferredModel ?? "(router)" });
+      send("hello", { protocol: THIN_PROTOCOL, motor: "node-ts", modelo: preferredModel ?? opts.level ?? "low", level: opts.level ?? "low" });
       const hb = setInterval(() => {
         try {
           res.write(": ping\n\n");
@@ -490,6 +565,74 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
           })),
           preferido: preferredModel ?? null,
         });
+      } catch (e) {
+        json(res, 500, { error: e instanceof Error ? e.message : String(e) });
+      }
+      return;
+    }
+
+    // H8: casillas de conexión de claves
+    if (req.method === "GET" && url.pathname === "/v1/connections") {
+      try {
+        const { loadAllKeys } = await import("../auth/keys.js");
+        const { getAllCredentials } = await import("../auth/credentials.js");
+        const keys = await loadAllKeys();
+        const creds = await getAllCredentials();
+
+        // Model providers
+        const modelProviders = [
+          { id: "kilo", name: "Kilo (anonymous)", note: "200 req/hora, sin clave", category: "model" as const },
+          { id: "openrouter", name: "OpenRouter", note: "25+ modelos free", category: "model" as const },
+          { id: "groq", name: "Groq", note: "~1000 req/día por modelo", category: "model" as const },
+          { id: "zen", name: "Zen", note: "Modelos free rotativos", category: "model" as const },
+        ];
+
+        // Service credentials
+        const serviceCreds = [
+          { id: "github_token", name: "GitHub", note: "git push/pull to private repos", category: "service" as const },
+          { id: "gitlab_token", name: "GitLab", note: "git push/pull", category: "service" as const },
+          { id: "cloudflare_api_token", name: "Cloudflare", note: "Pages/Workers deploy", category: "service" as const },
+          { id: "npm_token", name: "npm", note: "npm publish", category: "service" as const },
+          { id: "vercel_token", name: "Vercel", note: "deploy", category: "service" as const },
+          { id: "docker_token", name: "Docker Hub", note: "docker push", category: "service" as const },
+          { id: "netlify_token", name: "Netlify", note: "deploy", category: "service" as const },
+          { id: "pypi_token", name: "PyPI", note: "twine upload", category: "service" as const },
+        ];
+
+        const result = [
+          ...modelProviders.map((p) => ({
+            ...p,
+            connected: p.id === "kilo" ? true : !!(keys as Record<string, string | undefined>)[p.id],
+          })),
+          ...serviceCreds.map((s) => ({
+            ...s,
+            connected: !!creds[s.id] || !!(s.id === "github_token" && process.env.GITHUB_TOKEN),
+          })),
+        ];
+
+        json(res, 200, { providers: result });
+      } catch (e) {
+        json(res, 500, { error: e instanceof Error ? e.message : String(e) });
+      }
+      return;
+    }
+
+    // H8: POST /v1/connect — validate + store a credential
+    if (req.method === "POST" && url.pathname === "/v1/connect") {
+      try {
+        const parsed = JSON.parse(await readBody(req)) as { serviceId?: string; value?: string };
+        if (!parsed.serviceId || !parsed.value) {
+          json(res, 400, { error: "serviceId and value required" });
+          return;
+        }
+        const { validateCredential, storeCredential } = await import("../auth/credentials.js");
+        const result = await validateCredential(parsed.serviceId, parsed.value);
+        if (!result.ok) {
+          json(res, 400, { ok: false, error: result.error });
+          return;
+        }
+        await storeCredential(parsed.serviceId, parsed.value);
+        json(res, 200, { ok: true, stored: parsed.serviceId });
       } catch (e) {
         json(res, 500, { error: e instanceof Error ? e.message : String(e) });
       }
@@ -824,6 +967,22 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
       return;
     }
 
+    // H10: opciones seleccionables
+    if (req.method === "POST" && url.pathname === "/v1/options") {
+      try {
+        const parsed = JSON.parse(await readBody(req)) as { optionsId?: string; choice?: string };
+        if (!parsed.optionsId) {
+          json(res, 400, { error: renderScreen(screenString(opts.lang, "err_field_required"), { field: "optionsId" }) });
+          return;
+        }
+        const ok = resolveOptions(parsed.optionsId, parsed.choice ?? "", "cliente");
+        json(res, 200, { ok, aplicada: ok });
+      } catch (e) {
+        json(res, 400, { error: e instanceof Error ? e.message : String(e) });
+      }
+      return;
+    }
+
     if (req.method === "POST" && url.pathname === "/v1/cancel") {
       try {
         const parsed = JSON.parse(await readBody(req)) as { turnId?: string };
@@ -893,6 +1052,36 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
           } catch { /* auditoría best-effort */ }
         }
         json(res, 200, { ok: true, rules });
+      } catch (e) {
+        json(res, 400, { error: e instanceof Error ? e.message : String(e) });
+      }
+      return;
+    }
+
+    // H9: /explain — explica qué hizo el último turno
+    if (req.method === "POST" && url.pathname === "/v1/explain") {
+      try {
+        const parsed = JSON.parse(await readBody(req)) as { sessionId?: string };
+        const sid = parsed.sessionId ?? activeTurn?.sessionId;
+        if (!sid) {
+          json(res, 400, { error: "no active turn or sessionId required" });
+          return;
+        }
+        const metas = await store.list();
+        const meta = metas.find((m) => m.id === sid);
+        if (!meta || meta.turns.length === 0) {
+          json(res, 404, { error: "session not found or no turns" });
+          return;
+        }
+        const lastTurns = meta.turns.slice(-4);
+        const userMsg = lastTurns.find((t) => t.role === "user")?.content.slice(0, 200) ?? "";
+        const assistantMsg = lastTurns.find((t) => t.role === "assistant")?.content.slice(0, 500) ?? "";
+        json(res, 200, {
+          ok: true,
+          pregunta: userMsg,
+          respuesta: assistantMsg,
+          turnos: meta.turns.length,
+        });
       } catch (e) {
         json(res, 400, { error: e instanceof Error ? e.message : String(e) });
       }

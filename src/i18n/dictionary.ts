@@ -35,6 +35,14 @@ export interface Messages {
   routerLevelPrefix: string;
   /** M1.7: mensaje propio ante error externo (resto cae a EN). */
   errorExternal?: string;
+  /** H10: opciones seleccionables */
+  optionsTitle?: string;
+  optionsRecommended?: string;
+  optionsHint?: string;
+  optionSecurityConfirm?: string;
+  optionSecurityOnce?: string;
+  optionSecurityAlways?: string;
+  optionSecurityDeny?: string;
 }
 
 export const DEFAULT_LANGUAGE = "en";
@@ -67,6 +75,13 @@ export const MESSAGES: Record<string, Messages> = {
 
     errorExternal: "Something outside Noira failed",
     routerLevelPrefix: "Noira ·",
+    optionsTitle: "Choose an option:",
+    optionsRecommended: "(recommended)",
+    optionsHint: "Press a number, use arrows+Enter, click, or type your own answer:",
+    optionSecurityConfirm: "Confirm this action?",
+    optionSecurityOnce: "Yes, once",
+    optionSecurityAlways: "Yes, always in this project",
+    optionSecurityDeny: "No",
   },
   es: {
     langUnsupported: "Idioma no compatible ({lang}), usando inglés.",
@@ -95,6 +110,13 @@ export const MESSAGES: Record<string, Messages> = {
 
     errorExternal: "Algo fuera de Noira falló",
     routerLevelPrefix: "Noira ·",
+    optionsTitle: "Elige una opción:",
+    optionsRecommended: "(recomendada)",
+    optionsHint: "Pulsa un número, usa flechas+Enter, haz clic, o escribe tu propia respuesta:",
+    optionSecurityConfirm: "¿Confirmar esta acción?",
+    optionSecurityOnce: "Sí, una vez",
+    optionSecurityAlways: "Sí, siempre en este proyecto",
+    optionSecurityDeny: "No",
   },
   pt: {
     langUnsupported: "Idioma não suportado ({lang}), usando inglês.",
@@ -123,6 +145,13 @@ export const MESSAGES: Record<string, Messages> = {
 
     errorExternal: "Algo fora da Noira falhou",
     routerLevelPrefix: "Noira ·",
+    optionsTitle: "Escolha uma opção:",
+    optionsRecommended: "(recomendada)",
+    optionsHint: "Pressione um número, use setas+Enter, clique, ou digite sua própria resposta:",
+    optionSecurityConfirm: "Confirmar esta ação?",
+    optionSecurityOnce: "Sim, uma vez",
+    optionSecurityAlways: "Sim, sempre neste projeto",
+    optionSecurityDeny: "Não",
   },
   fr: {
     langUnsupported: "Langue non prise en charge ({lang}), bascule en anglais.",
@@ -151,6 +180,13 @@ export const MESSAGES: Record<string, Messages> = {
 
     errorExternal: "Quelque chose hors de Noira a échoué",
     routerLevelPrefix: "Noira ·",
+    optionsTitle: "Wähle eine Option:",
+    optionsRecommended: "(empfohlen)",
+    optionsHint: "Drücke eine Nummer, nutze Pfeile+Enter, klicke, oder tippe deine eigene Antwort:",
+    optionSecurityConfirm: "Diese Aktion bestätigen?",
+    optionSecurityOnce: "Ja, einmal",
+    optionSecurityAlways: "Ja, immer in diesem Projekt",
+    optionSecurityDeny: "Nein",
   },
   de: {
     langUnsupported: "Sprache nicht unterstützt ({lang}), Wechsel auf Englisch.",
@@ -179,6 +215,13 @@ export const MESSAGES: Record<string, Messages> = {
 
     errorExternal: "Etwas außerhalb von Noira ist fehlgeschlagen",
     routerLevelPrefix: "Noira ·",
+    optionsTitle: "Scegli un'opzione:",
+    optionsRecommended: "(consigliata)",
+    optionsHint: "Premi un numero, usa le frecce+Invio, clicca, o scrivi la tua risposta:",
+    optionSecurityConfirm: "Confermare questa azione?",
+    optionSecurityOnce: "Sì, una volta",
+    optionSecurityAlways: "Sì, sempre in questo progetto",
+    optionSecurityDeny: "No",
   },
   it: {
     langUnsupported: "Lingua non supportata ({lang}), si torna all'inglese.",
@@ -207,6 +250,13 @@ export const MESSAGES: Record<string, Messages> = {
 
     errorExternal: "Qualcosa fuori da Noira non ha funzionato",
     routerLevelPrefix: "Noira ·",
+    optionsTitle: "Выберите вариант:",
+    optionsRecommended: "(рекомендуемый)",
+    optionsHint: "Нажмите цифру, используйте стрелки+Enter, кликните, или напишите свой ответ:",
+    optionSecurityConfirm: "Подтвердить это действие?",
+    optionSecurityOnce: "Да, один раз",
+    optionSecurityAlways: "Да, всегда в этом проекте",
+    optionSecurityDeny: "Нет",
   },
   ru: {
     langUnsupported: "Язык не поддерживается ({lang}), переключаюсь на английский.",
@@ -232,6 +282,13 @@ export const MESSAGES: Record<string, Messages> = {
     quotaWarning: "Внимание: почти достигнут лимит бесплатных запросов для этой модели.",
     quotaExhausted: "Бесплатная квота для этой модели исчерпана. Попробуйте другую модель или провайдера.",
     routerLevelPrefix: "Noira ·",
+    optionsTitle: "اختر خياراً:",
+    optionsRecommended: "(موصى به)",
+    optionsHint: "اضغط رقم، استخدم الأسهم+Enter، انقر، أو اكتب إجابتك:",
+    optionSecurityConfirm: "تأكيد هذا الإجراء؟",
+    optionSecurityOnce: "نعم، مرة واحدة",
+    optionSecurityAlways: "نعم، دائماً في هذا المشروع",
+    optionSecurityDeny: "لا",
   },
   ar: {
     langUnsupported: "اللغة غير مدعومة ({lang})، سيتم استخدام الإنجليزية.",
@@ -260,6 +317,13 @@ export const MESSAGES: Record<string, Messages> = {
 
     errorExternal: "حدث خطأ خارج نويرا",
     routerLevelPrefix: "Noira ·",
+    optionsTitle: "एक विकल्प चुनें:",
+    optionsRecommended: "(अनुशंसित)",
+    optionsHint: "नंबर दबाएं, तीर+Enter का उपयोग करें, क्लिक करें, या अपना उत्तर टाइप करें:",
+    optionSecurityConfirm: "इस क्रिया की पुष्टि करें?",
+    optionSecurityOnce: "हाँ, एक बार",
+    optionSecurityAlways: "हाँ, इस प्रोजेक्ट में हमेशा",
+    optionSecurityDeny: "नहीं",
   },
   hi: {
     langUnsupported: "भाषा समर्थित नहीं है ({lang}), अंग्रेज़ी का उपयोग किया जाएगा।",
@@ -285,6 +349,13 @@ export const MESSAGES: Record<string, Messages> = {
     quotaWarning: "चेतावनी: इस मॉडल के लिए मुफ़्त अनुरोध सीमा करीब है।",
     quotaExhausted: "इस मॉडल के लिए मुफ़्त कोटा समाप्त। दूसरा मॉडल या प्रदाता आज़माएँ।",
     routerLevelPrefix: "Noira ·",
+    optionsTitle: "选择一个选项：",
+    optionsRecommended: "（推荐）",
+    optionsHint: "按数字键，用方向键+Enter，点击，或输入你自己的回答：",
+    optionSecurityConfirm: "确认此操作？",
+    optionSecurityOnce: "是，仅一次",
+    optionSecurityAlways: "是，在此项目中始终",
+    optionSecurityDeny: "否",
   },
   zh: {
     langUnsupported: "不支持的语言（{lang}），将使用英语。",
@@ -310,6 +381,13 @@ export const MESSAGES: Record<string, Messages> = {
     quotaWarning: "警告：此模型的免费请求额度即将用尽。",
     quotaExhausted: "此模型的免费额度已用尽。请尝试其他模型或提供商。",
     routerLevelPrefix: "Noira ·",
+    optionsTitle: "オプションを選択：",
+    optionsRecommended: "（推奨）",
+    optionsHint: "番号を押す、矢印+Enter、クリック、または自由に回答を入力：",
+    optionSecurityConfirm: "この操作を確認しますか？",
+    optionSecurityOnce: "はい、一度だけ",
+    optionSecurityAlways: "はい、このプロジェクトでは常に",
+    optionSecurityDeny: "いいえ",
   },
   ja: {
     langUnsupported: "サポートされていない言語（{lang}）です。英語を使用します。",
@@ -335,6 +413,13 @@ export const MESSAGES: Record<string, Messages> = {
     quotaWarning: "警告: このモデルの無料リクエスト上限に近づいています。",
     quotaExhausted: "このモデルの無料枠を使い切りました。別のモデルまたはプロバイダーを試してください。",
     routerLevelPrefix: "Noira ·",
+    optionsTitle: "옵션을 선택하세요:",
+    optionsRecommended: "(권장)",
+    optionsHint: "번호를 누르거나, 화살표+Enter, 클릭, 또는 자유롭게 답변을 입력하세요:",
+    optionSecurityConfirm: "이 작업을 확인하시겠습니까?",
+    optionSecurityOnce: "네, 한 번만",
+    optionSecurityAlways: "네, 이 프로젝트에서 항상",
+    optionSecurityDeny: "아니요",
   },
   ko: {
     langUnsupported: "지원되지 않는 언어({lang})입니다. 영어를 사용합니다.",
@@ -360,6 +445,13 @@ export const MESSAGES: Record<string, Messages> = {
     quotaWarning: "경고: 이 모델의 무료 요청 한도에 가까워지고 있습니다.",
     quotaExhausted: "이 모델의 무료 할당량을 모두 사용했습니다. 다른 모델이나 공급자를 시도하세요.",
     routerLevelPrefix: "Noira ·",
+    optionsTitle: "เลือกตัวเลือก:",
+    optionsRecommended: "(แนะนำ)",
+    optionsHint: "กดหมายเลข, ใช้ลูกศร+Enter, คลิก หรือพิมพ์คำตอบของคุณเอง:",
+    optionSecurityConfirm: "ยืนยันการกระทำนี้?",
+    optionSecurityOnce: "ใช่ ครั้งเดียว",
+    optionSecurityAlways: "ใช่ เสมอในโปรเจกต์นี้",
+    optionSecurityDeny: "ไม่",
   },
   th: {
     langUnsupported: "ไม่รองรับภาษา ({lang}) จะใช้ภาษาอังกฤษ",
@@ -385,6 +477,13 @@ export const MESSAGES: Record<string, Messages> = {
     quotaWarning: "คำเตือน: ใกล้ถึงขีดจำกัดคำขอฟรีของโมเดลนี้",
     quotaExhausted: "โควตาฟรีของโมเดลนี้หมดแล้ว ลองโมเดลหรือผู้ให้บริการอื่น",
     routerLevelPrefix: "Noira ·",
+    optionsTitle: "Bir seçenek seçin:",
+    optionsRecommended: "(önerilen)",
+    optionsHint: "Bir sayıya basın, ok+Enter kullanın, tıklayın veya kendi cevabınızı yazın:",
+    optionSecurityConfirm: "Bu eylemi onaylayın mı?",
+    optionSecurityOnce: "Evet, bir kez",
+    optionSecurityAlways: "Evet, bu projede her zaman",
+    optionSecurityDeny: "Hayır",
   },
   tr: {
     langUnsupported: "Desteklenmeyen dil ({lang}), İngilizce kullanılacak.",
@@ -410,6 +509,13 @@ export const MESSAGES: Record<string, Messages> = {
     quotaWarning: "Uyarı: bu modelin ücretsiz istek limitine yaklaşılıyor.",
     quotaExhausted: "Bu model için ücretsiz kota doldu. Başka bir model veya sağlayıcı deneyin.",
     routerLevelPrefix: "Noira ·",
+    optionsTitle: "Pilih opsi:",
+    optionsRecommended: "(disarankan)",
+    optionsHint: "Tekan nomor, gunakan panah+Enter, klik, atau ketik jawaban Anda sendiri:",
+    optionSecurityConfirm: "Konfirmasi tindakan ini?",
+    optionSecurityOnce: "Ya, sekali saja",
+    optionSecurityAlways: "Ya, selalu di proyek ini",
+    optionSecurityDeny: "Tidak",
   },
   id: {
     langUnsupported: "Bahasa tidak didukung ({lang}), menggunakan bahasa Inggris.",
@@ -435,6 +541,13 @@ export const MESSAGES: Record<string, Messages> = {
     quotaWarning: "Peringatan: mendekati batas permintaan gratis untuk model ini.",
     quotaExhausted: "Kuota gratis untuk model ini habis. Coba model atau penyedia lain.",
     routerLevelPrefix: "Noira ·",
+    optionsTitle: "Kies een optie:",
+    optionsRecommended: "(aanbevolen)",
+    optionsHint: "Druk op een nummer, gebruik pijltjes+Enter, klik, of typ je eigen antwoord:",
+    optionSecurityConfirm: "Deze actie bevestigen?",
+    optionSecurityOnce: "Ja, eenmalig",
+    optionSecurityAlways: "Ja, altijd in dit project",
+    optionSecurityDeny: "Nee",
   },
   nl: {
     langUnsupported: "Taal niet ondersteund ({lang}), Engelse tekst wordt gebruikt.",
@@ -460,6 +573,13 @@ export const MESSAGES: Record<string, Messages> = {
     quotaWarning: "Waarschuwing: gratis verzoeklimiet voor dit model bijna bereikt.",
     quotaExhausted: "Gratis quotum voor dit model uitgeput. Probeer een ander model of een andere provider.",
     routerLevelPrefix: "Noira ·",
+    optionsTitle: "Wybierz opcję:",
+    optionsRecommended: "(zalecana)",
+    optionsHint: "Naciśnij numer, użyj strzałek+Enter, kliknij, lub wpisz własną odpowiedź:",
+    optionSecurityConfirm: "Potwierdzić tę czynność?",
+    optionSecurityOnce: "Tak, raz",
+    optionSecurityAlways: "Tak, zawsze w tym projekcie",
+    optionSecurityDeny: "Nie",
   },
   pl: {
     langUnsupported: "Nieobsługiwany język ({lang}), przełączam na angielski.",
@@ -485,6 +605,13 @@ export const MESSAGES: Record<string, Messages> = {
     quotaWarning: "Ostrzeżenie: zbliżasz się do dziennego limitu bezpłatnych żądań dla tego modelu.",
     quotaExhausted: "Wyczerpano bezpłatny limit dla tego modelu. Wypróbuj inny model lub dostawcę.",
     routerLevelPrefix: "Noira ·",
+    optionsTitle: "Оберіть варіант:",
+    optionsRecommended: "(рекомендований)",
+    optionsHint: "Натисніть цифру, використовуйте стрілки+Enter, клікніть, або напишіть свою відповідь:",
+    optionSecurityConfirm: "Підтвердити цю дію?",
+    optionSecurityOnce: "Так, один раз",
+    optionSecurityAlways: "Так, завжди в цьому проєкті",
+    optionSecurityDeny: "Ні",
   },
   uk: {
     langUnsupported: "Мову не підтримано ({lang}), використовую англійську.",

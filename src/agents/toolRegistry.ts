@@ -25,6 +25,7 @@ export interface ToolCallCtx {
   cwd: string;
   confirmDestructive: boolean;
   confirm: (msg: string) => Promise<boolean>;
+  options?: (optsList: Array<{ key: string; label: string; recommended?: boolean }>, prompt: string) => Promise<string>;
   isSensitive: (path: string) => boolean;
   log: import("../core/logger.js").Logger;
 }
@@ -116,6 +117,7 @@ export function simpleToolCtx(ctx: {
   cwd: string;
   confirmDestructive?: boolean;
   confirm: (msg: string) => Promise<boolean>;
+  options?: (optsList: Array<{ key: string; label: string; recommended?: boolean }>, prompt: string) => Promise<string>;
   isSensitive: (p: string) => boolean;
   log: import("../core/logger.js").Logger;
 }): ToolCallCtx {
@@ -123,6 +125,7 @@ export function simpleToolCtx(ctx: {
     cwd: ctx.cwd,
     confirmDestructive: ctx.confirmDestructive ?? true,
     confirm: ctx.confirm,
+    options: ctx.options,
     isSensitive: ctx.isSensitive,
     log: ctx.log,
   };

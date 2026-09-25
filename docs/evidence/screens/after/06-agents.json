@@ -1,0 +1,11 @@
+{
+  "endpoint": "orchestrator",
+  "description": "Agent pipeline — orchestrator + specialist sub-agents",
+  "pipeline": [
+    "orchestrator",
+    "architect",
+    "coder",
+    "reviewer"
+  ],
+  "parallel": "Promise.all for multi-turn sessions, cancel, concurrent sessions"
+}

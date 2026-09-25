@@ -47,6 +47,8 @@ export interface OrchestratorOptions {
   /** HITO 2.2: memoria guardada + cuota visibles en la pantalla. */
   onMemoryEvent?: (ev: { nivel: "sesion" | "proyecto" | "global"; resumen: string }) => void;
   onQuotaEvent?: (q: { usadoPct: number; restante: number; total: number }) => void;
+  /** H10: opciones seleccionables — muestra menú y espera elección. */
+  options?: (optsList: Array<{ key: string; label: string; recommended?: boolean }>, prompt: string) => Promise<string>;
   onModelErrorExt?: (model: string, kind: "transient" | "quota" | "auth") => void;
   signal?: AbortSignal;
 }
@@ -187,6 +189,7 @@ export async function orchestrate(
     cwd: opts.cwd,
     confirmDestructive: true,
     confirm: opts.confirm,
+    options: opts.options,
     isSensitive: (p) => isSensitivePrompt(prompt, policy) || isSensitivePath(p, policy),
     log: opts.log,
   };
