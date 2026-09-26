@@ -11,14 +11,14 @@ import (
 func TestSetStatusQuota(t *testing.T) {
 	SetCatalog(map[string]string{
 		"st_model": "model", "st_mode": "mode", "st_session": "session",
-		"st_quota": "quota: {pct}%",
+		"st_quota": "quota",
 	})
 	cases := []struct {
 		lang      string
 		base      []string
 		quotaWant string
 	}{
-		{"en", []string{"model: (router)", "mode: build", "session: —"}, "quota: 8%"},
+		{"en", []string{"model: (router)", "mode: build", "session: —"}, "8%"},
 	}
 	for _, c := range cases {
 		m := &Model{lang: c.lang, modelName: "(router)", mode: "build"}

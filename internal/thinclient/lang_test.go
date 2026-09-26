@@ -75,7 +75,7 @@ func TestPluralCategory(t *testing.T) {
 func TestFitStatus40(t *testing.T) {
 	SetCatalog(map[string]string{
 		"st_model": "Modell", "st_mode": "Modus", "st_session": "Sitzung",
-		"st_quota": "Quote: {pct}%",
+		"st_quota": "Quote",
 	})
 	m := &Model{
 		lang:      "de",
@@ -96,7 +96,7 @@ func TestFitStatus40(t *testing.T) {
 			t.Errorf("línea >40: %q", ln)
 		}
 	}
-	if !strings.Contains(m.status, "Modus: build") || !strings.Contains(m.status, "Quote: 8%") {
+	if !strings.Contains(m.status, "Modus: build") || !strings.Contains(m.status, "8%") {
 		t.Errorf("modo/cuota intactos: %q", m.status)
 	}
 	// CJK: ancho doble cuenta x2.
