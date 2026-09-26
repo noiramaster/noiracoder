@@ -113,6 +113,16 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
 
 ## Hito 7 — VERIFICACIÓN FINAL (listo para publicar, 2026-09-20)
 
+### Fix 2026-09-26: Go TUI es el default
+- **Problema**: el wrapper (`bin/noiracoder.mjs`) requería `--go` para lanzar la pantalla Go.
+  Sin `--go`, caía al respaldo Ink/Node (prompt básico sin paneles). El usuario probó
+  `noira` por primera vez y vio el respaldo, no la pantalla real.
+- **Causa raíz**: diseño HITO 0 original (Node por defecto, Go opt-in con `--go`).
+- **Fix**: condición cambiada en `noiracoder.mjs:213-226`. Go TUI es default en
+  terminales interactivas; Ink solo para pipes/CI/`nc`/`--no-tui`.
+- **验证**: global install sincronizado. after4/after5 captures siguen válidos
+  (`--go` explícito en scripts, ahora redundante pero inofensivo).
+
 ## Verificaciones pedidas (2026-09-20, sin publicar)
 - [x] CI multi-OS (`verify-thin.yml`, run 35506528146): ubuntu + macos-14
       (arm64) + macos-15-intel (x64) en verde — build, boot exit 2, wrapper,

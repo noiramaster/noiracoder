@@ -16,8 +16,8 @@ const thinBin = existsSync(join(here, "noira-thin.exe"))
 
 const args = process.argv.slice(2);
 const isCliFlag = args.some((a) => ["--help","-h","--version","-v","serve","login","--lang"].includes(a) || a === "-l" || a === "--level");
-// HITO 0/1: por defecto SIEMPRE motor Node. Pantalla Go solo con --go + aviso,
-// y NUNCA vía `nc` (respaldo Ink/Node).
+// HITO 0/1: motor Node es respaldo para pipes/CI/nc/--no-tui.
+// 2026-09-26: Go TUI es el default en terminales interactivas.
 const wantGo = args.includes("--go");
 const isNc = invokedAs === "nc" || invokedAs === "nc.cmd" || invokedAs === "nc.ps1";
 // Escape hatch: fuerza el camino Node aunque haya terminal.
@@ -210,15 +210,17 @@ async function startGo() {
   process.exit(code ?? 0);
 }
 
-if (wantGo && !isNc && !forceNode && interactiveTTY) {
+// 2026-09-26: Go TUI es el default en terminales interactivas.
+// --go sigue aceptado (backward compat); --no-tui fuerza Ink.
+if (!isNc && !forceNode && interactiveTTY) {
   void startGo();
 } else {
-  if (wantGo && !isNc && !interactiveTTY) {
-    console.error("> --go necesita terminal interactivo: se usa el motor Node.");
+  if (!interactiveTTY && !forceNode) {
+    console.error("> Sin terminal interactivo: se usa el motor Node.");
     process.env.NOIRA_NOTICE = "Pantalla Go no disponible: sin terminal interactivo. Sigues en el motor Node.";
   }
-  if (wantGo && isNc) {
-    console.error("> `nc` es siempre el respaldo Ink/Node: --go se ignora.");
+  if (isNc) {
+    console.error("> `nc` es siempre el respaldo Ink/Node.");
   }
   startNode();
 }
