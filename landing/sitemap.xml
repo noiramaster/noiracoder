@@ -9,6 +9,7 @@
   <url><loc>https://noiracoder.pages.dev/terminos.html</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://noiracoder.pages.dev/privacidad.html</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://noiracoder.pages.dev/blog/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://noiracoder.pages.dev/blog/2026-09-26-diagnosticos-typescript-go-python.html</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
   <url><loc>https://noiracoder.pages.dev/blog/2026-09-25-deploy-vercel-con-confirmacion.html</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
   <url><loc>https://noiracoder.pages.dev/blog/2026-09-24-mcp-servidores-reales.html</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
   <url><loc>https://noiracoder.pages.dev/blog/2026-09-23-undo-redo-snapshots-automaticos.html</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>

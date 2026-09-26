@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnósticos de TypeScript, Go y Python con NoiraCoder | NOIRACODER</title>
+<meta name="description" content="NoiraCoder permite diagnosticar errores de tipado y compilación en TypeScript, Go y Python directamente desde la terminal.">
+<link rel="canonical" href="https://noiracoder.pages.dev/blog/2026-09-26-diagnosticos-typescript-go-python.html">
+<meta property="og:title" content="Diagnósticos de TypeScript, Go y Python con NoiraCoder — NOIRACODER">
+<meta property="og:description" content="NoiraCoder permite diagnosticar errores de tipado y compilación en TypeScript, Go y Python directamente desde la terminal.">
+<meta property="og:site_name" content="NOIRACODER">
+<meta property="og:url" content="https://noiracoder.pages.dev/blog/2026-09-26-diagnosticos-typescript-go-python.html">
+<meta property="og:type" content="article">
+<meta name="robots" content="index, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<script src="/i18n.js" defer></script>
+<script src="/copy.js" defer></script>
+<script>var NOIRA_POST = {"date":"2026-09-26","title_es":"Diagnósticos de TypeScript, Go y Python con NoiraCoder","excerpt_es":"NoiraCoder permite diagnosticar errores de tipado y compilación en TypeScript, Go y Python directamente desde la terminal.","body_es":"<p>NoiraCoder es un agente de código que se ejecuta directamente en la terminal, capaz de analizar y diagnosticar errores en varios lenguajes sin salir del entorno de línea de comandos.</p><h2>Diagnóstico en TypeScript</h2><p>Al ejecutar <code>noiracoder diagnose src/app.ts</code>, el agente inspecciona tipos, inferencias y configuraciones de <code>tsconfig.json</code>, resaltando incompatibilidades y sugerencias de tipado.</p><pre><code>ERROR: src/app.ts:12 - Tipo 'string' no asignable a 'number'.\nSUGERENCIA: Cambiar a Number(value) o actualizar la definición del tipo.</code></pre><h2>Diagnóstico en Go y Python</h2><p>Para Go, <code>noiracoder diagnose ./cmd/main.go</code> verifica imports, estructuras y errores de compilación, mientras que en Python <code>noiracoder diagnose script.py</code> revisa anotaciones de tipo y posibles excepciones en tiempo de ejecución.</p><pre><code>GO ERROR: cmd/main.go:45 - uso de variable sin inicializar.\nPYTHON WARNING: script.py:22 - posible TypeError al concatenar str y int.</code></pre><p>Con estos diagnósticos rápidos y precisos, NoiraCoder permite a los desarrolladores corregir problemas antes de compilar o ejecutar, mejorando la productividad y la calidad del código.</p>","title_en":"Diagnosing TypeScript, Go, and Python with NoiraCoder: A Terminal Code Agent","excerpt_en":"NoiraCoder streamlines cross‑language diagnostics, letting you spot TypeScript, Go, and Python issues directly from the terminal.","body_en":"<p>NoiraCoder is a powerful terminal‑based code agent that brings static analysis and runtime diagnostics to your favorite languages without leaving the command line. Whether you are juggling a TypeScript front‑end, a Go microservice, or a Python data pipeline, NoiraCoder can parse, lint, and suggest fixes in seconds.</p>\n<h2>Why Multi‑Language Diagnostics Matter</h2>\n<p>Modern projects rarely stick to a single stack. A single repository might contain a React UI (TypeScript), a backend API (Go), and a machine‑learning script (Python). Traditional IDE plugins require separate configurations and often miss the interactions between these layers. A unified terminal tool eliminates context‑switching and ensures consistency across the codebase.</p>\n<h2>How NoiraCoder Handles TypeScript, Go, and Python</h2>\n<p>NoiraCoder leverages language‑specific parsers under a common CLI interface. For TypeScript it runs <code>tsc</code> and <code>eslint</code> under the hood, for Go it invokes <code>go vet</code> and <code>staticcheck</code>, and for Python it chains <code>flake8</code> with <code>mypy</code>. The agent aggregates the results, formats them as JSON, and then prints a concise, color‑coded summary.</p>\n<pre><code>noiracoder diagnose \\\n  --ts src/**/*.ts \\\n  --go ./cmd/... \\\n  --py scripts/**/*.py \\\n  --output json\n</code></pre>\n<p>The command above scans all three language groups in one go, returning a single JSON payload that can be piped into CI pipelines or further processed with <code>jq</code>. Errors are grouped by language, severity, and file path, making it trivial to prioritize fixes.</p>\n<p>By integrating NoiraCoder into your development workflow, you gain a consistent diagnostic experience across TypeScript, Go, and Python, reducing bugs early and keeping your terminal as the single source of truth.</p>","title_pt":"NoiraCoder: Diagnósticos Rápidos para TypeScript, Go e Python no Terminal","excerpt_pt":"Descubra como o NoiraCoder simplifica a identificação de erros em TypeScript, Go e Python diretamente no seu terminal.","body_pt":"<p>NoiraCoder chegou como um agente de código que opera inteiramente no terminal, trazendo a potência de análises estáticas e sugestões de correção para as linguagens mais populares do desenvolvimento moderno.</p><h2>Diagnóstico em TypeScript</h2><p>Com um único comando, o NoiraCoder analisa seu projeto TypeScript, detectando tipos incompatíveis, imports ausentes e erros de configuração do tsconfig. O resultado é apresentado de forma clara, indicando o arquivo, a linha e a sugestão de correção.</p><pre><code>noiracoder diagnose --lang ts src/**/*.ts</code></pre><h2>Diagnóstico em Go e Python</h2><p>Para Go, a ferramenta verifica problemas de importação, vetores não utilizados e inconsistências de módulo. Em Python, o foco está em erros de sintaxe, tipos (quando usando type hints) e importações quebradas. Em ambos os casos, o output segue o padrão de mensagens do terminal, facilitando a integração com scripts de CI.</p><pre><code>noiracoder diagnose --lang go ./...   # Go\nnoiracoder diagnose --lang py ./**/*.py   # Python</code></pre><p>Ao integrar o NoiraCoder ao seu fluxo de trabalho, você ganha rapidez na detecção de problemas e reduz o tempo gasto com depurações manuais, permitindo que a equipe se concentre na entrega de código de qualidade.</p>","title_fr":"Diagnostiquer TypeScript, Go et Python avec NoiraCoder","excerpt_fr":"NoiraCoder simplifie le diagnostic et la correction d’erreurs courantes dans les projets TypeScript, Go et Python directement depuis le terminal.","body_fr":"<p>NoiraCoder est un agent de code fonctionnant dans le terminal qui analyse, suggère et corrige automatiquement les problèmes de syntaxe, de typage et de logique dans plusieurs langages. Grâce à son intégration fluide avec les outils de linting et les compilateurs, il devient un allié précieux pour les développeurs qui souhaitent gagner du temps lors du débogage.</p><h2>Diagnostic TypeScript</h2><p>Lorsque vous travaillez sur un projet TypeScript, NoiraCoder utilise le compilateur <code>tsc</code> pour identifier les erreurs de typage et les incohérences de module. En exécutant simplement <code>noiracoder diagnose src/**/*.ts</code>, l’agent génère un rapport détaillé et propose des correctifs immédiats.</p><pre><code>// Exemple de sortie de NoiraCoder\nsrc/app.ts:12:5 - error TS2322: Type 'string' is not assignable to type 'number'.\nSuggestion: Change the variable type to 'string' or convert the value.\n</code></pre><h2>Diagnostic Go et Python</h2><p>Pour Go, NoiraCoder s’appuie sur <code>go vet</code> et <code>golint</code>, tandis que pour Python il utilise <code>pylint</code> et <code>mypy</code>. La même commande <code>noiracoder diagnose</code> détecte les problèmes de style, les erreurs de type et les potentielles fuites de ressources.</p><pre><code># Go example\nmain.go:27:2 - warning: possible nil pointer dereference\n# Python example\nutils.py:45:10 - error: Incompatible return value type (got \"str\", expected \"int\")\n</code></pre><p>En combinant ces diagnostics, NoiraCoder offre une vue d’ensemble unifiée, permettant aux équipes multi‑langages de standardiser leurs processus de correction et d’améliorer la qualité du code sans quitter le terminal.</p>","title_de":"NoiraCoder: Diagnostik in TypeScript, Go und Python direkt im Terminal","excerpt_de":"Mit NoiraCoder erhalten Entwickler sofortige, präzise Diagnosen für TypeScript-, Go- und Python-Code im Terminal.","body_de":"<p>NoiraCoder ist ein intelligenter Agent, der sich nahtlos in Ihre Kommandozeile integriert und Ihnen hilft, komplexe Codebasen in TypeScript, Go und Python zu analysieren. Durch die Kombination von statischer Analyse, Linter‑Ergebnissen und KI‑gestützter Fehlersuche liefert er sofortige Diagnosen, ohne dass Sie Ihren Editor verlassen müssen.</p>\n<h2>Diagnosen für TypeScript</h2>\n<p>Für TypeScript prüft NoiraCoder Typinkonsistenzen, fehlende Typdefinitionen und potenzielle Laufzeitfehler. Mit einem einzigen Befehl können Sie alle relevanten Probleme auflisten und erhalten Vorschläge zur automatischen Korrektur, etwa das Hinzufügen von fehlenden Interfaces oder das Anpassen von Generics.</p>\n<pre><code>noiracoder diagnose --lang ts src/**/*.ts</code></pre>\n<h2>Go‑Analyse in Echtzeit</h2>\n<p>Im Go‑Umfeld erkennt NoiraCoder unsichere Goroutine‑Nutzung, fehlende Error‑Checks und Verstöße gegen gängige Go‑Best Practices. Die Ausgabe ist kompakt und farblich hervorgehoben, sodass kritische Stellen sofort ins Auge springen.</p>\n<pre><code>noiracoder diagnose --lang go ./...</code></pre>\n<h2>Python‑Fehlerfindung leicht gemacht</h2>\n<p>Python‑Entwickler profitieren von einer schnellen Erkennung von Syntaxfehlern, veralteten Bibliotheken und potenziellen Performance‑Bottlenecks. NoiraCoder schlägt zudem Refactorings vor, die die Lesbarkeit und Wartbarkeit des Codes erhöhen.</p>\n<pre><code>noiracoder diagnose --lang py my_project/</code></pre>\n<p>Durch die einheitliche Schnittstelle für drei beliebte Programmiersprachen wird NoiraCoder zum unverzichtbaren Werkzeug für Full‑Stack‑Entwickler, die im Terminal effizient diagnostizieren und sofortige Verbesserungen vornehmen wollen.</p>","title_it":"NoiraCoder: Diagnostica Avanzata per TypeScript, Go e Python","excerpt_it":"NoiraCoder porta la diagnostica dei linguaggi più popolari direttamente nel tuo terminale, migliorando la produttività.","body_it":"<p>NoiraCoder è un agente di codice operante interamente da terminale, progettato per fornire suggerimenti, refactoring e diagnostica in tempo reale per vari linguaggi. Grazie alla sua capacità di analizzare il contesto del progetto, è ideale per sviluppatori che lavorano con TypeScript, Go e Python.</p><h2>Diagnostica per TypeScript</h2><p>Con TypeScript, NoiraCoder individua rapidamente errori di tipizzazione, importazioni mancanti e problemi di configurazione del tsconfig. L'output è chiaro e orientato al terminale, consentendo di correggere subito il codice.</p><pre><code>// Esempio di diagnostica TypeScript\nconst user: string = 42; // ❌ Type 'number' is not assignable to type 'string'</code></pre><h2>Diagnostica per Go e Python</h2><p>Per Go, l'agente verifica le dipendenze, le convenzioni di naming e le potenziali race condition, mentre per Python analizza errori di sintassi, tipizzazione opzionale (mypy) e problemi di import.</p><pre><code># Esempio di diagnostica Go\nfunc Add(a int, b int) int {\n    return a + b // ✅ OK\n}\n\n# Esempio di diagnostica Python\nx: int = 'hello'  # ❌ Incompatible type \"str\" for \"int\"\n</code></pre><p>Integrando NoiraCoder nel tuo flusso di lavoro, riduci i tempi di debug e mantieni una base di codice pulita, indipendentemente dal linguaggio scelto.</p>","title_ar":"تشخيص الأخطاء في TypeScript و Go و Python باستخدام NoiraCoder","excerpt_ar":"اكتشف كيف يساعدك NoiraCoder في تحليل الأخطاء وتحسين الكود عبر ثلاث لغات برمجة.","body_ar":"<p>NoiraCoder هو وكيل برمجي يعمل داخل الطرفية، يتيح للمطورين الحصول على تشخيص فوري للخطأ في الشيفرة وتحسين جودة التطبيقات بسرعة.</p><h2>تشخيص TypeScript</h2><p>باستخدام الأمر <code>noiracode diagnose ts myfile.ts</code>، يقدم NoiraCoder تفاصيل دقيقة عن الأخطاء المتعلقة بالأنواع، مثل تعيين قيم غير متوافقة أو نقص تعريف المتغيرات.</p><pre><code>// مثال على خطأ TypeScript\nlet count: number = \"10\"; // ❌ لا يمكن تعيين سلسلة إلى متغير من نوع number\n</code></pre><h2>تشخيص Go و Python</h2><p>لـ Go، يمكنك تشغيل <code>noiracode diagnose go main.go</code> لتحديد الأخطاء في الأنواع أو الواجهات. أما في Python، فإن <code>noiracode diagnose py script.py</code> يعرض تحذيرات النوع باستخدام تعليقات النوع أو مكتبة <code>typing</code>.</p><pre><code>// مثال على خطأ Go\nvar x int = \"hello\" // ❌ لا يمكن تحويل سلسلة إلى int\n</code></pre><pre><code># مثال على خطأ Python\ndef add(a: int, b: int) -> int:\n    return a + b\n\nresult = add(5, \"3\")  # ❌ الجمع بين int و str\n</code></pre><p>باختصار، يدمج NoiraCoder أدوات التشخيص المتقدمة في بيئة الطرفية، مما يسهل على المطورين تحسين الكود في TypeScript و Go و Python بسرعة وفعالية.</p>"};</script>
+</head>
+<body>
+<header class="site-header"><div class="wrap-head">
+  <a href="/" class="logo">&gt; NOIRACODER</a>
+  <nav class="main-nav">
+    <a class="navlink" href="/docs/skills.html" data-i18n="nav.skills">Skills</a>
+    <a class="navlink" href="/docs/tutoriales.html" data-i18n="nav.tutorials">Tutoriales</a>
+    <a class="navlink" href="/blog/" data-i18n="nav.blog">Blog</a>
+    <a class="navlink" href="/contacto.html" data-i18n="nav.contact">Contacto</a>
+    <a class="navlink" href="/docs/tutoriales.html" data-i18n="nav.login">Entrar</a>
+    <a class="btn-signup" href="/#instalar" data-i18n="nav.signup">Empezar</a>
+    <div class="langswitch"><button aria-label="language">[<span class="cur">EN</span> ▾]</button><div class="menu">
+      <button data-lang="en">EN</button><button data-lang="es">ES</button><button data-lang="pt">PT</button><button data-lang="fr">FR</button><button data-lang="de">DE</button><button data-lang="it">IT</button><button data-lang="ar">AR</button>
+    </div></div>
+  </nav>
+  <div class="mobile-only">
+    <div class="langswitch"><button aria-label="language">[<span class="cur">EN</span> ▾]</button><div class="menu">
+      <button data-lang="en">EN</button><button data-lang="es">ES</button><button data-lang="pt">PT</button><button data-lang="fr">FR</button><button data-lang="de">DE</button><button data-lang="it">IT</button><button data-lang="ar">AR</button>
+    </div></div>
+    <button class="menu-btn" data-menu-btn>[=]</button>
+  </div>
+</div>
+<div class="mobile-menu" data-mobile-menu>
+  <a href="/docs/skills.html" data-i18n="nav.skills">Skills</a>
+  <a href="/docs/tutoriales.html" data-i18n="nav.tutorials">Tutoriales</a>
+  <a href="/blog/" data-i18n="nav.blog">Blog</a>
+  <a href="/contacto.html" data-i18n="nav.contact">Contacto</a>
+  <a href="/docs/tutoriales.html" data-i18n="nav.login">Entrar</a>
+  <a href="/#instalar" data-i18n="nav.signup">Empezar</a>
+</div></header>
+<main class="wrap-page">
+  <div class="mono" style="font-size:.75rem;color:var(--muted)">Blog · 2026-09-26 · 4 min</div>
+  <h1 class="mono" style="font-size:1.875rem;font-weight:700;margin:.75rem 0 1rem" id="post-title"></h1>
+  <article class="post-body" id="post-body"></article>
+  <p style="margin-top:2rem"><a class="link-accent" href="/">← Volver</a> · <a class="link-accent" href="/blog/">Todos</a></p>
+</main>
+<footer class="site-footer">
+  <div class="cols">
+    <div><h4 class="brand">&gt; NOIRACODER</h4><p class="brandp" data-i18n="footer.brand">…</p></div>
+    <div><h4 data-i18n="footer.products">Ecosistema</h4><ul>
+      <li><a href="https://noiramaster.pages.dev/" target="_blank" rel="noopener">Noiramaster</a></li>
+    </ul></div>
+    <div><h4 data-i18n="footer.resources">Recursos</h4><ul>
+      <li><a href="/blog/" data-i18n="nav.blog">Blog</a></li>
+      <li><a href="/sobre.html" data-i18n="nav.about">Sobre NoiraCoder</a></li>
+      <li><a href="/legal.html" data-i18n="nav.legal">Legal</a></li>
+      <li><a href="/terminos.html" data-i18n="nav.terms">Términos</a></li>
+      <li><a href="/privacidad.html" data-i18n="nav.privacy">Privacidad</a></li>
+    </ul></div>
+    <div><h4 data-i18n="footer.community">Comunidad</h4><div class="social">
+      <a href="https://x.com/noiramaster" target="_blank" rel="noopener" aria-label="X"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+      <a href="https://www.instagram.com/noiramaster/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0z"/></svg></a>
+      <a href="https://www.reddit.com/user/AddendumIll3987/" target="_blank" rel="noopener" aria-label="Reddit"><svg viewBox="0 0 24 24"><path d="M12 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 01-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 01.042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 014.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 01.14-.197.35.35 0 01.238-.042l2.906.617a1.214 1.214 0 011.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249z"/></svg></a>
+    </div></div>
+    <div><h4 data-i18n="footer.languages">Idiomas</h4><div class="langrow">
+      <button data-lang="es">ES</button><button data-lang="en">EN</button><button data-lang="pt">PT</button><button data-lang="fr">FR</button><button data-lang="de">DE</button><button data-lang="it">IT</button><button data-lang="ar">AR</button>
+    </div></div>
+  </div>
+  <div class="bottombar"><p>&gt; Noira © <span class="year">2026</span> · <span data-i18n="footer.copyright">Todos los derechos reservados.</span></p></div>
+</footer>
+<script>
+document.querySelectorAll('.year').forEach(function (e) { e.textContent = new Date().getFullYear(); });
+document.addEventListener('DOMContentLoaded', function () {
+  renderPost();
+});
+document.addEventListener('noira-lang', function () {
+  renderPost();
+});
+function renderPost() {
+  var lang = (typeof noiraGetLang === 'function') ? noiraGetLang() : 'en';
+  var title = NOIRA_POST['title_' + lang] || NOIRA_POST.title_en || NOIRA_POST.title_es;
+  var body = NOIRA_POST['body_' + lang] || NOIRA_POST.body_en || NOIRA_POST.body_es;
+  document.getElementById('post-title').textContent = title;
+  document.getElementById('post-body').innerHTML = body;
+  document.title = (title + ' | NOIRACODER');
+}
+</script>
+</body>
+</html>

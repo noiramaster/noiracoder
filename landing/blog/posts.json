@@ -1,5 +1,25 @@
 [
   {
+    "slug": "diagnosticos-typescript-go-python",
+    "file": "2026-09-26-diagnosticos-typescript-go-python.html",
+    "date": "2026-09-26",
+    "category": "noiracoder",
+    "title_es": "Diagnósticos de TypeScript, Go y Python con NoiraCoder",
+    "title_en": "Diagnosing TypeScript, Go, and Python with NoiraCoder: A Terminal Code Agent",
+    "title_pt": "NoiraCoder: Diagnósticos Rápidos para TypeScript, Go e Python no Terminal",
+    "title_fr": "Diagnostiquer TypeScript, Go et Python avec NoiraCoder",
+    "title_de": "NoiraCoder: Diagnostik in TypeScript, Go und Python direkt im Terminal",
+    "title_it": "NoiraCoder: Diagnostica Avanzata per TypeScript, Go e Python",
+    "title_ar": "تشخيص الأخطاء في TypeScript و Go و Python باستخدام NoiraCoder",
+    "excerpt_es": "NoiraCoder permite diagnosticar errores de tipado y compilación en TypeScript, Go y Python directamente desde la terminal.",
+    "excerpt_en": "NoiraCoder streamlines cross‑language diagnostics, letting you spot TypeScript, Go, and Python issues directly from the terminal.",
+    "excerpt_pt": "Descubra como o NoiraCoder simplifica a identificação de erros em TypeScript, Go e Python diretamente no seu terminal.",
+    "excerpt_fr": "NoiraCoder simplifie le diagnostic et la correction d’erreurs courantes dans les projets TypeScript, Go et Python directement depuis le terminal.",
+    "excerpt_de": "Mit NoiraCoder erhalten Entwickler sofortige, präzise Diagnosen für TypeScript-, Go- und Python-Code im Terminal.",
+    "excerpt_it": "NoiraCoder porta la diagnostica dei linguaggi più popolari direttamente nel tuo terminale, migliorando la produttività.",
+    "excerpt_ar": "اكتشف كيف يساعدك NoiraCoder في تحليل الأخطاء وتحسين الكود عبر ثلاث لغات برمجة."
+  },
+  {
     "slug": "deploy-vercel-con-confirmacion",
     "file": "2026-09-25-deploy-vercel-con-confirmacion.html",
     "date": "2026-09-25",
