@@ -1,0 +1,10 @@
+{
+  "endpoint": "/help",
+  "description": "Help screen — now includes /connections, /connect, /explain",
+  "commands": "/help /sessions /resume /new /plan /build /model /lang /title /learn /mouse /copy /mcp /parallel /agents /connections /connect /explain /quit",
+  "changes": [
+    "Added /connections — status overview of all providers",
+    "Added /connect — interactive form with links and paste field",
+    "Added /explain — shows last turn Q&A summary"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "endpoint": "/v1/events (SSE)",
+  "description": "Turn streaming — now includes turn.summary event",
+  "events": [
+    "turn.echo",
+    "turn.text",
+    "turn.tool_start",
+    "turn.tool_end",
+    "turn.summary",
+    "turn.end"
+  ],
+  "changes": [
+    "Added turn.summary SSE event with tools, switches, model, time",
+    "3-failure detection: sends hint after 3 consecutive errors"
+  ]
+}

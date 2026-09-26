@@ -1,0 +1,12 @@
+{
+  "endpoint": "boot (hello event)",
+  "description": "Boot banner — new welcome screen with level, tips, no 'connected' jargon",
+  "before": "> NOIRACODER  listo.\n  type /help for commands...",
+  "after": "> NOIRACODER  type /help for commands · Enter to send · ↑↓ history\n\n  Ask me anything: fix a bug, add a feature, explain code, run tests…\n  I remember context across sessions. Start typing or try: /help\n  Detected language: English · Level: low\n  Tip: /connect to add API keys for more models and quota",
+  "changes": [
+    "Removed '(router)' — now shows active level (low/mid/high/max)",
+    "Removed 'conectado al motor' jargon — replaced with user-friendly boot_hint",
+    "Added M3.3: 4 welcome lines with examples, language, level, tip",
+    "Model name from hello event replaces hardcoded '(router)'"
+  ]
+}

@@ -362,6 +362,46 @@ Sin app de escritorio ni extensión IDE. Sin "privacidad local" en el mensaje.
 ## H6 — HASH VERIFICATION (completo, 2026-09-23)
 - [x] `build-thin.mjs` genera SHA256 del binario Go → `*.sha256`.
 
+## H7 — VERIFICACIÓN FINAL (completo, 2026-09-20)
+- [x] CI multi-OS (verify-thin.yml): ubuntu + macos-14 (arm64) + macos-15-intel.
+- [x] Fallback Ink ante Go rota (pty 4/4).
+- [x] Suites en verde: Go tests + vet.
+- [x] pty 9/9 con binario CI.
+- [ ] Publicar v0.2.0 (runbook en sección anterior).
+
+## H8 — SISTEMA DE CREDENCIALES (completo, 2026-09-26)
+- [x] Detección genérica de servicios: detecta API key faltante de cualquier
+  proveedor (OpenRouter, GitHub, Cloudflare, GitLab, npm, Vercel, Docker,
+  Netlify, PyPI, Groq, Zen) al ejecutar un comando bash.
+- [x] Validación contra API real antes de almacenar (GitHub → api.github.com,
+  Cloudflare → client/v4/user/tokens/verify, npm → registry.npmjs.org, etc.).
+- [x] Almacenamiento cifrado en `~/.noirarc/keys.json` vía DPAPI/AES.
+- [x] POST /v1/connect en motor + Connect() en Go client.
+- [x] Comando /connect: flujo de dos pasos (selección de proveedor → input de
+  API key → validación → almacenamiento). Sin contaminación de sesión.
+- [x] Comando /connections: muestra 12 proveedores con [✓]/[ ].
+- [x] Wire en bash tool: pre-check (detecta antes de ejecutar) + post-check
+  (detecta desde error). Opciones H10 para selección.
+- [x] i18n: connect_prompt_key, connect_ok, connect_fail, connect_retry × 7.
+- [x] Evidencia: after4/ (6 capturas), after5/ (6 capturas).
+
+## H9 — EXPERIENCIA Y DIAGNÓSTICO (completo, 2026-09-26)
+- [x] Detección de 3 fallos consecutivos → sugiere cambiar modelo.
+- [x] Resumen de tarea al completar turno (qué hizo el modelo).
+- [x] Comando /explain: explica qué hizo el último turno.
+- [x] Detección de proyecto: muestra nombre del directorio actual.
+- [x] Advertencia de cuota agotada.
+
+## H10 — COMPONENTE DE OPCIONES SELECCIONABLES (completo, 2026-09-26)
+- [x] Server: PendingOptions, resolveOptions(), pendingOptions Map, endpoint
+  POST /v1/options + POST /v1/options/resolve.
+- [x] Go client: optionsState, optionItem, teclado (↑↓/Enter/Esc), renderizado
+  con caja de bordes, limited recommended (solo top 3 proveedores).
+- [x] Wire en orchestrator + toolRegistry + bash tool.
+- [x] i18n: options_title, options_select, options_cancel, options_security_*
+  en 17 idiomas (dictionary.ts) + 7 idiomas (screen.ts).
+- [x] Tests: h10-options.mjs 21/21.
+
 ## M8 — RC FINAL (completo, 2026-09-23)
 - [x] Verificación: build+typecheck OK, i18n-screen 0 (108 keys × 7),
   adversarial 39/39, learn 17/17, memory-guard 7/7, Go panel OK.

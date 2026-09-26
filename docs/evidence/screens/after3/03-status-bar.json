@@ -1,0 +1,11 @@
+{
+  "endpoint": "status bar (setStatus)",
+  "description": "Status bar — shows real model name or level, never '(router)'",
+  "before": "model: (router) · mode: build · session: — · quota: 8%",
+  "after": "model: low · mode: build · session: my-project · quota: 42%",
+  "changes": [
+    "modelName initialized from hello event 'modelo' field",
+    "Fallback to 'level' field when modelo is empty or '(router)'",
+    "hello event now sends: modelo: preferredModel ?? level ?? 'low'"
+  ]
+}

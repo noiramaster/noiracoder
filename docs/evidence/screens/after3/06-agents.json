@@ -1,0 +1,34 @@
+{
+  "endpoint": "orchestrator + /connect",
+  "description": "H8 connection form — /connect shows providers with links + paste field",
+  "connectionForm": {
+    "title": "Connect API Keys",
+    "providers": [
+      {
+        "id": "kilo",
+        "name": "Kilo (anonymous)",
+        "note": "200 req/hora, sin clave",
+        "connected": true
+      },
+      {
+        "id": "openrouter",
+        "name": "OpenRouter",
+        "note": "25+ modelos free",
+        "link": "https://openrouter.ai/keys"
+      },
+      {
+        "id": "groq",
+        "name": "Groq",
+        "note": "~1000 req/día por modelo",
+        "link": "https://console.groq.com/keys"
+      },
+      {
+        "id": "zen",
+        "name": "Zen",
+        "note": "Modelos free rotativos",
+        "link": "https://opencode.ai/zen"
+      }
+    ],
+    "usesH10Options": true
+  }
+}
