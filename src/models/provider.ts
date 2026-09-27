@@ -86,9 +86,14 @@ export class OpenRouterClient {
     return this.baseURL;
   }
 
+  // K2: límite por petición. Sin esto, un proveedor que acepta la conexión
+  // pero nunca responde deja al turno colgado en silencio hasta el watchdog
+  // de 60s. El timeout dispara un error CLARO y reintentable (rota de modelo).
+  private static readonly REQUEST_MS = 45_000;
   private async request(path: string, init: RequestInit, signal?: AbortSignal): Promise<Response> {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 45000);
+    let timedOut = false;
+    const timeout = setTimeout(() => { timedOut = true; controller.abort(); }, OpenRouterClient.REQUEST_MS);
     const combinedSignal = signal ? AbortSignal.any([signal, controller.signal]) : controller.signal;
     try {
       const res = await fetch(`${this.baseURL}${path}`, {
@@ -103,6 +108,16 @@ export class OpenRouterClient {
         },
       });
       return res;
+    } catch (e) {
+      // Abort provocado por NUESTRO timeout (no cancelación del usuario):
+      // mensaje claro + retryable para que el agente rote de modelo.
+      if (timedOut && !signal?.aborted) {
+        throw new LlmErrorImpl(
+          `proveedor sin respuesta: 45s sin cabeceras de ${this.baseURL}${path} (timeout de petición, se rota de modelo).`,
+          { retryable: true },
+        );
+      }
+      throw e;
     } finally {
       clearTimeout(timeout);
     }
@@ -219,9 +234,10 @@ export class OpenRouterClient {
     let model = "";
 
     // Sin timeout de inactividad, un stream que se queda mudo (red o modelo
-    // colgado a mitad de respuesta) deja al agente esperando PARA SIEMPRE
-    // sin mostrar nada. 90s sin ningún chunk = error claro y reintentable.
-    const IDLE_MS = 90_000;
+    // colgado a mitad de respuesta) deja al agente esperando sin mostrar nada.
+    // K2: 45s (por debajo del watchdog de 60s del servidor) = error claro y
+    // reintentable que rota de modelo en vez de morir por watchdog genérico.
+    const IDLE_MS = 45_000;
     const readWithIdleTimeout = async (): Promise<{ done: boolean; value?: Uint8Array }> => {
       let timer: ReturnType<typeof setTimeout> | undefined;
       try {
@@ -230,11 +246,11 @@ export class OpenRouterClient {
             // Orden crítico: rechazar PRIMERO (Promise.race toma el primer
             // settled; si cancelamos antes, el read resuelto gana y el
             // timeout quedaría en silencio). Luego se libera el reader.
-            reject(
-              new LlmErrorImpl(`stream detenido: 90s sin datos del modelo (red o modelo colgado).`, {
-                retryable: true,
-              }),
-            );
+              reject(
+                new LlmErrorImpl(`stream detenido: 45s sin datos del modelo (red o modelo colgado, se rota de modelo).`, {
+                  retryable: true,
+                }),
+              );
             try { (reader.cancel("idle-timeout") as Promise<void>).catch(() => {}); } catch {}
           }, IDLE_MS);
         });

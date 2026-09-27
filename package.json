@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "NoiraCoder - agential coding harness for the Noira ecosystem (multi-provider, cache-aware, sandboxed).",
   "license": "MIT",
-  "author": "Kujtim Hoxha (OpenCode) + Noira",
+  "author": "Kujtim Hoxha (OpenCode)",
   "exports": {
     ".": "./dist/index.js"
   },
@@ -16,8 +16,7 @@
   "files": [
     "dist",
     "bin/noiracoder.mjs",
-    "skills",
-    "scripts/fetch-go-binary.mjs"
+    "skills"
   ],
   "engines": {
     "node": ">=20"
@@ -25,8 +24,10 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "build:thin": "node scripts/build-thin.mjs",
+    "build:thin:all": "node scripts/build-thin-all.mjs",
+    "check:artifacts": "node scripts/check-release.mjs --artifacts-only",
+    "prepack": "npm run build && node scripts/build-thin.mjs && node scripts/check-release.mjs --artifacts-only",
     "prepublishOnly": "node scripts/check-release.mjs",
-    "postinstall": "node scripts/fetch-go-binary.mjs || true",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "start": "node dist/index.js",
     "dev": "tsc -p tsconfig.json --watch",
@@ -54,5 +55,25 @@
     "@types/node": "^22.0.0",
     "@types/react": "^19.2.18",
     "typescript": "^5.6.0"
-  }
+  },
+  "optionalDependencies": {
+    "noiracoder-win32-x64": "0.1.0",
+    "noiracoder-darwin-x64": "0.1.0",
+    "noiracoder-darwin-arm64": "0.1.0",
+    "noiracoder-linux-x64": "0.1.0"
+  },
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/noiramaster/noiracoder.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/noiramaster/noiracoder/issues"
+  },
+  "homepage": "https://github.com/noiramaster/noiracoder#readme"
 }

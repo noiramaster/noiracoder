@@ -3,6 +3,7 @@
  *
  * Commands:
  *   nc <prompt>                 one-shot task run
+ *   nc models                   read-only inventory (providers + levels, no network)
  *   nc login                    interactive "Sign in with OpenRouter" (OAuth PKCE)
  *   nc serve [--port PORT]      headless web server (client-server API)
  *   nc --version                version
@@ -23,7 +24,7 @@ import { pathToFileURL } from "node:url";
 import type { Level } from "../types.js";
 
 export interface CliArgs {
-  command: "run" | "login" | "serve" | "version" | "lang" | "connect";
+  command: "run" | "login" | "serve" | "version" | "lang" | "connect" | "models";
   prompt: string;
   level: Level;
   levelExplicit: boolean;
@@ -94,6 +95,9 @@ export function parseArgs(argv: string[]): CliArgs {
       case "connect":
         command = "connect";
         break;
+      case "models":
+        command = "models";
+        break;
       case "help":
       case "--help":
       case "-h":
@@ -115,6 +119,7 @@ export function printHelp(): void {
       `  noira              Abre el chat (como claude / opencode)\n` +
       `  noira login        Conecta (1 clic)\n` +
       `  noira connect      Kilo anónimo + estado de claves opcionales\n` +
+      `  noira models       Proveedores y niveles (solo lectura, sin red)\n` +
       `  noira --no-tui     Fuerza modo texto Node (si la TUI no responde)\n` +
       `  noira --help       Más opciones\n`
   );
@@ -229,7 +234,7 @@ export async function cliMain(argv: string[], meta?: { invokedAs?: string }): Pr
       log.raw(color.dim("> Cada clave opcional amplía tu cuota. Tardan ~1 min y se guardan cifradas.\n"));
       const steps: { id: string; name: string; url: string; note: string }[] = [
         { id: "kilo", name: "0) Kilo", url: "sin registro", note: "Ya activo: 20 modelos :free, sin hacer nada." },
-        { id: "openrouter", name: "1) OpenRouter", url: "https://openrouter.ai/keys", note: `Amplía la cuota: 25+ modelos free, ${OPENROUTER_FREE_DAILY.noCredits}/día (1000/día con 10 $ cargados). Guárdala con: noira login` },
+        { id: "openrouter", name: "1) OpenRouter", url: "se abre el navegador", note: `Un clic, sin copiar nada: noira login. 25+ modelos free, ${OPENROUTER_FREE_DAILY.noCredits}/día (1000/día con 10 $ cargados).` },
         { id: "groq", name: "2) Groq", url: "https://console.groq.com/keys", note: "Muy rápida. Límite por modelo. Guarda con: noira login --groq <key>" },
         { id: "zen", name: "3) Zen", url: "https://opencode.ai/zen", note: "Modelos free promocionales (rotan). Guarda con: noira login --zen <key>" },
       ];
@@ -325,6 +330,50 @@ export async function cliMain(argv: string[], meta?: { invokedAs?: string }): Pr
         return false;
       };
       return startServer({ port: args.port, log, level: args.level, lang, authToken, mcp: mcp ?? undefined, confirm: serverConfirm });
+    }
+    case "models": {
+      // K1: inventario 100% local (disco). CERO llamadas de red: no puede
+      // colgarse aunque todos los proveedores estén caídos.
+      const { loadAllKeys, configDir } = await import("../auth/keys.js");
+      const { buildProviderPool } = await import("../models/providers/index.js");
+      const { pipelineFor } = await import("../agents/roster.js");
+      const { readdir, readFile } = await import("node:fs/promises");
+      const { join } = await import("node:path");
+      const keys = await loadAllKeys();
+      const pool = buildProviderPool(keys);
+      log.raw("");
+      log.raw(color.gold("> NOIRA — proveedores y niveles (solo lectura, sin red)"));
+      for (const p of pool) {
+        const has = p.id === "kilo" ? true : !!((keys as Record<string, string | undefined>)[p.id]);
+        log.raw(`${has ? color.ok("[ok]") : color.dim("[ ]")} ${p.id} — ${color.dim(p.label)}${has ? "" : " (sin clave)"}`);
+      }
+      // Catálogo en caché local (lo escribe el motor al correr; sin red aquí).
+      try {
+        const dir = configDir();
+        const files = (await readdir(dir)).filter((f) => /^catalog\.v\d+\.json$/.test(f)).sort().reverse();
+        if (files.length) {
+          const raw = JSON.parse(await readFile(join(dir, files[0]), "utf8")) as { models?: { id: string; provider?: string; free?: boolean }[] };
+          const models = Array.isArray(raw.models) ? raw.models : [];
+          const per: Record<string, { n: number; free: number }> = {};
+          for (const m of models) {
+            const pv = m.provider ?? "?";
+            per[pv] ??= { n: 0, free: 0 };
+            per[pv].n++;
+            if (m.free) per[pv].free++;
+          }
+          log.raw(color.dim(`> catálogo local ${files[0]} (${models.length} modelos):`));
+          for (const [pv, c] of Object.entries(per)) log.raw(`  · ${pv}: ${c.n} modelos (${c.free} free)`);
+        } else {
+          log.raw(color.dim("> sin catálogo local todavía (corre un turno para generarlo)."));
+        }
+      } catch {
+        log.raw(color.dim("> sin catálogo local todavía (corre un turno para generarlo)."));
+      }
+      log.raw(color.dim("> niveles (pipeline por nivel):"));
+      for (const lv of ["low", "medium", "high", "max"] as const) {
+        log.raw(`  · ${lv}: ${pipelineFor(lv, false).join(" → ")}`);
+      }
+      return 0;
     }
     case "run": {
       if (!args.prompt) {

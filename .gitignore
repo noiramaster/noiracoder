@@ -16,3 +16,5 @@ bin/noira-thin
 .noira/
 .noiracoder/opencode.db*
 
+
+npm/*/bin/

@@ -10,9 +10,31 @@ const distEntry = join(here, "..", "dist", "cli", "cli.js");
 const invokedAs = basename(process.argv[1] ?? "");
 // HITO 1: cliente fino. El binario thin (sin motor heredado) es noira-thin.
 // El legacy noira-go.exe (motor propio sin sandbox) YA NO se lanza nunca.
-const thinBin = existsSync(join(here, "noira-thin.exe"))
-  ? join(here, "noira-thin.exe")
-  : join(here, "noira-thin");
+// TAREA C: orden de resolución —
+//   1) NOIRA_THIN_BIN (override de pruebas),
+//   2) paquete opcional por plataforma (npm i instala solo el de tu SO),
+//   3) bin/ local (compilación de desarrollo: npm run build:thin).
+function platformPkg() {
+  const p = process.platform, a = process.arch;
+  if (p === "win32" && a === "x64") return { pkg: "noiracoder-win32-x64", bin: "noira-thin.exe" };
+  if (p === "darwin" && a === "x64") return { pkg: "noiracoder-darwin-x64", bin: "noira-thin" };
+  if (p === "darwin" && a === "arm64") return { pkg: "noiracoder-darwin-arm64", bin: "noira-thin" };
+  if (p === "linux" && a === "x64") return { pkg: "noiracoder-linux-x64", bin: "noira-thin" };
+  return null;
+}
+function resolveThinBin() {
+  const pp = platformPkg();
+  if (pp) {
+    // npm instala los opcionales como HERMANOS (node_modules/<pkg>),
+    // o sea dos niveles por encima de bin/.
+    const fromPkg = join(here, "..", "..", pp.pkg, "bin", pp.bin);
+    if (existsSync(fromPkg)) return fromPkg;
+  }
+  const legacy = join(here, process.platform === "win32" ? "noira-thin.exe" : "noira-thin");
+  if (existsSync(legacy)) return legacy;
+  return null;
+}
+const thinBin = resolveThinBin();
 
 const args = process.argv.slice(2);
 const isCliFlag = args.some((a) => ["--help","-h","--version","-v","serve","login","--lang"].includes(a) || a === "-l" || a === "--level");
@@ -90,10 +112,10 @@ async function startGo() {
   // Override para pruebas (binario roto a propósito): NOIRA_THIN_BIN.
   const overrideBin = process.env.NOIRA_THIN_BIN || "";
   const bin = overrideBin || thinBin;
-  if (!existsSync(bin)) {
+  if (!bin || !existsSync(bin)) {
     console.error("> Sin binario thin (noira-thin): se usa el respaldo Ink/Node.");
-    console.error("> El binario llega con hash verificado (Hito 6); en desarrollo: npm run build:thin");
-    process.env.NOIRA_NOTICE = "Pantalla Go no disponible: falta el binario. Arreglo: npm run build:thin (o espera la 0.2.0). Sigues en el motor Node.";
+    console.error("> El binario llega con el paquete opcional de tu plataforma; en desarrollo: npm run build:thin");
+    process.env.NOIRA_NOTICE = "Pantalla Go no disponible: falta el binario. Arreglo: reinstala noiracoder (o npm run build:thin en desarrollo). Sigues en el motor Node.";
     startNode();
     return;
   }
@@ -131,6 +153,17 @@ async function startGo() {
   if (!healthy) {
     try { motor.kill(); } catch { /* ya muerto */ }
     console.error("> El motor no arrancó a tiempo; se usa el respaldo Ink/Node.");
+    // 2026-09-26: el motivo se imprimía como "> Sin terminal interactivo" o
+    // caía mudo cuando `serve --thin` moría sin stderr (CLI empaquetada sin
+    // dist/server/thin.js). Sin esto el diagnóstico era imposible y el
+    // respaldo Ink tapaba la causa real.
+    if (!existsSync(join(here, "..", "dist", "server", "thin.js"))) {
+      console.error("> Causa probable: falta dist/server/thin.js en el paquete instalado (motor thin sin compilar).");
+    } else if (motor.exitCode !== null) {
+      console.error(`> Diagnóstico: el motor 'serve --thin' salió con código ${motor.exitCode} sin escribir stderr.`);
+    } else {
+      console.error("> Diagnóstico: el motor siguió vivo pero /health no respondió en 6 s.");
+    }
     if (motorErr) console.error(motorErr.split("\n").slice(-5).join("\n"));
     process.env.NOIRA_NOTICE = "Pantalla Go no disponible: el motor no arrancó. Sigues en el motor Node.";
     startNode();
