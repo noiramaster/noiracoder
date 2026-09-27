@@ -47,16 +47,7 @@
     "@modelcontextprotocol/sdk": "^1.12.0",
     "ink": "^7.1.1",
     "react": "^19.2.8",
-    "zod": "^3.25.76"
-  },
-  "devDependencies": {
-    "@modelcontextprotocol/server-everything": "^2026.8.31",
-    "@modelcontextprotocol/server-filesystem": "^2026.8.31",
-    "@types/node": "^22.0.0",
-    "@types/react": "^19.2.18",
-    "typescript": "^5.6.0"
-  },
-  "optionalDependencies": {
+    "zod": "^3.25.76",
     "@noiramaster/noiracoder-win32-x64": "0.2.0",
     "noiracoder-darwin-x64": "0.2.0",
     "noiracoder-darwin-arm64": "0.2.0",
