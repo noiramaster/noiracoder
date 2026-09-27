@@ -16,7 +16,7 @@ const invokedAs = basename(process.argv[1] ?? "");
 //   3) bin/ local (compilación de desarrollo: npm run build:thin).
 function platformPkg() {
   const p = process.platform, a = process.arch;
-  if (p === "win32" && a === "x64") return { pkg: "noiracoder-win32-x64", bin: "noira-thin.exe" };
+  if (p === "win32" && a === "x64") return { pkg: "@noiramaster/noiracoder-win32-x64", bin: "noira-thin.exe" };
   if (p === "darwin" && a === "x64") return { pkg: "noiracoder-darwin-x64", bin: "noira-thin" };
   if (p === "darwin" && a === "arm64") return { pkg: "noiracoder-darwin-arm64", bin: "noira-thin" };
   if (p === "linux" && a === "x64") return { pkg: "noiracoder-linux-x64", bin: "noira-thin" };
