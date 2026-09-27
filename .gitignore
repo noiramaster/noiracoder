@@ -18,3 +18,7 @@ bin/noira-thin
 
 
 npm/*/bin/
+
+# TAREA T: paquetes por plataforma (~30MB de binarios). Los genera
+# scripts/build-thin-all.mjs al publicar; no se versionan.
+npm/

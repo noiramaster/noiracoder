@@ -1,9 +1,0 @@
-{
-  "name": "noiracoder-win32-x64",
-  "version": "0.1.0",
-  "description": "NoiraCoder thin screen binary (Windows x64).",
-  "license": "MIT",
-  "os": ["win32"],
-  "cpu": ["x64"],
-  "files": ["bin"]
-}
