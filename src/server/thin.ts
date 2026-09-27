@@ -977,6 +977,83 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
       return;
     }
 
+    // GG: confirmación directa del servidor (fuera de turno). Igual que
+    // remoteConfirm pero a nivel de servidor para /v1/deploy y /v1/login:
+    // SSE confirm.request + espera con timeout; sin cliente se DENIEGA
+    // (jamás auto-acepta). No toca el sistema de confirmaciones, lo usa.
+    const askClient = async (detail: string): Promise<boolean> => {
+      if (!sse || sse.writableEnded) {
+        opts.log.warn(`[thin] confirm sin cliente → denegado: ${detail}`);
+        return false;
+      }
+      const confirmId = randomUUID();
+      send("confirm.request", { confirmId, accion: "ejecutar", detalle: detail.slice(0, 500), timeoutMs: CONFIRM_TIMEOUT_MS });
+      return new Promise<boolean>((resolve) => {
+        const timer = setTimeout(() => {
+          resolveConfirm(confirmId, false, "timeout 120s");
+        }, CONFIRM_TIMEOUT_MS);
+        (timer as unknown as { unref?: () => void }).unref?.();
+        pendingConfirms.set(confirmId, { resolve, settled: false, timer });
+      });
+    };
+
+    // GG: POST /v1/deploy — paridad con /deploy del REPL (deployTool con su
+    // gate de confirmación, ahora vía askClient). Respuesta larga: el deploy
+    // real puede tardar minutos; el cliente espera (como un turno).
+    if (req.method === "POST" && url.pathname === "/v1/deploy") {
+      try {
+        const parsed = JSON.parse(await readBody(req)) as { target?: string; dryRun?: boolean };
+        const { deployTool } = await import("../tools/deploy.js");
+        const out = await deployTool().handler(
+          { target: parsed.target ?? "vercel", dryRun: parsed.dryRun ?? false },
+          {
+            cwd: process.cwd(),
+            confirmDestructive: true,
+            confirm: askClient,
+            log: opts.log,
+          },
+        );
+        json(res, 200, { ok: !out.startsWith("[error]") && !out.startsWith("[cancel]") && !out.startsWith("[denied]"), output: out });
+      } catch (e) {
+        json(res, 400, { error: e instanceof Error ? e.message : String(e) });
+      }
+      return;
+    }
+
+    // GG: POST /v1/logout — paridad con /logout del REPL (borra claves del
+    // disco). La confirmación la pide EL CLIENTE con su diálogo (igual que
+    // borrar sesión): el servidor solo ejecuta tras el POST explícito.
+    if (req.method === "POST" && url.pathname === "/v1/logout") {
+      try {
+        const { removeStoredKeys } = await import("../auth/keys.js");
+        const r = await removeStoredKeys();
+        json(res, 200, {
+          ok: true,
+          deleted: r.deleted,
+          file: r.deleted ? r.file : "",
+          msg: r.deleted ? `claves eliminadas del disco: ${r.file}` : "no había archivo de claves en disco (nada que borrar)",
+        });
+      } catch (e) {
+        json(res, 400, { error: e instanceof Error ? e.message : String(e) });
+      }
+      return;
+    }
+
+    // HH: POST /v1/login — OAuth OpenRouter en el servidor (abre el navegador
+    // local, como `noira login`). Para la bienvenida de la pantalla Go.
+    if (req.method === "POST" && url.pathname === "/v1/login") {
+      try {
+        const { interactiveSignIn } = await import("../auth/oauth.js");
+        const { storeKey } = await import("../auth/keys.js");
+        const r = await interactiveSignIn({ label: "NoiraCoder" });
+        await storeKey("openrouter", r.key);
+        json(res, 200, { ok: true, msg: `OpenRouter conectado (user ${r.user_id ?? "?"})` });
+      } catch (e) {
+        json(res, 400, { ok: false, error: e instanceof Error ? e.message : String(e) });
+      }
+      return;
+    }
+
     if (req.method === "POST" && url.pathname === "/v1/cancel") {
       try {
         const parsed = JSON.parse(await readBody(req)) as { turnId?: string };

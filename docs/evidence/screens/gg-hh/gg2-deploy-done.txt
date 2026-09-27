@@ -1,0 +1,33 @@
+[?1049h[H[38;2;58;58;58m╭────────────────────────────╮[38;2;251;191;36;1m> NOIRACODER[0m  [38;2;251;191;36;1mmedium[38;2;102;102;102;22m · [38;2;251;191;36;1mbuild
+[38;2;58;58;58;22m│   [0m+ Nueva sesión[11C[38;2;58;58;58m│──────────────────────────────────────────────────────────────────────
+│ [0m[proyecto][17C[38;2;58;58;58m│
+│ [0m────────────────────────── [38;2;58;58;58m│  [0m> NOIRACODER  escribe /help para ver comandos · Enter enviar · ↑↓   
+[38;2;58;58;58m│ [0m(sin sesiones guardadas)   [38;2;58;58;58m│
+│ [38;2;102;102;102m· ↑↓ mover[17C[38;2;58;58;58m│  [0mRecuerdo contexto entre sesiones. Empieza a escribir o prueba: /h   
+[38;2;58;58;58m│ [38;2;102;102;102m· Enter abrir[14C[38;2;58;58;58m│
+│ [38;2;102;102;102m· escribir filtra[10C[38;2;58;58;58m│  [0mPublicando… (puede tardar minutos)
+[38;2;58;58;58m│ [38;2;102;102;102m· r renombrar[14C[38;2;58;58;58m│[0m[confirm] permitido por el usuario: Publicar "static" a produccion?   
+[38;2;58;58;58m│ [38;2;102;102;102m· f fijar[18C[38;2;58;58;58m│  [0mcwd: C:\Users\aissa\AppData\Local\Temp\gg-wsdeploy-Uolar3
+[38;2;58;58;58m│ [38;2;102;102;102m· d borrar[17C[38;2;58;58;58m│[0mEste paso es visible externamente y no se deshace solo. [y/N]
+[38;2;58;58;58m│ [38;2;102;102;102m· Tab chat[17C[38;2;58;58;58m│[0m[confirm] cliente
+[38;2;58;58;58m│ [38;2;102;102;102m· Ctrl+B ocultar[11C[38;2;58;58;58m│  [0m[ok] build estatico generado en C:\Users\aissa\AppData\Local\Temp   
+[38;2;58;58;58m╰────────────────────────────╯
+
+
+
+
+
+
+
+
+
+
+[30C[38;2;251;191;36m╭─────────────────────────────────────────────────────────────────────
+[30C│  [37;40m┃   [39m1 [7m>[38;5;240;27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[0m       
+[30C[38;2;251;191;36m│  [37m┃
+[30C[38;2;251;191;36m│  [37m┃
+[30C[38;2;251;191;36m╰─────────────────────────────────────────────────────────────────────
+
+[30C[38;2;102;102;102mEnter enviar · ↑↓ historial · Ctrl+C cancela turno/sale · /help comand
+[30CMayús+arrastrar selecciona · /copy última respuesta · /mouse off      
+[0m                              [38;2;102;102;102mmodelo: medium · modo[0m: build · sesión: —                              [7A[?2004h[?1004h[?1003h

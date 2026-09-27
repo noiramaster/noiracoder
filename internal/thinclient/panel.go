@@ -186,6 +186,55 @@ func (m *Model) openSession(id string) {
 	m.client.SetUi(m.panel.Open, id)
 }
 
+// welcomeSeen dice si ya se mostró la bienvenida HH (una sola vez).
+func welcomeSeen() bool {
+	home := os.Getenv("NOIRARC_HOME")
+	if home == "" {
+		if h, err := os.UserHomeDir(); err == nil {
+			home = h
+		} else {
+			return false
+		}
+	}
+	b, err := os.ReadFile(filepath.Join(home, ".noirarc", "prefs.json"))
+	if err != nil {
+		return false
+	}
+	var v struct {
+		Welcomed *bool `json:"welcomed"`
+	}
+	if err := json.Unmarshal(b, &v); err != nil || v.Welcomed == nil {
+		return false
+	}
+	return *v.Welcomed
+}
+
+// setWelcomeSeen marca la bienvenida como vista (merge, no pisa prefs).
+func setWelcomeSeen() {
+	home := os.Getenv("NOIRARC_HOME")
+	if home == "" {
+		if h, err := os.UserHomeDir(); err == nil {
+			home = h
+		} else {
+			return
+		}
+	}
+	dir := filepath.Join(home, ".noirarc")
+	p := filepath.Join(dir, "prefs.json")
+	var v map[string]any
+	if b, err := os.ReadFile(p); err == nil {
+		_ = json.Unmarshal(b, &v)
+	}
+	if v == nil {
+		v = map[string]any{}
+	}
+	v["welcomed"] = true
+	if b, err := json.Marshal(v); err == nil {
+		_ = os.MkdirAll(dir, 0755)
+		_ = os.WriteFile(p, b, 0644)
+	}
+}
+
 // mousePref lee el flag de ratón (defecto true).
 func mousePref() bool {
 	home := os.Getenv("NOIRARC_HOME")
@@ -440,14 +489,7 @@ func (m *Model) handleMouse(msg tea.MouseMsg) (tea.Model, tea.Cmd) {
 			for i := range m.options.items {
 				if z := zone.Get("opt:" + strconv.Itoa(i)); z != nil && z.InBounds(msg) {
 					o := m.options
-					m.options = nil
-					item := o.items[i]
-					go func() {
-						_ = m.client.Options(o.id, item.Key)
-					}()
-					if o.id == "connect-form" {
-						m.enterConnectForm(item)
-					}
+					m.resolveOptionsLocal(o, i, false)
 					return m, nil
 				}
 			}

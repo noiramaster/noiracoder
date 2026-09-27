@@ -1,0 +1,195 @@
+[?9001h[?1004h[2J[m]0;C:\Users\aissa\noiracoder\bin\noira-thin.exe[?25l[?1049h[2J[?2004h[?1002h[?1006h[?1003;1006h[H[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K[100C[38;2;58;58;58m[H╭────────────────────────────╮[38;2;251;191;36m[1m> NOIRACODER[m  [38;2;251;191;36m[1mmedium[38;2;102;102;102m[22m · [38;2;251;191;36m[1mbuild[m[K[38;2;58;58;58m
+│   [m+ Nueva sesión[11X[38;2;58;58;58m[11C│──────────────────────────────────────────────────────────────────────
+│ [m[proyecto][17X[38;2;58;58;58m[17C│[K
+│ [m────────────────────────── [38;2;58;58;58m│  [mRecuerdo contexto entre sesiones. Empieza a escribir o prueba: /h   [38;2;58;58;58m
+│ [m(sin sesiones guardadas)   [38;2;58;58;58m│[K
+│ [38;2;102;102;102m· ↑↓ mover[17X[38;2;58;58;58m[17C│[K
+│ [38;2;102;102;102m· Enter abrir[14X[38;2;58;58;58m[14C│[K
+│ [38;2;102;102;102m· escribir filtra[10X[38;2;58;58;58m[10C│[K
+│ [38;2;102;102;102m· r renombrar[14X[38;2;58;58;58m[14C│[K
+│ [38;2;102;102;102m· f fijar[18X[38;2;58;58;58m[18C│[K
+│ [38;2;102;102;102m· d borrar[17X[38;2;58;58;58m[17C│[K
+│ [38;2;102;102;102m· Tab chat[17X[38;2;58;58;58m[17C│[K
+│ [38;2;102;102;102m· Ctrl+B ocultar[11X[38;2;58;58;58m[11C│[K
+╰────────────────────────────╯[K[m
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[30X[38;2;251;191;36m[30C╭─────────────────────────────────────────────────────────────────────[m
+[30X[38;2;251;191;36m[30C│  [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m       
+[30X[38;2;251;191;36m[30C│  [37m┃[K[m
+[30X[38;2;251;191;36m[30C│  [37m┃[K[m
+[30X[38;2;251;191;36m[30C╰─────────────────────────────────────────────────────────────────────[m
+[K
+[30X[38;2;102;102;102m[30CEnter enviar · ↑↓ historial · Ctrl+C cancela turno/sale · /help comand[m
+[30X[38;2;102;102;102m[30CMayús+arrastrar selecciona · /copy última respuesta · /mouse off      [m
+[30X[38;2;102;102;102m[30Cmodelo: medium · modo[m: build[K
+                              [30X[38;2;102;102;102msesión: —                                                             [34;162H[m[26;1H[30X[38;2;251;191;36m[30C│  [37m[40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m       [26;1H[30X[38;2;251;191;36m[30C│  [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m       [26;1H[30X[38;2;251;191;36m[30C│  [37m[40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m       [26;1H[30X[38;2;251;191;36m[30C│  [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m       [26;1H[30X[38;2;251;191;36m[30C│  [37m[40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m       [16;1H[30X[38;2;251;191;36m[30C╭────────────────────────────────────────╮[K[m
+[30X[38;2;251;191;36m[30C│                                        │[K[m
+[30X[38;2;251;191;36m[30C│  [1mElige una opción:[m[21X[38;2;251;191;36m[21C│[K[m
+[30X[38;2;251;191;36m[30C│  ▸ [m[1m[7m1. /deploy — publicar a producción[22m[27m  [38;2;251;191;36m│[K[m
+[30X[38;2;251;191;36m[30C│                                        │[K[m
+[30X[38;2;251;191;36m[30C│  [38;2;102;102;102mnúmero, flechas+Enter, clic[11X[38;2;251;191;36m[11C│[K[m
+[30X[38;2;251;191;36m[30C│                                        │[K[m
+[30X[38;2;251;191;36m[30C╰────────────────────────────────────────╯[K[m[26;1H[30X[38;2;251;191;36m[30C│  [37m[40m┃   [39m1 /deplo[7m [27m[52X[m[52C  
+[30X[38;2;251;191;36m[30C│  [37m┃[K[m
+[30X[38;2;251;191;36m[30C│  [37m┃[K[66C[m[16;1H[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K[26;1H[30X[38;2;251;191;36m[30C│  [37m[40m┃   [39m1 /deploy static[7m [27m[44X[m[44C  [38;2;58;58;58m[H│ [m────────────────────────── [38;2;58;58;58m│  [m> NOIRACODER  escribe /help para ver comandos · Enter enviar · ↑↓   [38;2;58;58;58m
+│ [m(sin sesiones guardadas)   [38;2;58;58;58m│[K
+│ [38;2;102;102;102m· ↑↓ mover[17X[38;2;58;58;58m[17C│  [mRecuerdo contexto entre sesiones. Empieza a escribir o prueba: /h   [38;2;58;58;58m
+│ [38;2;102;102;102m· Enter abrir[14X[38;2;58;58;58m[14C│[K
+│ [38;2;102;102;102m· escribir filtra[10X[38;2;58;58;58m[10C│  [mPublicando… (puede tardar minutos)[K[38;2;58;58;58m
+│ [38;2;102;102;102m· r renombrar[14X[38;2;58;58;58m[14C│[K
+│ [38;2;102;102;102m· f fijar[18X[38;2;58;58;58m[18C│[K
+│ [38;2;102;102;102m· d borrar[17X[38;2;58;58;58m[17C│[K
+│ [38;2;102;102;102m· Tab chat[17X[38;2;58;58;58m[17C│[K
+│ [38;2;102;102;102m· Ctrl+B ocultar[11X[38;2;58;58;58m[11C│[K
+╰────────────────────────────╯[K[m
+[K
+[K
+[30X[38;2;251;191;36m[30C╭─────────────────────────────────────────────────────────────────╮   [m
+[30X[38;2;251;191;36m[30C│                                                                 │   [m
+[30X[38;2;251;191;36m[30C│  [1m¿Permites esto?[m[48X[38;2;251;191;36m[48C│   [m
+[30X[38;2;251;191;36m[30C│  [mPublicar "static" a produccion?[32X[38;2;251;191;36m[32C│   [m
+[30X[38;2;251;191;36m[30C│    [mcwd: C:\Users\aissa\AppData\Local\Temp\gg-wsdeploy-Uolar3    [38;2;251;191;36m│   [m
+[30X[38;2;251;191;36m[30C│  [mEste paso es visible externamente y no se deshace solo. [y/N]  [38;2;251;191;36m│   [m
+[30X[38;2;251;191;36m[30C│                                                                 │   [m
+[30X[38;2;251;191;36m[30C│  [m[y] sí   [n] no[48X[38;2;251;191;36m[48C│   [m
+[30X[38;2;251;191;36m[30C│                                                                 │   [m
+[30X[38;2;251;191;36m[30C╰─────────────────────────────────────────────────────────────────╯   [m[26;1H[30X[38;2;251;191;36m[30C│  [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m       
+[30X[38;2;251;191;36m[30C│  [37m┃[K[m
+[30X[38;2;251;191;36m[30C│  [37m┃[K[m[34;1H                              [30X[38;2;102;102;102msesión: — · pensando… (medium)                                        [34;141H[m[26;1H[30X[38;2;251;191;36m[30C│  [37m[40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m       [26;1H[30X[38;2;251;191;36m[30C│  [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m       [26;1H[30X[38;2;251;191;36m[30C│  [37m[40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m       [26;1H[30X[38;2;251;191;36m[30C│  [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m       [26;1H[30X[38;2;251;191;36m[30C│  [37m[40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m       [38;2;58;58;58m[H╭────────────────────────────╮[38;2;251;191;36m[1m> NOIRACODER[m  [38;2;251;191;36m[1mmedium[38;2;102;102;102m[22m · [38;2;251;191;36m[1mbuild[m[K[38;2;58;58;58m
+│   [m+ Nueva sesión[11X[38;2;58;58;58m[11C│──────────────────────────────────────────────────────────────────────
+│ [m[proyecto][17X[38;2;58;58;58m[17C│[K
+│ [m────────────────────────── [38;2;58;58;58m│  [m> NOIRACODER  escribe /help para ver comandos · Enter enviar · ↑↓   [38;2;58;58;58m
+│ [m(sin sesiones guardadas)   [38;2;58;58;58m│[K
+│ [38;2;102;102;102m· ↑↓ mover[17X[38;2;58;58;58m[17C│  [mRecuerdo contexto entre sesiones. Empieza a escribir o prueba: /h   [38;2;58;58;58m
+│ [38;2;102;102;102m· Enter abrir[14X[38;2;58;58;58m[14C│[K
+│ [38;2;102;102;102m· escribir filtra[10X[38;2;58;58;58m[10C│  [mPublicando… (puede tardar minutos)[K[38;2;58;58;58m
+│ [38;2;102;102;102m· r renombrar[14X[38;2;58;58;58m[14C│[m[confirm] permitido por el usuario: Publicar "static" a produccion?   [38;2;58;58;58m
+│ [38;2;102;102;102m· f fijar[18X[38;2;58;58;58m[18C│  [mcwd: C:\Users\aissa\AppData\Local\Temp\gg-wsdeploy-Uolar3[K[38;2;58;58;58m
+│ [38;2;102;102;102m· d borrar[17X[38;2;58;58;58m[17C│[mEste paso es visible externamente y no se deshace solo. [y/N][K[38;2;58;58;58m
+│ [38;2;102;102;102m· Tab chat[17X[38;2;58;58;58m[17C│[K
+│ [38;2;102;102;102m· Ctrl+B ocultar[11X[38;2;58;58;58m[11C│[K
+╰────────────────────────────╯[K[m
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K[100C[2J[H[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K[100C[38;2;58;58;58m[H╭────────────────────────────╮[38;2;251;191;36m[1m> NOIRACODER[m  [38;2;251;191;36m[1mmedium[38;2;102;102;102m[22m · [38;2;251;191;36m[1mbuild[m[K[38;2;58;58;58m
+│   [m+ Nueva sesión[11X[38;2;58;58;58m[11C│──────────────────────────────────────────────────────────────────────
+│ [m[proyecto][17X[38;2;58;58;58m[17C│[K
+│ [m────────────────────────── [38;2;58;58;58m│  [m> NOIRACODER  escribe /help para ver comandos · Enter enviar · ↑↓   [38;2;58;58;58m
+│ [m(sin sesiones guardadas)   [38;2;58;58;58m│[K
+│ [38;2;102;102;102m· ↑↓ mover[17X[38;2;58;58;58m[17C│  [mRecuerdo contexto entre sesiones. Empieza a escribir o prueba: /h   [38;2;58;58;58m
+│ [38;2;102;102;102m· Enter abrir[14X[38;2;58;58;58m[14C│[K
+│ [38;2;102;102;102m· escribir filtra[10X[38;2;58;58;58m[10C│  [mPublicando… (puede tardar minutos)[K[38;2;58;58;58m
+│ [38;2;102;102;102m· r renombrar[14X[38;2;58;58;58m[14C│[m[confirm] permitido por el usuario: Publicar "static" a produccion?   [38;2;58;58;58m
+│ [38;2;102;102;102m· f fijar[18X[38;2;58;58;58m[18C│  [mcwd: C:\Users\aissa\AppData\Local\Temp\gg-wsdeploy-Uolar3[K[38;2;58;58;58m
+│ [38;2;102;102;102m· d borrar[17X[38;2;58;58;58m[17C│[mEste paso es visible externamente y no se deshace solo. [y/N][K[38;2;58;58;58m
+│ [38;2;102;102;102m· Tab chat[17X[38;2;58;58;58m[17C│[m[confirm] cliente[K[38;2;58;58;58m
+│ [38;2;102;102;102m· Ctrl+B ocultar[11X[38;2;58;58;58m[11C│  [m[ok] build estatico generado en C:\Users\aissa\AppData\Local\Temp   [38;2;58;58;58m
+╰────────────────────────────╯[K[m
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[30X[38;2;251;191;36m[30C╭─────────────────────────────────────────────────────────────────────[m
+[30X[38;2;251;191;36m[30C│  [37m[40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m       
+[30X[38;2;251;191;36m[30C│  [37m┃[K[m
+[30X[38;2;251;191;36m[30C│  [37m┃[K[m
+[30X[38;2;251;191;36m[30C╰─────────────────────────────────────────────────────────────────────[m
+[K
+[30X[38;2;102;102;102m[30CEnter enviar · ↑↓ historial · Ctrl+C cancela turno/sale · /help comand[m
+[30X[38;2;102;102;102m[30CMayús+arrastrar selecciona · /copy última respuesta · /mouse off      [m
+                              [30X[38;2;102;102;102mmodelo: medium · modo[m: build · sesión: —                              
+[K[100C[26;1H[30X[38;2;251;191;36m[30C│  [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m       

@@ -366,6 +366,27 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					}
 					return m, nil
 				}
+				// GG: /logout confirma en cliente (como borrar sesión) y el
+				// servidor solo ejecuta tras el POST explícito.
+				if c.kind == "logout" {
+					m.addLine("")
+					m.thinking = true
+					m.setStatus()
+					go func() {
+						ok, msg := m.client.Logout()
+						m.thinking = false
+						if ok {
+							m.addLine(lipgloss.NewStyle().Foreground(green).Render("  ✓ " + msg))
+						} else {
+							m.addLine(lipgloss.NewStyle().Foreground(red).Render("  ✗ " + msg))
+						}
+						m.setStatus()
+						if m.program != nil {
+							m.program.Send(tea.ClearScreen())
+						}
+					}()
+					return m, nil
+				}
 				m.addLine(F(m.lang, "confirm_yes", map[string]string{"detail": c.detail}))
 				go func() {
 					_ = m.client.Confirm(c.id, true)
@@ -398,24 +419,11 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, nil
 			case s == "enter":
 				o := m.options
-				m.options = nil
-				if o.idx >= 0 && o.idx < len(o.items) {
-					item := o.items[o.idx]
-					go func() {
-						_ = m.client.Options(o.id, item.Key)
-					}()
-					// H8: if this is the connect form, enter connect mode
-					if o.id == "connect-form" {
-						m.enterConnectForm(item)
-					}
-				}
+				m.resolveOptionsLocal(o, o.idx, false)
 				return m, nil
 			case s == "esc":
 				o := m.options
-				m.options = nil
-				go func() {
-					_ = m.client.Options(o.id, "")
-				}()
+				m.resolveOptionsLocal(o, 0, true)
 				return m, nil
 			default:
 				// Número directo: 1-9
@@ -423,15 +431,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					idx := int(s[0] - '1')
 					if idx < len(m.options.items) {
 						o := m.options
-						m.options = nil
-						item := o.items[idx]
-						go func() {
-							_ = m.client.Options(o.id, item.Key)
-						}()
-						// H8: if this is the connect form, enter connect mode
-						if o.id == "connect-form" {
-							m.enterConnectForm(item)
-						}
+						m.resolveOptionsLocal(o, idx, false)
 						return m, nil
 					}
 				}
@@ -439,8 +439,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 		switch msg.Type {
-		case tea.KeyCtrlC:
-			if m.turnID != "" {
+		case tea.KeyCtrlC:			if m.turnID != "" {
 				id := m.turnID
 				m.addLine(T(m.lang, "cancel_line"))
 				go func() {
@@ -499,8 +498,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	m.input, cmd = m.input.Update(msg)
 	m.syncSlash()
-	if _, ok := msg.(tea.WindowSizeMsg); !ok {
-		var vcmd tea.Cmd
+	if _, ok := msg.(tea.WindowSizeMsg); !ok {		var vcmd tea.Cmd
 		m.viewport, vcmd = m.viewport.Update(msg)
 		_ = vcmd
 	}
@@ -562,7 +560,17 @@ func (m *Model) doEnter() (tea.Model, tea.Cmd) {
 }
 
 // slashCmds son los comandos con / (M1.3: nombres fijos en inglés).
-var slashCmds = []string{"/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/lang", "/title", "/learn", "/mouse", "/copy", "/mcp", "/parallel", "/agents", "/connections", "/connect", "/explain", "/quit"}
+var slashCmds = []string{"/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/lang", "/title", "/learn", "/mouse", "/copy", "/mcp", "/parallel", "/agents", "/connections", "/connect", "/explain", "/deploy", "/logout", "/login", "/quit"}
+
+// slashDesc devuelve la descripción corta del comando (JJ: una por comando,
+// del catálogo; si falta, solo el comando).
+func (m *Model) slashDesc(c string) string {
+	d := T(m.lang, "slash_desc_"+strings.TrimPrefix(c, "/"))
+	if d == "" || d == "slash_desc_"+strings.TrimPrefix(c, "/") {
+		return ""
+	}
+	return d
+}
 
 // completeSlash completa con Tab el comando empezado (prefijo único o común).
 func completeSlash(input string) string {
@@ -590,6 +598,45 @@ func completeSlash(input string) string {
 	return pre
 }
 
+// resolveOptionsLocal resuelve un diálogo de opciones (Enter, número, clic
+// o Esc). POST al motor solo si el diálogo es suyo (options.request);
+// connect-form y welcome son locales. Usado por las 4 rutas para que se
+// comporten igual.
+func (m *Model) resolveOptionsLocal(o *optionsState, idx int, cancel bool) {
+	m.options = nil
+	if o == nil {
+		return
+	}
+	if cancel {
+		if o.id == "welcome" {
+			setWelcomeSeen()
+		}
+		if o.id != "connect-form" && o.id != "welcome" {
+			go func() {
+				_ = m.client.Options(o.id, "")
+			}()
+		}
+		return
+	}
+	if idx < 0 || idx >= len(o.items) {
+		return
+	}
+	item := o.items[idx]
+	if o.id != "connect-form" && o.id != "welcome" {
+		go func() {
+			_ = m.client.Options(o.id, item.Key)
+		}()
+	}
+	// H8: if this is the connect form, enter connect mode
+	if o.id == "connect-form" {
+		m.enterConnectForm(item)
+	}
+	// HH: bienvenida (conectar OAuth o seguir).
+	if o.id == "welcome" {
+		m.chooseWelcome(item.Key)
+	}
+}
+
 // enterConnectForm (H8) pide la clave tras elegir proveedor. Compartido por
 // Enter, número y clic para que las tres rutas se comporten igual.
 func (m *Model) enterConnectForm(item optionItem) {
@@ -600,6 +647,70 @@ func (m *Model) enterConnectForm(item optionItem) {
 	m.addLine("")
 	m.addLine(lipgloss.NewStyle().Foreground(accent).Bold(true).Render("  " + T(m.lang, "connect_prompt_key")))
 	m.addLine("")
+}
+
+// HH: bienvenida de primer arranque con el componente H10 (flechas,
+// número, clic). El bloque visual va en View() como contenido ESTÁTICO
+// (igual que la cabecera): el viewport re-emite el SGR de forma no fiable
+// en pty (título y hint no llegaban, verificado) mientras lo estático sí.
+// Si ya se vio (o hay sesiones), orientación mínima de una pantalla.
+func (m *Model) maybeWelcome() {
+	if welcomeSeen() || len(m.panel.Items) > 0 {
+		m.addLine(lipgloss.NewStyle().Foreground(muted).Render("  " + T(m.lang, "welcome_line2")))
+		m.addLine("")
+		return
+	}
+	m.addLine(lipgloss.NewStyle().Foreground(muted).Render("  " + T(m.lang, "welcome_more")))
+	m.addLine("")
+	m.options = &optionsState{
+		id:     "welcome",
+		prompt: "",
+		items: []optionItem{
+			{Key: "connect", Label: T(m.lang, "welcome_connect"), Recommended: true},
+			{Key: "skip", Label: T(m.lang, "welcome_skip")},
+		},
+		idx: 0,
+	}
+}
+
+// renderWelcomeBlock pinta título + Kilo como bloque estático (HH).
+func (m *Model) renderWelcomeBlock() string {
+	if m.options == nil || m.options.id != "welcome" {
+		return ""
+	}
+	return lipgloss.NewStyle().Foreground(accent).Bold(true).Render("  " + T(m.lang, "welcome_title")) + "\n" +
+		lipgloss.NewStyle().Foreground(green).Render("  ✓ " + T(m.lang, "welcome_kilo")) + "\n"
+}
+
+// chooseWelcome resuelve la bienvenida (Enter, número o clic).
+func (m *Model) chooseWelcome(key string) {
+	setWelcomeSeen()
+	m.options = nil
+	if key != "connect" {
+		return
+	}
+	m.doLogin()
+}
+
+// doLogin lanza el OAuth en el servidor y pinta el resultado. Compartido
+// por /login y la bienvenida.
+func (m *Model) doLogin() {
+	m.addLine(lipgloss.NewStyle().Foreground(accent).Render("  " + T(m.lang, "login_wait")))
+	m.thinking = true
+	m.setStatus()
+	go func() {
+		ok, msg := m.client.Login()
+		m.thinking = false
+		if ok {
+			m.addLine(lipgloss.NewStyle().Foreground(green).Render("  ✓ " + msg))
+		} else {
+			m.addLine(lipgloss.NewStyle().Foreground(red).Render("  ✗ " + msg))
+		}
+		m.setStatus()
+		if m.program != nil {
+			m.program.Send(tea.ClearScreen())
+		}
+	}()
 }
 
 // slashItems devuelve los comandos con / que casan con lo escrito. Se filtran
@@ -613,7 +724,11 @@ func (m *Model) slashItems() []optionItem {
 	out := make([]optionItem, 0, len(slashCmds))
 	for _, c := range slashCmds {
 		if strings.HasPrefix(c, q) {
-			out = append(out, optionItem{Key: c, Label: c})
+			label := c
+			if d := m.slashDesc(c); d != "" {
+				label = c + " — " + d
+			}
+			out = append(out, optionItem{Key: c, Label: label})
 		}
 	}
 	return out
@@ -950,6 +1065,47 @@ func (m *Model) handleCommand(text string) bool {
 		return true
 	case "/quit":
 		return true
+	case "/deploy":
+		// GG: paridad con /deploy del REPL (Vercel/static vía deployTool;
+		// la confirmación la pide el SERVIDOR por SSE con su diálogo real).
+		target := "vercel"
+		if len(parts) > 1 {
+			if parts[1] != "vercel" && parts[1] != "static" {
+				m.addLine(T(m.lang, "deploy_usage"))
+				return true
+			}
+			target = parts[1]
+		}
+		m.addLine(lipgloss.NewStyle().Foreground(accent).Render("  " + T(m.lang, "deploy_running")))
+		m.thinking = true
+		m.setStatus()
+		go func() {
+			ok, out := m.client.Deploy(target)
+			m.thinking = false
+			for _, ln := range strings.Split(strings.TrimSpace(out), "\n") {
+				if strings.TrimSpace(ln) != "" {
+					m.addLine("  " + ln)
+				}
+			}
+			if !ok && strings.TrimSpace(out) == "" {
+				m.addLine(T(m.lang, "err_line") + target)
+			}
+			m.setStatus()
+			if m.program != nil {
+				m.program.Send(tea.ClearScreen())
+			}
+		}()
+		return true
+	case "/logout":
+		// GG: paridad con /logout del REPL; confirma en cliente (diálogo
+		// existente, como borrar sesión) y el servidor ejecuta tras el POST.
+		m.confirm = &confirmState{kind: "logout", detail: T(m.lang, "logout_confirm")}
+		return true
+	case "/login":
+		// HH/GG: paridad con /login del REPL; el OAuth corre en el servidor
+		// (abre el navegador local) y aquí solo se muestra el resultado.
+		m.doLogin()
+		return true
 	case "/mouse":
 		if len(parts) < 2 || (parts[1] != "on" && parts[1] != "off") {
 			m.addLine(T(m.lang, "mouse_usage"))
@@ -1114,7 +1270,7 @@ func (m *Model) handleCommand(text string) bool {
 	// H9: unknown command — suggest similar commands
 	input := parts[0]
 	similar := []string{}
-	known := []string{"/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/lang", "/title", "/learn", "/mouse", "/copy", "/mcp", "/parallel", "/agents", "/connections", "/explain", "/quit"}
+	known := []string{"/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/lang", "/title", "/learn", "/mouse", "/copy", "/mcp", "/parallel", "/agents", "/connections", "/connect", "/explain", "/deploy", "/logout", "/login", "/quit"}
 	for _, k := range known {
 		if strings.HasPrefix(k, input) || strings.Contains(k, input) {
 			similar = append(similar, k)
@@ -1159,12 +1315,6 @@ func (m *Model) onEvent(ev Event) {
 		m.addLine("")
 		m.addLine(lipgloss.NewStyle().Foreground(gold).Bold(true).Render("  > NOIRACODER") +
 			lipgloss.NewStyle().Foreground(muted).Render("  "+T(m.lang, "boot_hint")))
-		// M3.3: líneas de bienvenida
-		m.addLine("")
-		m.addLine(lipgloss.NewStyle().Foreground(accent).Render("  " + T(m.lang, "welcome_line1")))
-		m.addLine(lipgloss.NewStyle().Foreground(muted).Render("  " + T(m.lang, "welcome_line2")))
-		m.addLine(lipgloss.NewStyle().Foreground(muted).Render("  " + T(m.lang, "welcome_line3")))
-		m.addLine(lipgloss.NewStyle().Foreground(muted).Render("  " + T(m.lang, "welcome_line4")))
 		m.addLine("")
 		m.setStatus()
 		m.refreshPanel()
@@ -1181,6 +1331,8 @@ func (m *Model) onEvent(ev Event) {
 				}
 			}
 		}
+		// HH: bienvenida (primer arranque) u orientación breve (vuelta).
+		m.maybeWelcome()
 		m.setStatus()
 	case "turn.echo":
 		// M4.2: eco inmediato del mensaje del usuario.
@@ -1271,6 +1423,25 @@ func (m *Model) onEvent(ev Event) {
 	}
 }
 
+// maxOptionRows es la ventana visible de la caja (JJ): con 22 comandos no
+// cabe entera; se muestra una ventana con marcadores de scroll.
+const maxOptionRows = 10
+
+// optionWindow devuelve [inicio, fin) visibles alrededor del cursor.
+func optionWindow(total, idx int) (int, int) {
+	if total <= maxOptionRows {
+		return 0, total
+	}
+	start := idx - 4
+	if start < 0 {
+		start = 0
+	}
+	if start > total-maxOptionRows {
+		start = total - maxOptionRows
+	}
+	return start, start + maxOptionRows
+}
+
 // renderOptionsBox es el componente único de lista seleccionable (H10 para las
 // opciones del motor, M para el menú de "/"): borde en acento, título en
 // acento, fila activa en acento+negrita con cursor "▸", filas numeradas,
@@ -1285,7 +1456,14 @@ func (m *Model) renderOptionsBox(prompt string, items []optionItem, idx int, zon
 	if len(items) > 1 {
 		lines = append(lines, "")
 	}
-	for i, item := range items {
+	// JJ: ventana con scroll (el cursor siempre visible + marcadores).
+	lo, hi := optionWindow(len(items), idx)
+	if lo > 0 {
+		lines = append(lines, lipgloss.NewStyle().Foreground(muted).Render(
+			F(m.lang, "opt_more_up", map[string]string{"n": fmt.Sprint(lo)})))
+	}
+	for i := lo; i < hi; i++ {
+		item := items[i]
 		suffix := ""
 		if item.Recommended {
 			suffix = "  " + lipgloss.NewStyle().Foreground(green).Render(T(m.lang, "options_recommended"))
@@ -1306,6 +1484,10 @@ func (m *Model) renderOptionsBox(prompt string, items []optionItem, idx int, zon
 				" " + item.Label + suffix
 		}
 		lines = append(lines, zone.Mark(zoneID+":"+strconv.Itoa(i), row))
+	}
+	if hi < len(items) {
+		lines = append(lines, lipgloss.NewStyle().Foreground(muted).Render(
+			F(m.lang, "opt_more_down", map[string]string{"n": fmt.Sprint(len(items) - hi)})))
 	}
 	lines = append(lines, "")
 	lines = append(lines, lipgloss.NewStyle().Foreground(muted).Render(T(m.lang, "options_hint")))
@@ -1342,7 +1524,15 @@ func (m *Model) View() string {
 	head += "  " + modelLabel + lipgloss.NewStyle().Foreground(muted).Render(" · ") + modeLabel
 	head += "\n" + lipgloss.NewStyle().Foreground(border).Render(strings.Repeat("─", maxInt(m.chatW, 20)))
 
+	// JJ: el alto se recalcula en cada frame con el diálogo visible para que
+	// cabecera + diálogo + entrada quepan siempre (ver chatViewportHeight).
+	m.viewport.Height = m.chatViewportHeight()
+	if m.viewport.Height < 3 {
+		m.viewport.Height = 3
+	}
 	body := m.viewport.View()
+	// HH: bloque estático de bienvenida (título + Kilo) entre filete y chat.
+	welcome := m.renderWelcomeBlock()
 	var dlg string
 	if m.confirm != nil {
 		box := lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(accent).Padding(1, 2)
@@ -1370,7 +1560,7 @@ func (m *Model) View() string {
 			runewidth.Truncate(T(m.lang, "mouse_hint"), m.chatW, ""))
 	}
 	st := lipgloss.NewStyle().Foreground(muted).Render(m.status)
-	chat := head + "\n" + body + dlg + "\n" + in + "\n\n" + hints + extra + "\n" + st
+	chat := head + "\n" + welcome + body + dlg + "\n" + in + "\n\n" + hints + extra + "\n" + st
 	// M2: lateral al lado (ancho) o como hoja (estrecho). Scan envuelve
 	// las zonas de clic para el ratón.
 	if m.panel.Open && m.width >= MinFullWidth {
@@ -1404,14 +1594,12 @@ func (m *Model) relayout() {
 		ih = 1
 	}
 	m.input.SetHeight(ih)
-	extra := 1 // línea mouse_hint cuando el ratón está activo
-	if !m.mouseOn {
-		extra = 0
-	}
 	// N: la cabecera ahora son 2 líneas (título + filete) y hay una en blanco
 	// antes de los hints. Sin este -2 la vista desbordaba pantallas de 34
 	// filas y la primera línea (cabecera) se salía por arriba.
-	m.viewport.Height = m.height - (2 + ih + 2 + 2 + 1) - 1 - extra
+	// JJ: además se resta el diálogo visible (ver dlgHeight): con la caja
+	// abierta el chat se encoge en vez de empujar la cabecera fuera.
+	m.viewport.Height = m.chatViewportHeight()
 	if m.viewport.Height < 3 {
 		m.viewport.Height = 3
 	}
@@ -1419,4 +1607,56 @@ func (m *Model) relayout() {
 	if m.input.Width() < 10 {
 		m.input.SetWidth(10)
 	}
+}
+
+// dlgHeight reserva filas para el diálogo visible (confirm/opciones/menú).
+// Sin esto, la caja inline empujaba la cabecera fuera de la pantalla.
+// Con ventana (optionWindow) solo cuentan las filas visibles + marcadores.
+func (m *Model) dlgHeight() int {
+	h := 0
+	if m.confirm != nil {
+		h = 8
+	}
+	visRows := func(total, idx int) int {
+		if total <= maxOptionRows {
+			return total
+		}
+		return maxOptionRows + 2 // ventana + 2 marcadores
+	}
+	if m.options != nil {
+		n := visRows(len(m.options.items), m.options.idx)
+		dh := 8 + n
+		if len(m.options.items) > 1 {
+			dh++
+		}
+		if dh > h {
+			h = dh
+		}
+	}
+	if m.slashOpen {
+		if items := m.slashItems(); len(items) > 0 {
+			n := visRows(len(items), m.slashIdx)
+			dh := 8 + n
+			if len(items) > 1 {
+				dh++
+			}
+			if dh > h {
+				h = dh
+			}
+		}
+	}
+	return h
+}
+
+// chatViewportHeight es la fuente única del alto del chat (relayout y View).
+func (m *Model) chatViewportHeight() int {
+	ih := 3
+	if m.height < 18 {
+		ih = 1
+	}
+	extra := 1 // línea mouse_hint cuando el ratón está activo
+	if !m.mouseOn {
+		extra = 0
+	}
+	return m.height - (2 + ih + 2 + 2 + 1) - 1 - extra - m.dlgHeight()
 }

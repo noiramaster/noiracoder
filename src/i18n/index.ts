@@ -77,10 +77,19 @@ export class LanguageSelector {
       return this.cached;
     }
     // M1.4: primer arranque sin prefs → idioma del SO, sin preguntar, y se guarda.
+    // HH: se fusiona con lo que haya (el cliente Go guarda welcomed/mouse en
+    // el mismo fichero; escribir solo {language} lo borraría y la bienvenida
+    // saldría en cada arranque).
     const code = this.normalizeStored(detectOsLang());
     try {
       mkdirSync(this.configDir, { recursive: true });
-      writeFileSync(this.prefsFile, JSON.stringify({ language: code }, null, 2) + "\n", "utf8");
+      let prev: Record<string, unknown> = {};
+      try {
+        const raw = readFileSync(this.prefsFile, "utf8");
+        const p: unknown = JSON.parse(raw);
+        if (p !== null && typeof p === "object") prev = p as Record<string, unknown>;
+      } catch { /* nada que conservar */ }
+      writeFileSync(this.prefsFile, JSON.stringify({ ...prev, language: code }, null, 2) + "\n", "utf8");
     } catch { /* idioma ya resuelto; persistirá cuando se pueda */ }
     this.cached = code;
     return this.cached;

@@ -4,6 +4,8 @@ package thinclient
 // Sin pty: motor falso httptest (patrón de panel_update_test.go).
 
 import (
+	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"testing"
@@ -155,5 +157,85 @@ func TestViewFitsHeight(t *testing.T) {
 	}
 	if !strings.Contains(v, "> NOIRACODER") {
 		t.Fatalf("la cabecera debe estar visible")
+	}
+}
+
+// GG: /deploy, /logout y /login están en el menú con descripción, y el
+// menú muestra "comando — descripción".
+func TestSlashMenuDeployLogoutLogin(t *testing.T) {
+	m, done := testModel(t)
+	defer done()
+	m.input.SetValue("/")
+	m.syncSlash()
+	found := map[string]bool{}
+	for _, it := range m.slashItems() {
+		found[it.Key] = true
+		if it.Key == "/deploy" && !strings.Contains(it.Label, "—") {
+			t.Fatalf("/deploy sin descripción: %q", it.Label)
+		}
+	}
+	for _, c := range []string{"/deploy", "/logout", "/login"} {
+		if !found[c] {
+			t.Fatalf("%s falta en el menú", c)
+		}
+	}
+	// /deploy con destino malo enseña uso sin llamar al motor.
+	m.input.SetValue("/deploy marciano")
+	m.syncSlash()
+	if m.slashOpen {
+		t.Fatalf("/deploy marciano con espacio debe cerrar el menú")
+	}
+	m = upd(m, keyPress(tea.KeyEnter))
+	if len(m.history) == 0 || m.history[len(m.history)-1] != "/deploy marciano" {
+		t.Fatalf("/deploy marciano debe ejecutarse (uso), history=%v", m.history)
+	}
+	// /logout abre confirmación en cliente, no borra solo.
+	m2, done2 := testModel(t)
+	defer done2()
+	m2.input.SetValue("/logout")
+	m2.syncSlash()
+	m2 = upd(m2, keyPress(tea.KeyEnter))
+	if m2.confirm == nil || m2.confirm.kind != "logout" {
+		t.Fatalf("/logout debe pedir confirmación en cliente, confirm=%+v", m2.confirm)
+	}
+}
+
+// HH: bienvenida de primer arranque con el componente H10.
+func TestWelcome(t *testing.T) {
+	m, done := testModel(t)
+	defer done()
+	// Sin sesiones: muestra bloque + opciones welcome.
+	m.panel.Items = nil
+	m.maybeWelcome()
+	if m.options == nil || m.options.id != "welcome" {
+		t.Fatalf("primer arranque debe abrir opciones welcome, options=%+v", m.options)
+	}
+	if len(m.options.items) != 2 || !m.options.items[0].Recommended {
+		t.Fatalf("welcome: 2 opciones con la primera recomendada, %+v", m.options.items)
+	}
+	// El bloque (título + Kilo) va en View como estático, no en el chat.
+	v := m.View()
+	if !strings.Contains(v, "bienvenido") || !strings.Contains(v, "kilo activo") {
+		t.Fatalf("el bloque estático debe mostrar título + Kilo")
+	}
+	// Elegir "seguir" cierra y marca vista (sin llamar al motor).
+	m = upd(m, keyPress(tea.KeyRunes, '2'))
+	if m.slashOpen || m.options != nil {
+		t.Fatalf("elegir seguir debe cerrar")
+	}
+	if !welcomeSeen() {
+		t.Fatalf("elegir debe marcar welcomed en prefs")
+	}
+	// Con sesiones no interrumpe.
+	m3, done3 := testModel(t)
+	defer done3()
+	os.Remove(filepath.Join(os.Getenv("NOIRARC_HOME"), ".noirarc", "prefs.json"))
+	m3.refreshPanel()
+	if len(m3.panel.Items) == 0 {
+		t.Fatalf("el motor falso debe dar sesiones para este caso")
+	}
+	m3.maybeWelcome()
+	if m3.options != nil {
+		t.Fatalf("con sesiones no debe abrir welcome")
 	}
 }

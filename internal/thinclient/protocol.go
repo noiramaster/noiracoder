@@ -233,6 +233,69 @@ func (c *Client) Connect(serviceID string, value string) (bool, string) {
 	return resp.Ok, ""
 }
 
+// GG: Deploy publica vía deployTool del motor (con su confirmación vía SSE).
+func (c *Client) Deploy(target string) (bool, string) {
+	st, b, err := c.req("POST", "/v1/deploy", map[string]any{
+		"target": target,
+	})
+	if err != nil {
+		return false, err.Error()
+	}
+	var resp struct {
+		Ok     bool   `json:"ok"`
+		Output string `json:"output"`
+		Error  string `json:"error,omitempty"`
+	}
+	if err := json.Unmarshal(b, &resp); err != nil {
+		return false, string(b)
+	}
+	if st != 200 {
+		return false, resp.Error
+	}
+	return resp.Ok, resp.Output
+}
+
+// GG: Logout borra las claves del disco (el cliente confirma antes).
+func (c *Client) Logout() (bool, string) {
+	st, b, err := c.req("POST", "/v1/logout", nil)
+	if err != nil {
+		return false, err.Error()
+	}
+	var resp struct {
+		Ok      bool   `json:"ok"`
+		Deleted bool   `json:"deleted"`
+		Msg     string `json:"msg"`
+		Error   string `json:"error,omitempty"`
+	}
+	if err := json.Unmarshal(b, &resp); err != nil {
+		return false, string(b)
+	}
+	if st != 200 {
+		return false, resp.Error
+	}
+	return resp.Ok, resp.Msg
+}
+
+// HH: Login lanza el OAuth OpenRouter en el servidor (abre el navegador).
+func (c *Client) Login() (bool, string) {
+	st, b, err := c.req("POST", "/v1/login", nil)
+	if err != nil {
+		return false, err.Error()
+	}
+	var resp struct {
+		Ok    bool   `json:"ok"`
+		Msg   string `json:"msg"`
+		Error string `json:"error,omitempty"`
+	}
+	if err := json.Unmarshal(b, &resp); err != nil {
+		return false, string(b)
+	}
+	if st != 200 {
+		return false, resp.Error
+	}
+	return resp.Ok, resp.Msg
+}
+
 // H9: Explain devuelve el resumen del último turno de una sesión.
 type ExplainResult struct {
 	Pregunta string `json:"pregunta"`
