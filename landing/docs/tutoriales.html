@@ -50,31 +50,39 @@
 <main class="wrap-page">
   <h1 class="mono" style="font-size:1.875rem;font-weight:700;margin-bottom:1rem"><span style="color:var(--accent)">&gt;</span> <span data-i18n="nav.tutorials">Tutoriales</span></h1>
   <div class="section">
-    <h2>&gt; <span data-i18n="tuto.s1t">Empieza sin claves</span></h2>
-    <p class="sub" data-i18n="tuto.s1sub">Kilo anónimo funciona nada más instalar. Sin registro, sin tarjeta.</p>
-    <div class="step"><h3 data-i18n="tuto.a1t">1 · Abre la pantalla en tu proyecto</h3><pre data-i18n="tuto.a1pre">cd mi-proyecto
-noira --go</pre></div>
-    <div class="step"><h3 data-i18n="tuto.a2t">2 · Pide tu primera tarea</h3><pre data-i18n="tuto.a2pre">Escribe y pulsa Enter   # el motor elige modelo y rota solo si falla</pre></div>
+    <h2>&gt; <span data-i18n="tuto.s0t">Antes de empezar</span></h2>
+    <p class="sub" data-i18n="tuto.s0sub">Necesitas Node 20 o más y 5 minutos.</p>
   </div>
   <div class="section">
-    <h2>&gt; <span data-i18n="tuto.s2t">Amplía tu cuota (opcional)</span></h2>
-    <p class="sub" data-i18n="tuto.s2sub">Conecta claves solo si quieres más cuota. Cada una tarda ~1 min.</p>
-    <div class="step"><h3 data-i18n="tuto.b1t">1 · OpenRouter</h3><pre data-i18n="tuto.b1pre">noira login   # se abre el navegador, 1 clic (OAuth)
-# o manual: https://openrouter.ai/keys</pre></div>
-    <div class="step"><h3 data-i18n="tuto.b2t">2 · Groq</h3><pre data-i18n="tuto.b2pre"># https://console.groq.com/keys (gratis, 1 min)
-noira login --groq &lt;tu-key&gt;</pre></div>
-    <div class="step"><h3 data-i18n="tuto.b3t">3 · Zen</h3><pre data-i18n="tuto.b3pre"># https://opencode.ai/zen (gratis, 1 min)
-noira login --zen &lt;tu-key&gt;</pre></div>
-    <div class="step"><h3 data-i18n="tuto.vt">✓ Verifica</h3><pre data-i18n="tuto.vpre">noira connect   # valida cada provider con red real</pre></div>
+    <h2>&gt; <span data-i18n="tuto.s1t">Paso 1 · Instalar</span></h2>
+    <p class="sub" data-i18n="tuto.s1sub">Un comando.</p>
+    <div class="step"><h3 data-i18n="tuto.s1t">Paso 1 · Instalar</h3><pre data-i18n="tuto.a1pre">npm install -g noiracoder
+noira</pre></div>
   </div>
   <div class="section">
-    <h2>&gt; <span data-i18n="tuto.s3t">Tu primera sesión</span></h2>
-    <div class="step"><h3 data-i18n="tuto.c1t">1 · Streaming + confirmaciones</h3><pre data-i18n="tuto.c1pre"># la respuesta llega token a token; lo peligroso pide [y/n]</pre></div>
-    <div class="step"><h3 data-i18n="tuto.c2t">2 · Sesiones y modos</h3><pre data-i18n="tuto.c2pre">/sessions   # listar
-/resume 1   # continuar
-/plan · /build   # solo lectura / ejecución</pre></div>
-    <div class="step"><h3 data-i18n="tuto.c3t">3 · Modelo y salida</h3><pre data-i18n="tuto.c3pre">/model &lt;id&gt;   # cambiar modelo
-Ctrl+C   # cancelar turno (otra vez para salir)</pre></div>
+    <h2>&gt; <span data-i18n="tuto.s2t">Paso 2 · Conectar</span></h2>
+    <p class="sub" data-i18n="tuto.s2sub">Para OpenRouter y Kilo no se copia nada.</p>
+    <div class="step"><h3 data-i18n="tuto.b1t">OpenRouter · 1 clic</h3><pre data-i18n="tuto.b1pre">noira login</pre></div>
+    <div class="step"><h3 data-i18n="tuto.b2t">Kilo · ya viene activo</h3><pre data-i18n="tuto.b2pre"># sin hacer nada</pre></div>
+    <div class="step"><h3 data-i18n="tuto.b3t">Groq o Zen (opcional)</h3><pre data-i18n="tuto.b3pre">noira login --groq &lt;tu-key&gt;</pre></div>
+    <div class="step"><h3 data-i18n="tuto.b4t">Otros servicios · aquí sí se pega</h3><pre data-i18n="tuto.b4pre">noira connect</pre></div>
+    <div class="step"><h3 data-i18n="tuto.vt">✓ Verifica</h3><pre data-i18n="tuto.vpre">noira models
+noira connect</pre></div>
+  </div>
+  <div class="section">
+    <h2>&gt; <span data-i18n="tuto.s3t">Paso 3 · Tu primera sesión</span></h2>
+    <p class="sub" data-i18n="tuto.s3sub">Copia esto tal cual:</p>
+    <div class="step"><h3 data-i18n="tuto.s3t">Paso 3 · Tu primera sesión</h3><pre data-i18n="tuto.c1pre">cd mi-proyecto
+noira</pre></div>
+    <div class="step"><h3>› <span data-i18n="tuto.s3t">Paso 3</span> · ejemplo literal</h3><pre data-i18n="tuto.c2pre">Crea un fichero llamado hola.txt con el texto exacto: Hola Noira</pre>
+    <p class="sub" data-i18n="tuto.c2note">Pulsa Enter.</p></div>
+  </div>
+  <div class="section">
+    <h2>&gt; <span data-i18n="tuto.s4t">Qué más puedes pedirle</span></h2>
+    <p class="sub" data-i18n="tuto.s4sub">Habla normal.</p>
+    <div class="step"><h3 data-i18n="tuto.s4t">Qué más puedes pedirle</h3><pre data-i18n="tuto.d1pre">Arréglame este error: &lt;pega el error&gt;
+/sessions
+Ctrl+C</pre></div>
   </div>
 </main>
 
