@@ -239,3 +239,52 @@ func TestWelcome(t *testing.T) {
 		t.Fatalf("con sesiones no debe abrir welcome")
 	}
 }
+
+// HALLAZGO menú corto: al abrirse debe verse desde la opción 1 (ventana
+// desde 0 con el cursor en 0); el scroll solo aparece al navegar.
+func TestOptionWindowOpensAtTop(t *testing.T) {
+	lo, hi := optionWindow(len(slashCmds), 0)
+	if lo != 0 {
+		t.Fatalf("al abrir la ventana debe empezar en 0, lo=%d", lo)
+	}
+	if hi-lo != maxOptionRows {
+		t.Fatalf("al abrir la ventana debe ser completa, [%d,%d)", lo, hi)
+	}
+	// Al navegar, la ventana sigue al cursor (scroll solo entonces).
+	lo2, hi2 := optionWindow(len(slashCmds), len(slashCmds)-1)
+	if hi2 != len(slashCmds) || lo2 == 0 {
+		t.Fatalf("al final la ventana debe seguir al cursor, [%d,%d)", lo2, hi2)
+	}
+}
+
+// HALLAZGO menú corto: en terminales de pocas filas el frame con el menú
+// abierto debe caber en pantalla con la opción 1 visible (antes las filas
+// 1-3 se salían por arriba sin forma de verlas).
+func TestSlashFitsShortTerminal(t *testing.T) {
+	for _, h := range []int{22, 24, 26, 30, 34} {
+		m, done := testModel(t)
+		m.width, m.height = 100, h
+		m.relayout()
+		m.input.SetValue("/")
+		m.syncSlash()
+		if !m.slashOpen || m.slashIdx != 0 {
+			done()
+			t.Fatalf("H=%d: / debe abrir el menú en idx 0", h)
+		}
+		v := zoneRe.ReplaceAllString(m.View(), "")
+		n := strings.Count(v, "\n") + 1
+		if n > h {
+			done()
+			t.Fatalf("H=%d: el frame (%d líneas) desborda", h, n)
+		}
+		if !strings.Contains(v, "1. /help") {
+			done()
+			t.Fatalf("H=%d: la opción 1 debe estar visible", h)
+		}
+		if !strings.Contains(v, "> NOIRACODER") {
+			done()
+			t.Fatalf("H=%d: la cabecera debe estar visible", h)
+		}
+		done()
+	}
+}

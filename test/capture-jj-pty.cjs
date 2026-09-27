@@ -68,14 +68,19 @@ const ok = (n, c, extra = "") => {
   await waitScreen(sa, /NOIRACODER/, 30000);
   await sleep(2500);
 
-  // JJ1: menú "/" con descripciones alineadas.
+  // JJ1: menú "/" con descripciones alineadas. La ventana es adaptativa
+  // (HALLAZGO menú corto): 10 filas si caben, menos en terminales cortas;
+  // lo exigible: empieza en la 1, todas con descripción, marcador abajo.
   p.write("/");
   await sleep(2000);
   const s1 = sa.serialize({ excludeModes: false });
   snap("jj1-slash-desc.txt", s1);
   const rows = strip(s1).split(/\r?\n/).filter((l) => /\d+\.\s+\/\S+/.test(l));
-  ok("JJ1 menu-con-descripciones", rows.length === 10 && rows.every((l) => /—/.test(l)),
-    `ventana de 10 con descs, ej: ${JSON.stringify((rows[0] || "").trim().slice(0, 60))}`);
+  const firstNum = (rows[0] || "").match(/(\d+)\.\s+\/(\S+)/);
+  ok("JJ1 menu-con-descripciones", rows.length >= 1 && rows.every((l) => /—/.test(l)),
+    `ventana adaptativa (${rows.length} filas) con descs, ej: ${JSON.stringify((rows[0] || "").trim().slice(0, 60))}`);
+  ok("JJ1 empieza-en-1", !!firstNum && firstNum[1] === "1" && firstNum[2].startsWith("help"),
+    `primera fila: ${JSON.stringify((rows[0] || "").trim().slice(0, 30))}`);
   ok("JJ1 fila-activa-acento", /38;2;251;191;36/.test(s1), "acento presente");
   // Scroll: al bajar, aparecen marcadores y la ventana sigue al cursor.
   for (let i = 0; i < 8; i++) p.write("\x1b[B");

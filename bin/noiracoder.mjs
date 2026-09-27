@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { dirname, join, basename } from "node:path";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { homedir } from "node:os";
 import { spawn } from "node:child_process";
 import { randomBytes } from "node:crypto";
 
@@ -43,16 +44,43 @@ function resolveThinBin() {
 const thinBin = resolveThinBin();
 
 const args = process.argv.slice(2);
-const isCliFlag = args.some((a) => ["--help","-h","--version","-v","serve","login","--lang"].includes(a) || a === "-l" || a === "--level");
+// Reset de bienvenida HH para pruebas: `noira --show-welcome` pone
+// welcomed=false en .noirarc/prefs.json (merge: no toca sesiones, claves
+// ni el resto de prefs) y arranca normal. La bienvenida sale si además
+// no hay sesiones (o con NOIRARC_HOME limpio); ver maybeWelcome().
+function prefsPath() {
+  const home = process.env.NOIRARC_HOME || homedir();
+  return join(home, ".noirarc", "prefs.json");
+}
+function resetWelcomeFlag() {
+  try {
+    const p = prefsPath();
+    let v = {};
+    try { v = JSON.parse(readFileSync(p, "utf8")); } catch { v = {}; }
+    if (v === null || typeof v !== "object") v = {};
+    v.welcomed = false;
+    mkdirSync(dirname(p), { recursive: true });
+    writeFileSync(p, JSON.stringify(v), "utf8");
+    console.error("> Bienvenida reactivada (welcomed=false en prefs.json).");
+  } catch (e) {
+    console.error(`> No se pudo resetear la bienvenida: ${e instanceof Error ? e.message : e}`);
+  }
+}
+let runArgs = args;
+if (runArgs.includes("--show-welcome")) {
+  resetWelcomeFlag();
+  runArgs = runArgs.filter((a) => a !== "--show-welcome");
+}
+const isCliFlag = runArgs.some((a) => ["--help","-h","--version","-v","serve","login","--lang"].includes(a) || a === "-l" || a === "--level");
 // HITO 0/1: motor Node es respaldo para pipes/CI/nc/--no-tui.
 // 2026-09-26: Go TUI es el default en terminales interactivas.
-const wantGo = args.includes("--go");
+const wantGo = runArgs.includes("--go");
 const isNc = invokedAs === "nc" || invokedAs === "nc.cmd" || invokedAs === "nc.ps1";
 // Escape hatch: fuerza el camino Node aunque haya terminal.
-const forceNode = args.includes("--no-tui") || args.includes("--repl") || process.env.NOIRA_NO_TUI === "1";
+const forceNode = runArgs.includes("--no-tui") || runArgs.includes("--repl") || process.env.NOIRA_NO_TUI === "1";
 // La TUI necesita terminal interactivo REAL; sin TTY se usa Node (EOF + exit 0).
 const interactiveTTY = !!process.stdin.isTTY && !!process.stdout.isTTY;
-const nodeArgs = args.filter((a) => a !== "--go");
+const nodeArgs = runArgs.filter((a) => a !== "--go");
 
 function startNode() {
   import(pathToFileURL(distEntry).href)

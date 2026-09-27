@@ -1423,23 +1423,76 @@ func (m *Model) onEvent(ev Event) {
 	}
 }
 
+// nl cuenta saltos de línea (vale para "" → 0, sin casos especiales).
+// OJO: no usar "nº de líneas" (Count+1) para sumar bloques: cada +1
+// fantasma por bloque desborda la cuenta ~12 líneas y la ventana se
+// encoge de más (HALLAZGO menú corto: a 24 filas mostraba 1 opción
+// cuando cabían 8). Con nl la cuenta es exacta.
+func nl(s string) int {
+	return strings.Count(s, "\n")
+}
+
+// fitBox renderiza la caja de opciones encogiendo la ventana hasta que el
+// frame completo quepa en la pantalla (HALLAZGO menú corto: en terminales
+// de ≤25 filas las primeras opciones se salían por arriba sin forma de
+// verlas, y parecían "perdidas"). Al abrir, el cursor está en 0 y la
+// ventana empieza en 0: la opción 1 siempre visible. El scroll con
+// marcadores solo aparece al navegar más allá de lo visible, nunca al abrir.
+// fixedNL son los "\n" del frame sin la caja (ver View); total = fixedNL +
+// 1 + nl(box) + 1 + 1.
+func (m *Model) fitBox(prompt string, items []optionItem, idx int, zoneID string, fixedNL int) string {
+	w := len(items)
+	if w > maxOptionRows {
+		w = maxOptionRows
+	}
+	cap := w
+	compact := false
+	box := m.renderOptionsBoxCap(prompt, items, idx, zoneID, cap, compact)
+	// Solo itera si desborda (pantallas cortas); en terminales normales es
+	// una sola renderización, como antes. Último recurso: caja compacta.
+	for i := 0; i <= maxOptionRows+1 && m.height > 0; i++ {
+		if fixedNL+1+nl(box)+1+1 <= m.height {
+			break
+		}
+		if cap > 1 {
+			cap--
+		} else if !compact {
+			compact = true
+		} else {
+			break
+		}
+		box = m.renderOptionsBoxCap(prompt, items, idx, zoneID, cap, compact)
+	}
+	return box
+}
+
 // maxOptionRows es la ventana visible de la caja (JJ): con 22 comandos no
 // cabe entera; se muestra una ventana con marcadores de scroll.
 const maxOptionRows = 10
 
 // optionWindow devuelve [inicio, fin) visibles alrededor del cursor.
 func optionWindow(total, idx int) (int, int) {
-	if total <= maxOptionRows {
+	return optionWindowCap(total, idx, maxOptionRows)
+}
+
+// optionWindowCap igual con tope de filas dado (HALLAZGO menú corto: en
+// terminales de pocas filas la ventana se encoge para que el frame quepa;
+// el cursor sigue siempre visible y la opción 1 al abrir).
+func optionWindowCap(total, idx, cap int) (int, int) {
+	if cap < 1 {
+		cap = 1
+	}
+	if total <= cap {
 		return 0, total
 	}
 	start := idx - 4
 	if start < 0 {
 		start = 0
 	}
-	if start > total-maxOptionRows {
-		start = total - maxOptionRows
+	if start > total-cap {
+		start = total - cap
 	}
-	return start, start + maxOptionRows
+	return start, start + cap
 }
 
 // renderOptionsBox es el componente único de lista seleccionable (H10 para las
@@ -1448,16 +1501,24 @@ func optionWindow(total, idx int) (int, int) {
 // zona de clic por fila y aire dentro de la caja. Bordes redondeados cortos
 // (~4px), no cajas pesadas.
 func (m *Model) renderOptionsBox(prompt string, items []optionItem, idx int, zoneID string) string {
+	return m.renderOptionsBoxCap(prompt, items, idx, zoneID, maxOptionRows, false)
+}
+
+// renderOptionsBoxCap igual con tope de filas visibles (HALLAZGO menú
+// corto: la ventana se encoge hasta que el frame quepa en pantalla).
+// compact quita blancos + ayuda (último recurso en pantallas mínimas;
+// título, filas y marcadores se conservan).
+func (m *Model) renderOptionsBoxCap(prompt string, items []optionItem, idx int, zoneID string, cap int, compact bool) string {
 	title := prompt
 	if title == "" {
 		title = T(m.lang, "options_title")
 	}
 	lines := []string{lipgloss.NewStyle().Foreground(accent).Bold(true).Render(title)}
-	if len(items) > 1 {
+	if len(items) > 1 && !compact {
 		lines = append(lines, "")
 	}
 	// JJ: ventana con scroll (el cursor siempre visible + marcadores).
-	lo, hi := optionWindow(len(items), idx)
+	lo, hi := optionWindowCap(len(items), idx, cap)
 	if lo > 0 {
 		lines = append(lines, lipgloss.NewStyle().Foreground(muted).Render(
 			F(m.lang, "opt_more_up", map[string]string{"n": fmt.Sprint(lo)})))
@@ -1489,8 +1550,10 @@ func (m *Model) renderOptionsBox(prompt string, items []optionItem, idx int, zon
 		lines = append(lines, lipgloss.NewStyle().Foreground(muted).Render(
 			F(m.lang, "opt_more_down", map[string]string{"n": fmt.Sprint(len(items) - hi)})))
 	}
-	lines = append(lines, "")
-	lines = append(lines, lipgloss.NewStyle().Foreground(muted).Render(T(m.lang, "options_hint")))
+	if !compact {
+		lines = append(lines, "")
+		lines = append(lines, lipgloss.NewStyle().Foreground(muted).Render(T(m.lang, "options_hint")))
+	}
 	box := lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(accent).Padding(1, 2)
 	return box.Render(strings.Join(lines, "\n"))
 }
@@ -1533,6 +1596,21 @@ func (m *Model) View() string {
 	body := m.viewport.View()
 	// HH: bloque estático de bienvenida (título + Kilo) entre filete y chat.
 	welcome := m.renderWelcomeBlock()
+	// La entrada/hints/estado no dependen del diálogo: se construyen antes
+	// para medir el frame (HALLAZGO menú corto, ver fitBox).
+	boxIn := lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(accent).Padding(0, 2)
+	in := boxIn.Render(m.input.View())
+	hints := lipgloss.NewStyle().Foreground(muted).Render(T(m.lang, "hints"))
+	extra := ""
+	if m.mouseOn {
+		extra = "\n" + lipgloss.NewStyle().Foreground(muted).Render(
+			runewidth.Truncate(T(m.lang, "mouse_hint"), m.chatW, ""))
+	}
+	st := lipgloss.NewStyle().Foreground(muted).Render(m.status)
+	// fixedNL son los "\n" del frame SIN la caja de diálogo (los dos "\n"
+	// que la envuelven cuentan aquí). Con nl() la cuenta es exacta.
+	fixedNL := nl(head) + 1 + nl(welcome) + nl(body) +
+		1 + 1 + nl(in) + 2 + nl(hints) + nl(extra) + 1 + nl(st)
 	var dlg string
 	if m.confirm != nil {
 		box := lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(accent).Padding(1, 2)
@@ -1542,24 +1620,15 @@ func (m *Model) View() string {
 	// H10: opciones seleccionables — diálogo. El menú de "/" (M) reutiliza la
 	// MISMA caja para que se comporten igual: acento, cursor visible, clic.
 	if m.options != nil {
-		dlg = "\n" + m.renderOptionsBox(m.options.prompt, m.options.items, m.options.idx, "opt") + "\n"
+		dlg = "\n" + m.fitBox(m.options.prompt, m.options.items, m.options.idx, "opt", fixedNL) + "\n"
 	}
 	if m.slashOpen {
 		if items := m.slashItems(); len(items) > 0 {
-			dlg = "\n" + m.renderOptionsBox("", items, m.slashIdx, "slash") + "\n"
+			dlg = "\n" + m.fitBox("", items, m.slashIdx, "slash", fixedNL) + "\n"
 		}
 	}
 	// La entrada es el elemento con el foco: borde en acento para que se vea
 	// dónde estás. Padding lateral 2 para que respire.
-	box := lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(accent).Padding(0, 2)
-	in := box.Render(m.input.View())
-	hints := lipgloss.NewStyle().Foreground(muted).Render(T(m.lang, "hints"))
-	extra := ""
-	if m.mouseOn {
-		extra = "\n" + lipgloss.NewStyle().Foreground(muted).Render(
-			runewidth.Truncate(T(m.lang, "mouse_hint"), m.chatW, ""))
-	}
-	st := lipgloss.NewStyle().Foreground(muted).Render(m.status)
 	chat := head + "\n" + welcome + body + dlg + "\n" + in + "\n\n" + hints + extra + "\n" + st
 	// M2: lateral al lado (ancho) o como hoja (estrecho). Scan envuelve
 	// las zonas de clic para el ratón.
