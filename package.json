@@ -1,6 +1,6 @@
 {
   "name": "noiracoder",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "NoiraCoder - agential coding harness for the Noira ecosystem (multi-provider, cache-aware, sandboxed).",
   "license": "MIT",
   "author": "Kujtim Hoxha (OpenCode)",
