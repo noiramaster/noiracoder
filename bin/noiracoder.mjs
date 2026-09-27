@@ -25,10 +25,16 @@ function platformPkg() {
 function resolveThinBin() {
   const pp = platformPkg();
   if (pp) {
-    // npm instala los opcionales como HERMANOS (node_modules/<pkg>),
-    // o sea dos niveles por encima de bin/.
+    // Instalación local: npm deja los opcionales como HERMANOS
+    // (node_modules/<pkg>), o sea dos niveles por encima de bin/.
     const fromPkg = join(here, "..", "..", pp.pkg, "bin", pp.bin);
     if (existsSync(fromPkg)) return fromPkg;
+    // Instalación global (-g): npm ANIDA las dependencias bajo
+    // node_modules/noiracoder/node_modules/<pkg>. NN: el global real de
+    // 0.2.1 traía el binario aquí y el wrapper no lo miraba → caía al
+    // respaldo Ink con "Sin binario thin" aunque todo estaba instalado.
+    const nested = join(here, "..", "node_modules", pp.pkg, "bin", pp.bin);
+    if (existsSync(nested)) return nested;
   }
   const legacy = join(here, process.platform === "win32" ? "noira-thin.exe" : "noira-thin");
   if (existsSync(legacy)) return legacy;

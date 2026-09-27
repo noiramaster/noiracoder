@@ -33,6 +33,9 @@ const WANT = [
  * GATE A/B/C — invariantes que el 2026-09-26 se incumplieron a la vez y el
  * publicable salió igual: dist sin servidor thin, CLI sin `serve --thin` y
  * binario de pantalla sin verificar. Cada uno corresponde a un fallo real.
+ * GATE D (NN, 2026-09-27) — cada optionalDependencies debe existir YA en el
+ * registro público con la versión exacta pedida. Si falta, npm la salta EN
+ * SILENCIO (es opcional) y el usuario cae al respaldo Ink sin ningún error.
  */
 function checkLocalArtifacts() {
   const problems = [];
@@ -132,5 +135,52 @@ try {
 } catch (e) {
   console.error(`[prepublish] BLOQUEADO: no hay release ${TAG} con binarios (${e instanceof Error ? e.message : e}).`);
   console.error(`[prepublish] Orden correcto: bump versión → tag ${TAG} → CI publica → npm publish.`);
+  process.exit(1);
+}
+
+// GATE D (NN) — los opcionales de plataforma deben existir en el registro
+// con la versión EXACTA pedida (pin, sin rangos: "0.2.0", no "^0.2.0").
+// Si alguno falta, npm lo omite en silencio y el instalado cae a Ink.
+function regJson(path) {
+  return new Promise((resolve, reject) => {
+    get(`https://registry.npmjs.org/${path}`, { headers: { "User-Agent": "noiracoder-prepublish", Accept: "application/json" } }, (res) => {
+      if (res.statusCode !== 200) {
+        res.resume();
+        reject(new Error(`HTTP ${res.statusCode} en registry.npmjs.org/${path}`));
+        return;
+      }
+      const chunks = [];
+      res.on("data", (c) => chunks.push(c));
+      res.on("end", () => {
+        try { resolve(JSON.parse(Buffer.concat(chunks).toString("utf8"))); }
+        catch (e) { reject(e); }
+      });
+      res.on("error", reject);
+    }).on("error", reject);
+  });
+}
+
+try {
+  const { optionalDependencies = {} } = JSON.parse(readFileSync(join(pkgDir, "package.json"), "utf8"));
+  const names = Object.keys(optionalDependencies);
+  if (names.length === 0) {
+    console.error("[prepublish] BLOQUEADO: sin optionalDependencies de plataforma (el thin no llegaría a nadie).");
+    process.exit(1);
+  }
+  for (const name of names) {
+    const want = String(optionalDependencies[name]);
+    if (!/^\d+\.\d+\.\d+$/.test(want)) {
+      console.error(`[prepublish] BLOQUEADO: ${name} pide "${want}" (debe ser versión exacta, p. ej. "0.2.0").`);
+      process.exit(1);
+    }
+    const meta = await regJson(`${name.replace("/", "%2f")}/${want}`);
+    if (!meta || meta.version !== want) {
+      console.error(`[prepublish] BLOQUEADO: ${name}@${want} no existe en el registro público.`);
+      process.exit(1);
+    }
+    console.error(`[prepublish] ok: opcional ${name}@${want} existe en el registro.`);
+  }
+} catch (e) {
+  console.error(`[prepublish] BLOQUEADO: no se pudo verificar optionalDependencies (${e instanceof Error ? e.message : e}).`);
   process.exit(1);
 }
