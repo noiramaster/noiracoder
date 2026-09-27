@@ -1,6 +1,6 @@
 {
   "name": "noiracoder",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "NoiraCoder - agential coding harness for the Noira ecosystem (multi-provider, cache-aware, sandboxed).",
   "license": "MIT",
   "author": "Kujtim Hoxha (OpenCode)",
@@ -57,10 +57,10 @@
     "typescript": "^5.6.0"
   },
   "optionalDependencies": {
-    "noiracoder-win32-x64": "0.1.0",
-    "noiracoder-darwin-x64": "0.1.0",
-    "noiracoder-darwin-arm64": "0.1.0",
-    "noiracoder-linux-x64": "0.1.0"
+    "noiracoder-win32-x64": "0.2.0",
+    "noiracoder-darwin-x64": "0.2.0",
+    "noiracoder-darwin-arm64": "0.2.0",
+    "noiracoder-linux-x64": "0.2.0"
   },
   "main": "index.js",
   "directories": {

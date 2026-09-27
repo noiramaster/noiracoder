@@ -84,9 +84,17 @@ function checkLocalArtifacts() {
 checkLocalArtifacts();
 if (ARTIFACTS_ONLY) process.exit(0);
 
-function fetchText(url) {
+function fetchText(url, redirects = 5) {
   return new Promise((resolve, reject) => {
     get(url, { headers: { "User-Agent": "noiracoder-prepublish" } }, (res) => {
+      // DD: github.com/releases/download SIEMPRE responde 302 hacia una URL
+      // firmada; sin seguirlo el gate no podía pasar nunca aunque el release
+      // exista y esté completo.
+      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location && redirects > 0) {
+        res.resume();
+        fetchText(res.headers.location, redirects - 1).then(resolve, reject);
+        return;
+      }
       if (res.statusCode !== 200) {
         res.resume();
         reject(new Error(`HTTP ${res.statusCode} en ${url}`));
