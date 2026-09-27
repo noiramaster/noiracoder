@@ -10,7 +10,7 @@ var NOIRA_STORAGE_KEY = 'noira-lang';
 var NOIRA_LANG_LABELS = { en: 'EN', es: 'ES', pt: 'PT', fr: 'FR', de: 'DE', it: 'IT', ar: 'AR' };
 
 var NOIRA_EN = {
-  nav: { home: 'Home', docs: 'Docs', skills: 'Skills', tutorials: 'Tutorials', blog: 'Blog', contact: 'Contact', about: 'About', legal: 'Legal', terms: 'Terms', privacy: 'Privacy', login: 'Log in', signup: 'Get started' },
+  nav: { home: 'Home', docs: 'Docs', skills: 'Skills', tutorials: 'Tutorials', blog: 'Blog', contact: 'Contact', about: 'About', legal: 'Legal', terms: 'Terms', privacy: 'Privacy', login: 'Install', signup: 'Get started' },
   hero: {
     title: 'NOIRACODER',
     tagline: 'A coding agent with memory.',
@@ -71,7 +71,7 @@ var NOIRA_EN = {
 };
 
 var NOIRA_ES = {
-  nav: { home: 'Inicio', docs: 'Docs', skills: 'Skills', tutorials: 'Tutoriales', blog: 'Blog', contact: 'Contacto', about: 'Sobre NoiraCoder', legal: 'Legal', terms: 'Términos', privacy: 'Privacidad', login: 'Entrar', signup: 'Empezar' },
+  nav: { home: 'Inicio', docs: 'Docs', skills: 'Skills', tutorials: 'Tutoriales', blog: 'Blog', contact: 'Contacto', about: 'Sobre NoiraCoder', legal: 'Legal', terms: 'Términos', privacy: 'Privacidad', login: 'Instalar', signup: 'Empezar' },
   hero: {
     title: 'NOIRACODER',
     tagline: 'Un agente de código con memoria.',
@@ -132,7 +132,7 @@ var NOIRA_ES = {
 };
 
 var NOIRA_PT = {
-  nav: { home: 'Início', docs: 'Docs', skills: 'Skills', tutorials: 'Tutoriais', blog: 'Blog', contact: 'Contato', about: 'Sobre', legal: 'Aviso Legal', terms: 'Termos', privacy: 'Privacidade', login: 'Entrar', signup: 'Começar' },
+  nav: { home: 'Início', docs: 'Docs', skills: 'Skills', tutorials: 'Tutoriais', blog: 'Blog', contact: 'Contato', about: 'Sobre', legal: 'Aviso Legal', terms: 'Termos', privacy: 'Privacidade', login: 'Instalar', signup: 'Começar' },
   hero: {
     title: 'NOIRACODER',
     tagline: 'Um agente de código com memória.',
@@ -193,7 +193,7 @@ var NOIRA_PT = {
 };
 
 var NOIRA_FR = {
-  nav: { home: 'Accueil', docs: 'Docs', skills: 'Skills', tutorials: 'Tutoriels', blog: 'Blog', contact: 'Contact', about: 'À propos', legal: 'Mentions Légales', terms: 'Conditions', privacy: 'Confidentialité', login: 'Connexion', signup: 'Commencer' },
+  nav: { home: 'Accueil', docs: 'Docs', skills: 'Skills', tutorials: 'Tutoriels', blog: 'Blog', contact: 'Contact', about: 'À propos', legal: 'Mentions Légales', terms: 'Conditions', privacy: 'Confidentialité', login: 'Installer', signup: 'Commencer' },
   hero: {
     title: 'NOIRACODER',
     tagline: 'Un agent de code avec mémoire.',
@@ -254,7 +254,7 @@ var NOIRA_FR = {
 };
 
 var NOIRA_DE = {
-  nav: { home: 'Startseite', docs: 'Docs', skills: 'Skills', tutorials: 'Tutorials', blog: 'Blog', contact: 'Kontakt', about: 'Über uns', legal: 'Impressum', terms: 'AGB', privacy: 'Datenschutz', login: 'Anmelden', signup: 'Loslegen' },
+  nav: { home: 'Startseite', docs: 'Docs', skills: 'Skills', tutorials: 'Tutorials', blog: 'Blog', contact: 'Kontakt', about: 'Über uns', legal: 'Impressum', terms: 'AGB', privacy: 'Datenschutz', login: 'Installieren', signup: 'Loslegen' },
   hero: {
     title: 'NOIRACODER',
     tagline: 'Ein Code-Agent mit Gedächtnis.',
@@ -315,7 +315,7 @@ var NOIRA_DE = {
 };
 
 var NOIRA_IT = {
-  nav: { home: 'Home', docs: 'Docs', skills: 'Skills', tutorials: 'Tutorial', blog: 'Blog', contact: 'Contatti', about: 'Chi siamo', legal: 'Note Legali', terms: 'Termini', privacy: 'Privacy', login: 'Accedi', signup: 'Inizia' },
+  nav: { home: 'Home', docs: 'Docs', skills: 'Skills', tutorials: 'Tutorial', blog: 'Blog', contact: 'Contatti', about: 'Chi siamo', legal: 'Note Legali', terms: 'Termini', privacy: 'Privacy', login: 'Installa', signup: 'Inizia' },
   hero: {
     title: 'NOIRACODER',
     tagline: 'Un agente di codice con memoria.',
@@ -376,7 +376,7 @@ var NOIRA_IT = {
 };
 
 var NOIRA_AR = {
-  nav: { home: 'الرئيسية', docs: 'التوثيق', skills: 'المهارات', tutorials: 'الدروس', blog: 'المدونة', contact: 'اتصل بنا', about: 'عن نوبرا', legal: 'إشعار قانوني', terms: 'الشروط', privacy: 'الخصوصية', login: 'تسجيل الدخول', signup: 'ابدأ الآن' },
+  nav: { home: 'الرئيسية', docs: 'التوثيق', skills: 'المهارات', tutorials: 'الدروس', blog: 'المدونة', contact: 'اتصل بنا', about: 'عن نوبرا', legal: 'إشعار قانوني', terms: 'الشروط', privacy: 'الخصوصية', login: 'تثبيت', signup: 'ابدأ الآن' },
   hero: {
     title: 'NOIRACODER',
     tagline: 'وكيل برمجة مع ذاكرة.',

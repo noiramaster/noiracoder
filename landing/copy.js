@@ -97,10 +97,26 @@
     }
   }
 
+  // FF2: los <pre> mezclan comando + explicación "# ..." en la misma línea
+  // (innerText arrastra el comentario al portapapeles). Se recorta el
+  // comentario final de cada línea (2+ espacios + # hasta fin de línea);
+  // las líneas que SON solo comentario se conservan (a veces son todo el
+  // contenido, p. ej. "# sin hacer nada"). Si no quedara nada, el original.
+  function cleanPre(t) {
+    var lines = String(t).split('\n');
+    var out = [];
+    for (var i = 0; i < lines.length; i++) {
+      var ln = lines[i].replace(/\s{2,}#.*$/, '').replace(/\s+$/, '');
+      if (ln !== '') out.push(ln);
+    }
+    if (!out.length) return String(t).replace(/\s+$/, '');
+    return out.join('\n');
+  }
+
   function init() {
     var pres = document.querySelectorAll('pre');
     for (var i = 0; i < pres.length; i++) {
-      var t = pres[i].innerText.replace(/\s+$/, '');
+      var t = cleanPre(pres[i].innerText);
       if (t) enhance(pres[i], t, false);
     }
     var tds = document.querySelectorAll('table.cmds td:first-child');
