@@ -64,6 +64,9 @@ type Model struct {
 	thinking    bool
 	confirm     *confirmState
 	options     *optionsState // H10
+	slashOpen   bool          // M: menú de comandos "/" abierto (filtra mientras se escribe)
+	slashIdx    int           // M: cursor del menú de comandos
+	slashFilter string        // M: último prefijo visto (cambiarlo resetea el cursor)
 	fatal       string
 	history     []string
 	histIdx     int
@@ -82,10 +85,17 @@ var (
 	green   = lipgloss.Color("#22c55e")
 	red     = lipgloss.Color("#ef4444")
 	yellow  = lipgloss.Color("#eab308")
-	accent  = lipgloss.Color("#FBBF24")
+	accent  = lipgloss.Color("#FBBF24") // == --accent de la landing (styles.css)
 	muted   = lipgloss.Color("#666666")
-	border  = lipgloss.Color("#222222")
+	border  = lipgloss.Color("#3a3a3a")
 )
+
+func maxInt(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
 
 // New crea el modelo y arranca el stream de eventos.
 func New(c *Client) *Model {
@@ -282,8 +292,35 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if um, cmd, done := m.handlePanelKey(msg); done {
 			return um, cmd
 		}
+		// M: menú de comandos "/" — mismo modelo de navegación que H10 (flechas,
+		// número, clic) pero SIN tragarse la escritura: lo que no es navegación
+		// cae al input y filtra la lista.
+		if m.slashOpen {
+			ks := msg.String()
+			if ks == "up" || ks == "up.Up" || ks == "down" || ks == "down.Down" ||
+				ks == "enter" || ks == "esc" {
+				return m.slashKey(msg)
+			}
+			if len(ks) == 1 && ks[0] >= '1' && ks[0] <= '9' {
+				m.slashPick(int(ks[0] - '1'))
+				return m, nil
+			}
+			if msg.Type == tea.KeyBackspace {
+				// Al borrar el "/" entero el menú se cierra; si no, se resetea
+				// el cursor porque el prefijo cambió.
+				if strings.TrimSpace(m.input.Value()) == "/" {
+					m.slashOpen = false
+				} else {
+					m.slashIdx = 0
+				}
+			}
+		}
 		// HITO 3.5: historial con ↑↓ cuando la entrada es de una línea.
+		// M: con el menú de "/" abierto o con opciones H10 abiertas, las flechas
+		// son de SELECCIÓN, no de historial. Sin este guarda, /connect pedía
+		// "flechas+Enter" en su texto pero el historial se las comía antes.
 		if (msg.Type == tea.KeyUp || msg.Type == tea.KeyDown) && m.confirm == nil &&
+			m.options == nil && !m.slashOpen &&
 			!strings.Contains(m.input.Value(), "\n") && len(m.history) > 0 {
 			if msg.Type == tea.KeyUp {
 				if m.histIdx == -1 {
@@ -369,13 +406,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					}()
 					// H8: if this is the connect form, enter connect mode
 					if o.id == "connect-form" {
-						m.connectMode = &connectState{
-							serviceID:   item.Key,
-							serviceName: item.Label,
-						}
-						m.addLine("")
-						m.addLine(lipgloss.NewStyle().Foreground(accent).Render("  " + T(m.lang, "connect_prompt_key")))
-						m.addLine("")
+						m.enterConnectForm(item)
 					}
 				}
 				return m, nil
@@ -399,13 +430,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 						}()
 						// H8: if this is the connect form, enter connect mode
 						if o.id == "connect-form" {
-							m.connectMode = &connectState{
-								serviceID:   item.Key,
-								serviceName: item.Label,
-							}
-							m.addLine("")
-							m.addLine(lipgloss.NewStyle().Foreground(accent).Render("  " + T(m.lang, "connect_prompt_key")))
-							m.addLine("")
+							m.enterConnectForm(item)
 						}
 						return m, nil
 					}
@@ -473,6 +498,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	var cmd tea.Cmd
 	m.input, cmd = m.input.Update(msg)
+	m.syncSlash()
 	if _, ok := msg.(tea.WindowSizeMsg); !ok {
 		var vcmd tea.Cmd
 		m.viewport, vcmd = m.viewport.Update(msg)
@@ -562,6 +588,121 @@ func completeSlash(input string) string {
 		}
 	}
 	return pre
+}
+
+// enterConnectForm (H8) pide la clave tras elegir proveedor. Compartido por
+// Enter, número y clic para que las tres rutas se comporten igual.
+func (m *Model) enterConnectForm(item optionItem) {
+	m.connectMode = &connectState{
+		serviceID:   item.Key,
+		serviceName: item.Label,
+	}
+	m.addLine("")
+	m.addLine(lipgloss.NewStyle().Foreground(accent).Bold(true).Render("  " + T(m.lang, "connect_prompt_key")))
+	m.addLine("")
+}
+
+// slashItems devuelve los comandos con / que casan con lo escrito. Se filtran
+// por prefijo y, en cuanto hay un espacio, el menú se cierra (el comando ya
+// lleva argumentos y no hay nada que elegir).
+func (m *Model) slashItems() []optionItem {
+	q := strings.TrimSpace(m.input.Value())
+	if !strings.HasPrefix(q, "/") || strings.Contains(q, " ") {
+		return nil
+	}
+	out := make([]optionItem, 0, len(slashCmds))
+	for _, c := range slashCmds {
+		if strings.HasPrefix(c, q) {
+			out = append(out, optionItem{Key: c, Label: c})
+		}
+	}
+	return out
+}
+
+// isSlashCmd dice si el texto es exactamente un comando con /.
+func isSlashCmd(v string) bool {
+	for _, c := range slashCmds {
+		if v == c {
+			return true
+		}
+	}
+	return false
+}
+
+// syncSlash abre/cierra el menú según lo que hay escrito. Se llama tras cada
+// tecla de escritura para que / siempre muestre la lista y cualquier otra
+// entrada la cierre.
+func (m *Model) syncSlash() {
+	raw := m.input.Value()
+	v := strings.TrimSpace(raw)
+	// El espacio se mira en el valor CRUDO: "/copy " (tras elegir) lleva un
+	// espacio final que TrimSpace quitaría y reabriría el menú en bucle.
+	if strings.HasPrefix(v, "/") && !strings.Contains(raw, " ") {
+		if !m.slashOpen {
+			m.slashOpen = true
+			m.slashIdx = 0
+		} else if m.slashFilter != v {
+			// El prefijo cambió al escribir/borrar: el cursor viejo ya no
+			// vale, se vuelve arriba.
+			m.slashIdx = 0
+		}
+		m.slashFilter = v
+		return
+	}
+	m.slashOpen = false
+	m.slashIdx = 0
+	m.slashFilter = ""
+}
+
+// slashKey navega el menú con flechas/Enter/Esc.
+func (m *Model) slashKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	items := m.slashItems()
+	if len(items) == 0 {
+		m.slashOpen = false
+		return m, nil
+	}
+	if m.slashIdx >= len(items) {
+		m.slashIdx = len(items) - 1
+	}
+	if m.slashIdx < 0 {
+		m.slashIdx = 0
+	}
+	switch msg.String() {
+	case "up", "up.Up":
+		if m.slashIdx > 0 {
+			m.slashIdx--
+		}
+	case "down", "down.Down":
+		if m.slashIdx < len(items)-1 {
+			m.slashIdx++
+		}
+	case "enter":
+		// El texto es EXACTAMENTE un comando ("/connect", no "/con"): se
+		// EJECUTA directo. Si no, Enter ELIGE y rellena la entrada (el
+		// segundo Enter lo lanza), como hacía Tab.
+		if v := strings.TrimSpace(m.input.Value()); isSlashCmd(v) {
+			m.slashOpen = false
+			m.slashIdx = 0
+			return m.doEnter()
+		}
+		m.slashPick(m.slashIdx)
+	case "esc":
+		m.slashOpen = false
+	}
+	return m, nil
+}
+
+// slashPick mete el comando elegido en la entrada (con espacio detrás) y cierra
+// el menú. No lanza el comando: eso es al segundo Enter, como con Tab.
+func (m *Model) slashPick(idx int) {
+	items := m.slashItems()
+	if idx < 0 || idx >= len(items) {
+		return
+	}
+	m.input.SetValue(items[idx].Key + " ")
+	m.input.CursorEnd()
+	m.slashOpen = false
+	m.slashIdx = 0
 }
 
 // handleLang lista/fija idioma UI y modo de respuesta (M1.5, efecto inmediato).
@@ -1130,6 +1271,48 @@ func (m *Model) onEvent(ev Event) {
 	}
 }
 
+// renderOptionsBox es el componente único de lista seleccionable (H10 para las
+// opciones del motor, M para el menú de "/"): borde en acento, título en
+// acento, fila activa en acento+negrita con cursor "▸", filas numeradas,
+// zona de clic por fila y aire dentro de la caja. Bordes redondeados cortos
+// (~4px), no cajas pesadas.
+func (m *Model) renderOptionsBox(prompt string, items []optionItem, idx int, zoneID string) string {
+	title := prompt
+	if title == "" {
+		title = T(m.lang, "options_title")
+	}
+	lines := []string{lipgloss.NewStyle().Foreground(accent).Bold(true).Render(title)}
+	if len(items) > 1 {
+		lines = append(lines, "")
+	}
+	for i, item := range items {
+		suffix := ""
+		if item.Recommended {
+			suffix = "  " + lipgloss.NewStyle().Foreground(green).Render(T(m.lang, "options_recommended"))
+		}
+		// La fila activa combina ▸ en acento + texto en inversa+negrita.
+		// Nota Windows/ConPTY: el fg truecolor del CONTENIDO del diálogo no
+		// siempre llega (el borde y la cabecera sí); la inversa+negrita y el
+		// marcador ▸ se ven en todos los terminales, y en los que sí pasan
+		// el truecolor el ▸ va en acento. Selección igual que la del panel.
+		var row string
+		if i == idx {
+			mark := lipgloss.NewStyle().Foreground(accent).Render("▸")
+			text := lipgloss.NewStyle().Reverse(true).Bold(true).
+				Render(fmt.Sprintf("%d", i+1) + ". " + item.Label)
+			row = mark + " " + text + suffix
+		} else {
+			row = "  " + lipgloss.NewStyle().Foreground(muted).Render(fmt.Sprintf("%d", i+1)+".") +
+				" " + item.Label + suffix
+		}
+		lines = append(lines, zone.Mark(zoneID+":"+strconv.Itoa(i), row))
+	}
+	lines = append(lines, "")
+	lines = append(lines, lipgloss.NewStyle().Foreground(muted).Render(T(m.lang, "options_hint")))
+	box := lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(accent).Padding(1, 2)
+	return box.Render(strings.Join(lines, "\n"))
+}
+
 func (m *Model) View() string {
 	if m.fatal != "" {
 		return lipgloss.NewStyle().Foreground(red).Render("NOIRACODER: "+m.fatal+"\n") +
@@ -1146,43 +1329,39 @@ func (m *Model) View() string {
 	modeLabel := m.mode
 	switch m.mode {
 	case "build":
-		modeLabel = lipgloss.NewStyle().Foreground(green).Render("build")
+		modeLabel = lipgloss.NewStyle().Foreground(accent).Bold(true).Render("build")
 	case "plan":
-		modeLabel = lipgloss.NewStyle().Foreground(yellow).Render("plan")
+		modeLabel = lipgloss.NewStyle().Foreground(green).Bold(true).Render("plan")
 	}
-	head := lipgloss.NewStyle().Foreground(gold).Bold(true).Render("> NOIRACODER") +
-		"  " + modelLabel + lipgloss.NewStyle().Foreground(muted).Render(" · ") + modeLabel
+	// N: cabecera con acento visible + filete separador para que respire.
+	head := lipgloss.NewStyle().Foreground(accent).Bold(true).Render("> NOIRACODER")
+	if m.sessName != "" {
+		head += lipgloss.NewStyle().Foreground(muted).Render("  · ") +
+			lipgloss.NewStyle().Foreground(accent).Render(runewidth.Truncate(Sanitize(m.sessName), 24, "…"))
+	}
+	head += "  " + modelLabel + lipgloss.NewStyle().Foreground(muted).Render(" · ") + modeLabel
+	head += "\n" + lipgloss.NewStyle().Foreground(border).Render(strings.Repeat("─", maxInt(m.chatW, 20)))
+
 	body := m.viewport.View()
 	var dlg string
 	if m.confirm != nil {
-		box := lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(yellow).Padding(0, 1)
-		dlg = "\n" + box.Render(T(m.lang, "confirm_q")+"\n"+m.confirm.detail+"\n\n"+T(m.lang, "confirm_yn")) + "\n"
+		box := lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(accent).Padding(1, 2)
+		dlg = "\n" + box.Render(lipgloss.NewStyle().Bold(true).Foreground(accent).Render(T(m.lang, "confirm_q"))+"\n"+
+			m.confirm.detail+"\n\n"+T(m.lang, "confirm_yn")) + "\n"
 	}
-	// H10: opciones seleccionables — diálogo
+	// H10: opciones seleccionables — diálogo. El menú de "/" (M) reutiliza la
+	// MISMA caja para que se comporten igual: acento, cursor visible, clic.
 	if m.options != nil {
-		box := lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(yellow).Padding(0, 1)
-		lines := []string{}
-		if m.options.prompt != "" {
-			lines = append(lines, m.options.prompt)
-		} else {
-			lines = append(lines, T(m.lang, "options_title"))
-		}
-		for i, item := range m.options.items {
-			prefix := "  "
-			if i == m.options.idx {
-				prefix = "> "
-			}
-			suffix := ""
-			if item.Recommended {
-				suffix = " " + T(m.lang, "options_recommended")
-			}
-			lines = append(lines, prefix+fmt.Sprintf("%d", i+1)+". "+item.Label+suffix)
-		}
-		lines = append(lines, "")
-		lines = append(lines, T(m.lang, "options_hint"))
-		dlg = "\n" + box.Render(strings.Join(lines, "\n")) + "\n"
+		dlg = "\n" + m.renderOptionsBox(m.options.prompt, m.options.items, m.options.idx, "opt") + "\n"
 	}
-	box := lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(border).Padding(0, 1)
+	if m.slashOpen {
+		if items := m.slashItems(); len(items) > 0 {
+			dlg = "\n" + m.renderOptionsBox("", items, m.slashIdx, "slash") + "\n"
+		}
+	}
+	// La entrada es el elemento con el foco: borde en acento para que se vea
+	// dónde estás. Padding lateral 2 para que respire.
+	box := lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(accent).Padding(0, 2)
 	in := box.Render(m.input.View())
 	hints := lipgloss.NewStyle().Foreground(muted).Render(T(m.lang, "hints"))
 	extra := ""
@@ -1191,7 +1370,7 @@ func (m *Model) View() string {
 			runewidth.Truncate(T(m.lang, "mouse_hint"), m.chatW, ""))
 	}
 	st := lipgloss.NewStyle().Foreground(muted).Render(m.status)
-	chat := head + "\n" + body + dlg + "\n" + in + "\n" + hints + extra + "\n" + st
+	chat := head + "\n" + body + dlg + "\n" + in + "\n\n" + hints + extra + "\n" + st
 	// M2: lateral al lado (ancho) o como hoja (estrecho). Scan envuelve
 	// las zonas de clic para el ratón.
 	if m.panel.Open && m.width >= MinFullWidth {
@@ -1229,7 +1408,10 @@ func (m *Model) relayout() {
 	if !m.mouseOn {
 		extra = 0
 	}
-	m.viewport.Height = m.height - (1 + ih + 2 + 1 + 1) - 1 - extra
+	// N: la cabecera ahora son 2 líneas (título + filete) y hay una en blanco
+	// antes de los hints. Sin este -2 la vista desbordaba pantallas de 34
+	// filas y la primera línea (cabecera) se salía por arriba.
+	m.viewport.Height = m.height - (2 + ih + 2 + 2 + 1) - 1 - extra
 	if m.viewport.Height < 3 {
 		m.viewport.Height = 3
 	}

@@ -1,0 +1,67 @@
+[?9001h[?1004h[2J[m]0;C:\Users\aissa\noiracoder\bin\noira-thin.exe[?25l[?1049h[2J[?2004h[?1002h[?1006h[?1003;1006h[38;2;251;191;36m[1m[H> NOIRACODER[m  [38;2;102;102;102mEsc volver[K[38;2;58;58;58m
+╭────────────────────────────╮[K
+│   [m+ Nueva sesión[11X[38;2;58;58;58m[11C│[K
+│ [m[proyecto][17X[38;2;58;58;58m[17C│[K
+│ [m────────────────────────── [38;2;58;58;58m│[K
+│ [m(sin sesiones guardadas)   [38;2;58;58;58m│[K
+│ [38;2;102;102;102m· ↑↓ mover[17X[38;2;58;58;58m[17C│[K
+│ [38;2;102;102;102m· Enter abrir[14X[38;2;58;58;58m[14C│[K
+│ [38;2;102;102;102m· escribir filtra[10X[38;2;58;58;58m[10C│[K
+│ [38;2;102;102;102m· r renombrar[14X[38;2;58;58;58m[14C│[K
+│ [38;2;102;102;102m· f fijar[18X[38;2;58;58;58m[18C│[K
+│ [38;2;102;102;102m· d borrar[17X[38;2;58;58;58m[17C│[K
+│ [38;2;102;102;102m· Tab chat[17X[38;2;58;58;58m[17C│[K
+│ [38;2;102;102;102m· Ctrl+B ocultar[11X[38;2;58;58;58m[11C│[K
+╰────────────────────────────╯[K[m
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K[100C[38;2;58;58;58m[H╭────────────────────────────╮[38;2;251;191;36m[1m> NOIRACODER[m  [38;2;251;191;36m[1mmedium[38;2;102;102;102m[22m · [38;2;251;191;36m[1mbuild[m[K[38;2;58;58;58m
+│   [m+ Nueva sesión[11X[38;2;58;58;58m[11C│──────────────────────────────────────────────────────────────────────
+│ [m[proyecto][17X[38;2;58;58;58m[17C│[K
+│ [m────────────────────────── [38;2;58;58;58m│  [m> NOIRACODER  escribe /help para ver comandos · Enter enviar · ↑↓   [38;2;58;58;58m
+│ [m[1mAyer[22m[23X[38;2;58;58;58m[23C│[K
+│   [m2/quit hace …[12X[38;2;58;58;58m[12C│  [mPide lo que quieras: arreglar un bug, añadir funcionalidad, expli   [38;2;58;58;58m
+│ [38;2;102;102;102m· ↑↓ mover[17X[38;2;58;58;58m[17C│  [mRecuerdo contexto entre sesiones. Empieza a escribir o prueba: /h   [38;2;58;58;58m
+│ [38;2;102;102;102m· Enter abrir[14X[38;2;58;58;58m[14C│  [mIdioma detectado: Español · Nivel: low[K[38;2;58;58;58m
+│ [38;2;102;102;102m· escribir filtra[10X[38;2;58;58;58m[10C│  [mTip: /connect para añadir claves API y ampliar cuota[K[38;2;58;58;58m
+│ [38;2;102;102;102m· r renombrar[14X[38;2;58;58;58m[14C│[K
+│ [38;2;102;102;102m· f fijar[18X[38;2;58;58;58m[18C│[K
+│ [38;2;102;102;102m· d borrar[17X[38;2;58;58;58m[17C│[K
+│ [38;2;102;102;102m· Tab chat[17X[38;2;58;58;58m[17C│[K
+│ [38;2;102;102;102m· Ctrl+B ocultar[11X[38;2;58;58;58m[11C│[K
+╰────────────────────────────╯[K[m
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[30X[38;2;251;191;36m[30C╭─────────────────────────────────────────────────────────────────────[m
+[30X[38;2;251;191;36m[30C│  [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m       
+[30X[38;2;251;191;36m[30C│  [37m┃[K[m
+[30X[38;2;251;191;36m[30C│  [37m┃[K[m
+[30X[38;2;251;191;36m[30C╰─────────────────────────────────────────────────────────────────────[m
+[K
+[30X[38;2;102;102;102m[30CEnter enviar · ↑↓ historial · Ctrl+C cancela turno/sale · /help comand[m
+[30X[38;2;102;102;102m[30CMayús+arrastrar selecciona · /copy última respuesta · /mouse off      [m
+[30X[38;2;102;102;102m[30Cmodelo: medium · modo[m: build[K
+                              [30X[38;2;102;102;102msesión: —                                                             [34;162H[m[26;1H[30X[38;2;251;191;36m[30C│  [37m[40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m       [26;1H[30X[38;2;251;191;36m[30C│  [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m       [26;1H[30X[38;2;251;191;36m[30C│  [37m[40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m       [26;1H[30X[38;2;251;191;36m[30C│  [37m[40m┃   [39m1 [7m>[38;5;240m[27m escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[m       

@@ -1,0 +1,14 @@
+PASS motor-arranca
+PASS boot
+PASS connect-dialog-visible
+FAIL M1 flechas-mueven-cursor-en-connect
+FAIL M2 menu-slash-abre
+FAIL M2 fila-activa-con-acento
+FAIL M2 menu-slash-flechas
+FAIL M2 menu-slash-filtra
+PASS M2 menu-slash-numero-rellena
+PASS N acento-en-cabecera
+PASS N acento-en-modo
+PASS N panels-respiran
+PASS N bordes-casi-cuadrados
+PASS N filete-cabecera

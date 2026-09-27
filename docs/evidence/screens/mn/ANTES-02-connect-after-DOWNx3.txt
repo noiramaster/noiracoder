@@ -1,0 +1,34 @@
+[?1049h[H                                  Obtén una clave gratis en el enlace de arriba, luego pégala aqu   
+
+                                (disconnected) PyPI
+                                  twine upload
+                                  Obtén una clave gratis en el enlace de arriba, luego pégala aqu   
+
+                                Selecciona un proveedor para conectar:
+
+[30C[38;2;234;179;8m╭─────────────────────────────────────────────────────────────────────
+[30C│ [0m¿Qué proveedor quieres conectar?
+[30C[38;2;234;179;8m│ [0m> 1. OpenRouter
+[30C[38;2;234;179;8m│   [0m2. Groq
+[30C[38;2;234;179;8m│   [0m3. Zen
+[30C[38;2;234;179;8m│   [0m4. GitHub (recomendada)
+[30C[38;2;234;179;8m│   [0m5. GitLab
+[30C[38;2;234;179;8m│   [0m6. Cloudflare (recomendada)
+[30C[38;2;234;179;8m│   [0m7. npm
+[30C[38;2;234;179;8m│   [0m8. Vercel
+[30C[38;2;234;179;8m│   [0m9. Docker Hub
+[30C[38;2;234;179;8m│   [0m10. Netlify
+[30C[38;2;234;179;8m│   [0m11. PyPI
+[30C[38;2;234;179;8m│
+[30C│ [0mpulsa un número, usa flechas+Enter, haz clic, o escribe tu propia re
+[30C[38;2;234;179;8m╰─────────────────────────────────────────────────────────────────────
+
+[30C[38;2;34;34;34m╭───────────────────────────────────────────────────────────────────╮ 
+[30C│ [37;40m┃   [39m1 [38;5;240m> escribe tu tarea… (Enter envía, Ctrl+C cancela/sale)[0m      [38;2;34;34;34m│ 
+[30C│ [37m┃[65C[38;2;34;34;34m│ 
+[30C│ [37m┃[65C[38;2;34;34;34m│ 
+[30C╰───────────────────────────────────────────────────────────────────╯ 
+[30C[38;2;102;102;102mEnter enviar · ↑↓ historial · Ctrl+C cancela turno/sale · /help comand
+[30CMayús+arrastrar selecciona · /copy última respuesta · /mouse off      
+[30Cmodelo: medium · modo[0m: build
+                              [38;2;102;102;102msesión: —                                                             [7A[0m[?2004h[?1004h[?1003h

@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
@@ -425,6 +426,32 @@ func (m *Model) handleMouse(msg tea.MouseMsg) (tea.Model, tea.Cmd) {
 		m.viewport.LineDown(3)
 		return m, nil
 	case msg.Action == tea.MouseActionPress && msg.Button == tea.MouseButtonLeft:
+		// M: clic en el menú de "/" (mismo componente que las opciones H10).
+		if m.slashOpen {
+			for i := range m.slashItems() {
+				if z := zone.Get("slash:" + strconv.Itoa(i)); z != nil && z.InBounds(msg) {
+					m.slashPick(i)
+					return m, nil
+				}
+			}
+		}
+		// H10: clic en una fila del diálogo de opciones.
+		if m.options != nil {
+			for i := range m.options.items {
+				if z := zone.Get("opt:" + strconv.Itoa(i)); z != nil && z.InBounds(msg) {
+					o := m.options
+					m.options = nil
+					item := o.items[i]
+					go func() {
+						_ = m.client.Options(o.id, item.Key)
+					}()
+					if o.id == "connect-form" {
+						m.enterConnectForm(item)
+					}
+					return m, nil
+				}
+			}
+		}
 		if z := zone.Get("pnew"); z != nil && z.InBounds(msg) {
 			m.newSession()
 			return m, nil
