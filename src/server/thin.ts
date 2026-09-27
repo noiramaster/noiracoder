@@ -16,6 +16,7 @@ import type { McpRegistry } from "../mcp/registry.js";
 import { SessionStore } from "../memory/sessions.js";
 import { doUndo, doRedo } from "../tools/undoSnapshot.js";
 import { sanitizeThinOut } from "./sanitize.js";
+import { redactSecrets } from "./titles.js";
 import { screenString, renderScreen } from "../i18n/screen.js";
 import { DEFAULT_POLICY } from "../sandbox/policies.js";
 
@@ -110,7 +111,10 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
   };
 
   const smartName = (message: string): string => {
-    const words = message.replace(/\s+/g, " ").trim().split(" ").slice(0, 8).join(" ");
+    // AA: el título nace redactado. Antes eran las primeras 8 palabras en
+    // crudo y un secreto pegado quedaba visible (panel, /sessions, disco)
+    // hasta que el titulador de fondo lo reemplazaba... si llegaba a correr.
+    const words = redactSecrets(message).replace(/\s+/g, " ").trim().split(" ").slice(0, 8).join(" ");
     return words.slice(0, 60) || "nueva sesión";
   };
 
