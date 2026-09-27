@@ -1,0 +1,184 @@
+{
+  "rows": [
+    {
+      "agent": "noira",
+      "id": "fix-suma",
+      "kind": "fix",
+      "ok": true,
+      "ms": 12,
+      "timeout": false,
+      "err": ""
+    },
+    {
+      "agent": "opencode",
+      "id": "fix-suma",
+      "kind": "fix",
+      "ok": true,
+      "ms": 11,
+      "timeout": false,
+      "err": ""
+    },
+    {
+      "agent": "noira",
+      "id": "fix-nulo",
+      "kind": "fix",
+      "ok": true,
+      "ms": 16,
+      "timeout": false,
+      "err": ""
+    },
+    {
+      "agent": "opencode",
+      "id": "fix-nulo",
+      "kind": "fix",
+      "ok": true,
+      "ms": 19,
+      "timeout": false,
+      "err": ""
+    },
+    {
+      "agent": "noira",
+      "id": "fix-typo",
+      "kind": "fix",
+      "ok": true,
+      "ms": 7,
+      "timeout": false,
+      "err": ""
+    },
+    {
+      "agent": "opencode",
+      "id": "fix-typo",
+      "kind": "fix",
+      "ok": true,
+      "ms": 12,
+      "timeout": false,
+      "err": ""
+    },
+    {
+      "agent": "noira",
+      "id": "fix-operador",
+      "kind": "fix",
+      "ok": true,
+      "ms": 8,
+      "timeout": false,
+      "err": ""
+    },
+    {
+      "agent": "opencode",
+      "id": "fix-operador",
+      "kind": "fix",
+      "ok": true,
+      "ms": 14,
+      "timeout": false,
+      "err": ""
+    },
+    {
+      "agent": "noira",
+      "id": "fix-offbyone",
+      "kind": "fix",
+      "ok": true,
+      "ms": 8,
+      "timeout": false,
+      "err": ""
+    },
+    {
+      "agent": "opencode",
+      "id": "fix-offbyone",
+      "kind": "fix",
+      "ok": true,
+      "ms": 13,
+      "timeout": false,
+      "err": ""
+    },
+    {
+      "agent": "noira",
+      "id": "feat-unico",
+      "kind": "feature",
+      "ok": true,
+      "ms": 13,
+      "timeout": false,
+      "err": ""
+    },
+    {
+      "agent": "opencode",
+      "id": "feat-unico",
+      "kind": "feature",
+      "ok": true,
+      "ms": 17,
+      "timeout": false,
+      "err": ""
+    },
+    {
+      "agent": "noira",
+      "id": "feat-media",
+      "kind": "feature",
+      "ok": true,
+      "ms": 11,
+      "timeout": false,
+      "err": ""
+    },
+    {
+      "agent": "opencode",
+      "id": "feat-media",
+      "kind": "feature",
+      "ok": true,
+      "ms": 19,
+      "timeout": false,
+      "err": ""
+    },
+    {
+      "agent": "noira",
+      "id": "ref-nombre",
+      "kind": "refactor",
+      "ok": true,
+      "ms": 17,
+      "timeout": false,
+      "err": ""
+    },
+    {
+      "agent": "opencode",
+      "id": "ref-nombre",
+      "kind": "refactor",
+      "ok": true,
+      "ms": 17,
+      "timeout": false,
+      "err": ""
+    },
+    {
+      "agent": "noira",
+      "id": "fix-par",
+      "kind": "fix",
+      "ok": true,
+      "ms": 13,
+      "timeout": false,
+      "err": ""
+    },
+    {
+      "agent": "opencode",
+      "id": "fix-par",
+      "kind": "fix",
+      "ok": true,
+      "ms": 24,
+      "timeout": false,
+      "err": ""
+    },
+    {
+      "agent": "noira",
+      "id": "fix-upper",
+      "kind": "fix",
+      "ok": true,
+      "ms": 11,
+      "timeout": false,
+      "err": ""
+    },
+    {
+      "agent": "opencode",
+      "id": "fix-upper",
+      "kind": "fix",
+      "ok": true,
+      "ms": 21,
+      "timeout": false,
+      "err": ""
+    }
+  ]
+}

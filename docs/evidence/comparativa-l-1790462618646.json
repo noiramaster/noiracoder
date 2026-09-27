@@ -1,0 +1,31 @@
+{
+  "rows": [
+    {
+      "agent": "noira",
+      "id": "fix-suma",
+      "kind": "fix",
+      "ok": true,
+      "ms": 14,
+      "timeout": false,
+      "err": ""
+    },
+    {
+      "agent": "opencode",
+      "id": "fix-suma",
+      "kind": "fix",
+      "ok": false,
+      "ms": 7,
+      "timeout": false,
+      "err": ""
+    },
+    {
+      "agent": "claude",
+      "id": "fix-suma",
+      "kind": "fix",
+      "ok": false,
+      "ms": 5,
+      "timeout": false,
+      "err": ""
+    }
+  ]
+}

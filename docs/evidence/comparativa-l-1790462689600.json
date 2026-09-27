@@ -1,0 +1,13 @@
+{
+  "rows": [
+    {
+      "agent": "opencode",
+      "id": "fix-suma",
+      "kind": "fix",
+      "ok": true,
+      "ms": 13,
+      "timeout": false,
+      "err": ""
+    }
+  ]
+}
