@@ -179,12 +179,17 @@ const GO_ALLOW = new Set([
   "409",
   // Colores de marca y nombre interno por defecto (M3.2 lo sustituye por real)
   "#FBBF24", "#22c55e", "#ef4444", "#eab308", "#666666", "#222222", "(router)",
+  // N (ronda 2026-09-27): borde visible #3a3a3a, misma categoría que #222222
+  "#3a3a3a",
   // Cabecera de marca (M1.3: la marca no se traduce)
   "> NOIRACODER",
   // Fragmentos printf sin texto (el texto viaja en la clave)
   "i18n %d: %s", "%s: %w",
   // M4.1: format strings de stats (latencia/score)
   "  %s  lat=%s  score=%.0f", "model/stats %d",
+  // H8: códigos de error con forma "<recurso> <código>" (el texto viaja en
+  // las claves err_* del catálogo; aquí solo el código para el log)
+  "options error %d: %s", "connections %d", "explain %d",
   // M3: colores de marca y textos de catálogo en Go
   "#FBBF24", " %d%%", "  NOIRACODER — ", "  > NOIRACODER",
   // M5.1: MCP strings en Go
@@ -235,10 +240,14 @@ const GO_KEY_NAMES = new Set(KEYS);
   else fail(`thin.ts: ${lits} errores literales`);
 }
 // Trinquete: nº de puntos log./console. por fichero legacy (M1.2+ los migra;
-// el número NO puede subir; bajarlo es bienvenido).
+// el número NO puede subir sin motivo documentado; bajarlo es bienvenido).
+// Subidas con motivo (ronda 2026-09-27): cli.ts 33->42 por el comando nuevo
+// `models` (9 salidas de inventario local); thin.ts 7->10 por diagnósticos
+// H10/plan (options tardía/duplicada/sin cliente). No se borra salida de
+// usuario ni se consolidan llamadas para falsear el contador.
 const RATCHET = {
-  "src/cli/repl.ts": 59, "src/cli/cli.ts": 33, "src/tui/tui.ts": 8,
-  "src/core/welcome.ts": 0, "src/server/thin.ts": 7, "src/sandbox/approve.ts": 0,
+  "src/cli/repl.ts": 59, "src/cli/cli.ts": 42, "src/tui/tui.ts": 8,
+  "src/core/welcome.ts": 0, "src/server/thin.ts": 10, "src/sandbox/approve.ts": 0,
 };
 {
   let bad = 0;
@@ -264,8 +273,14 @@ const RATCHET = {
     return out;
   };
   const CORE7 = ["en", "es", "pt", "fr", "de", "it", "ar"];
-  const FALLBACK_OK = new Set(["freeWarning", "errorExternal"]); // caen a EN vía T()
-  const SAME_OK = new Set(["routerLevelPrefix", "es:confirmNo", "it:confirmNo"]); // técnico/cognado
+  // H10 (ronda 2026-09-27): sus 7 claves caen a EN vía T() fuera del CORE7,
+  // igual que freeWarning/errorExternal desde M1.10. Las 7 SÍ están
+  // traducidas en el CORE7 (la rotación fr→pl se reparó en dictionary.ts).
+  const FALLBACK_OK = new Set(["freeWarning", "errorExternal",
+    "optionsTitle", "optionsRecommended", "optionsHint",
+    "optionSecurityConfirm", "optionSecurityOnce", "optionSecurityAlways", "optionSecurityDeny"]);
+  // "No" es cognado válido en es/it (como confirmNo); el resto, técnico.
+  const SAME_OK = new Set(["routerLevelPrefix", "es:confirmNo", "it:confirmNo", "es:optionSecurityDeny", "it:optionSecurityDeny"]);
   const en = flat(MESSAGES.en);
   let bad = 0;
   for (const l of Object.keys(MESSAGES)) {

@@ -889,6 +889,8 @@ NOIRA_EN.tuto = {
   d1pre: 'Fix this error: <paste the error>\nExplain what this function does\nAdd tests for s.js\nMake a plan before touching anything   # or /plan inside the chat\n/sessions   # list and resume sessions\nCtrl+C   # cancel (again to quit)'
 };
 NOIRA_PT.tuto = {
+  s0t: 'Antes de começar',
+  s0sub: 'Precisas de Node 20 ou superior e 5 minutos. Sem chaves nem cartão para começar: funciona com Kilo anónimo.',
   s1t: 'Começa sem chaves',
   s1sub: 'Kilo anónimo funciona logo após instalar. Sem registo, sem cartão.',
   a1t: '1 · Abre o ecrã no teu projeto',
@@ -903,17 +905,26 @@ NOIRA_PT.tuto = {
   b2pre: '# https://console.groq.com/keys (grátis, 1 min)\nnoira login --groq <tua-key>',
   b3t: '3 · Zen',
   b3pre: '# https://opencode.ai/zen (grátis, 1 min)\nnoira login --zen <tua-key>',
+  b4t: 'Outros serviços (GitHub, npm, Cloudflare…) · aqui é que se cola',
+  b4pre: 'noira connect   # pede-te a chave e guarda-a cifrada',
   vt: '✓ Verifica',
   vpre: 'noira connect   # valida cada provider com rede real',
   s3t: 'A tua primeira sessão',
+  s3sub: 'Copia isto tal qual para o teu terminal:',
   c1t: '1 · Streaming + confirmações',
   c1pre: '# a resposta chega token a token; o perigoso pede [y/n]',
   c2t: '2 · Sessões e modos',
   c2pre: '/sessions   # listar\n/resume 1   # continuar\n/plan · /build   # só leitura / execução',
+  c2note: 'Prime Enter. Vais ver como pensa, cria o ficheiro com a ferramenta write e mostra-te o resultado. O perigoso pede sempre [y/n].',
+  s4t: 'O que mais lhe podes pedir',
+  s4sub: 'Fala normal. Exemplos que funcionam:',
+  d1pre: 'Arranja-me este erro: <cola o erro>\nExplica o que faz esta função\nAdiciona testes para s.js\nFaz um plano antes de tocar em nada   # ou /plan dentro do chat\n/sessions   # ver e continuar sessões\nCtrl+C   # cancelar (outra vez para sair)',
   c3t: '3 · Modelo e saída',
   c3pre: '/model <id>   # mudar de modelo\nCtrl+C   # cancelar turno (outra vez para sair)'
 };
 NOIRA_FR.tuto = {
+  s0t: 'Avant de commencer',
+  s0sub: 'Il faut Node 20 ou plus et 5 minutes. Ni clés ni carte pour commencer : ça marche avec Kilo anonyme.',
   s1t: 'Commence sans clés',
   s1sub: 'Kilo anonyme marche dès l\u2019installation. Sans inscription, sans carte.',
   a1t: '1 · Ouvre l\u2019écran dans ton projet',
@@ -928,17 +939,26 @@ NOIRA_FR.tuto = {
   b2pre: '# https://console.groq.com/keys (gratuit, 1 min)\nnoira login --groq <ta-clé>',
   b3t: '3 · Zen',
   b3pre: '# https://opencode.ai/zen (gratuit, 1 min)\nnoira login --zen <ta-clé>',
+  b4t: 'Autres services (GitHub, npm, Cloudflare…) · c’est ici qu’on colle',
+  b4pre: 'noira connect   # demande la clé et la stocke chiffrée',
   vt: '✓ Vérifie',
   vpre: 'noira connect   # valide chaque fournisseur sur le vrai réseau',
   s3t: 'Ta première session',
+  s3sub: 'Copie ceci tel quel dans ton terminal :',
   c1t: '1 · Streaming + confirmations',
   c1pre: '# la réponse arrive token par token ; le dangereux demande [y/n]',
   c2t: '2 · Sessions et modes',
   c2pre: '/sessions   # lister\n/resume 1   # continuer\n/plan · /build   # lecture seule / exécution',
+  c2note: 'Appuie sur Entrée. Tu verras comment ça réfléchit, crée le fichier avec l’outil write et te montre le résultat. Le dangereux demande toujours [y/n].',
+  s4t: 'Que lui demander d’autre',
+  s4sub: 'Parle normalement. Exemples qui marchent :',
+  d1pre: 'Corrige-moi cette erreur : <colle l’erreur>\nExplique ce que fait cette fonction\nAjoute des tests pour s.js\nFais un plan avant de toucher à quoi que ce soit   # ou /plan dans le chat\n/sessions   # voir et reprendre les sessions\nCtrl+C   # annuler (encore pour quitter)',
   c3t: '3 · Modèle et sortie',
   c3pre: '/model <id>   # changer de modèle\nCtrl+C   # annuler le tour (encore pour quitter)'
 };
 NOIRA_DE.tuto = {
+  s0t: 'Bevor es losgeht',
+  s0sub: 'Du brauchst Node 20 oder neuer und 5 Minuten. Keine Schlüssel, keine Karte zum Starten: Es läuft mit anonymem Kilo.',
   s1t: 'Starte ohne Schlüssel',
   s1sub: 'Anonymes Kilo läuft direkt nach der Installation. Ohne Registrierung, ohne Karte.',
   a1t: '1 · Öffne den Screen in deinem Projekt',
@@ -953,17 +973,26 @@ NOIRA_DE.tuto = {
   b2pre: '# https://console.groq.com/keys (gratis, 1 Min)\nnoira login --groq <dein-key>',
   b3t: '3 · Zen',
   b3pre: '# https://opencode.ai/zen (gratis, 1 Min)\nnoira login --zen <dein-key>',
+  b4t: 'Andere Dienste (GitHub, npm, Cloudflare…) · hier wird eingefügt',
+  b4pre: 'noira connect   # fragt nach dem Schlüssel und speichert ihn verschlüsselt',
   vt: '✓ Prüfen',
   vpre: 'noira connect   # validiert jeden Provider im echten Netz',
   s3t: 'Deine erste Sitzung',
+  s3sub: 'Kopiere das genau so in dein Terminal:',
   c1t: '1 · Streaming + Bestätigungen',
   c1pre: '# die Antwort kommt Token für Token; Gefährliches fragt [y/n]',
   c2t: '2 · Sitzungen und Modi',
   c2pre: '/sessions   # auflisten\n/resume 1   # fortsetzen\n/plan · /build   # nur lesen / ausführen',
+  c2note: 'Drücke Enter. Du siehst, wie es denkt, die Datei mit dem write-Werkzeug erstellt und dir das Ergebnis zeigt. Gefährliches fragt immer [y/n].',
+  s4t: 'Was du sonst noch fragen kannst',
+  s4sub: 'Sprich normal. Beispiele, die funktionieren:',
+  d1pre: 'Behebe mir diesen Fehler: <Fehler einfügen>\nErkläre, was diese Funktion tut\nFüge Tests für s.js hinzu\nMach einen Plan, bevor du etwas anfasst   # oder /plan im Chat\n/sessions   # Sitzungen ansehen und fortsetzen\nStrg+C   # abbrechen (nochmal zum Beenden)',
   c3t: '3 · Modell und Ausgang',
   c3pre: '/model <id>   # Modell wechseln\nStrg+C   # Zug abbrechen (nochmal zum Beenden)'
 };
 NOIRA_IT.tuto = {
+  s0t: 'Prima di iniziare',
+  s0sub: 'Servono Node 20 o superiore e 5 minuti. Niente chiavi né carta per iniziare: funziona con Kilo anonimo.',
   s1t: 'Inizia senza chiavi',
   s1sub: 'Kilo anonimo funziona subito dopo l\u2019installazione. Senza registrazione, senza carta.',
   a1t: '1 · Apri la schermata nel tuo progetto',
@@ -978,17 +1007,26 @@ NOIRA_IT.tuto = {
   b2pre: '# https://console.groq.com/keys (gratis, 1 min)\nnoira login --groq <tua-key>',
   b3t: '3 · Zen',
   b3pre: '# https://opencode.ai/zen (gratis, 1 min)\nnoira login --zen <tua-key>',
+  b4t: 'Altri servizi (GitHub, npm, Cloudflare…) · qui si incolla',
+  b4pre: 'noira connect   # chiede la chiave e la salva cifrata',
   vt: '✓ Verifica',
   vpre: 'noira connect   # valida ogni provider sulla rete reale',
   s3t: 'La tua prima sessione',
+  s3sub: 'Copia questo tale e quale nel tuo terminale:',
   c1t: '1 · Streaming + conferme',
   c1pre: '# la risposta arriva token per token; ciò che è pericoloso chiede [y/n]',
   c2t: '2 · Sessioni e modalità',
   c2pre: '/sessions   # elenca\n/resume 1   # continua\n/plan · /build   # sola lettura / esecuzione',
+  c2note: 'Premi Invio. Vedrai come ragiona, crea il file con lo strumento write e ti mostra il risultato. Ciò che è pericoloso chiede sempre [y/n].',
+  s4t: 'Cos’altro puoi chiedergli',
+  s4sub: 'Parla normale. Esempi che funzionano:',
+  d1pre: 'Correggimi questo errore: <incolla l’errore>\nSpiega cosa fa questa funzione\nAggiungi test per s.js\nFai un piano prima di toccare nulla   # o /plan dentro la chat\n/sessions   # vedi e riprendi le sessioni\nCtrl+C   # annulla (di nuovo per uscire)',
   c3t: '3 · Modello e uscita',
   c3pre: '/model <id>   # cambia modello\nCtrl+C   # annulla il turno (di nuovo per uscire)'
 };
 NOIRA_AR.tuto = {
+  s0t: 'قبل أن تبدأ',
+  s0sub: 'تحتاج Node 20 أو أحدث و5 دقائق. لا مفاتيح ولا بطاقة للبدء: يعمل مع Kilo المجهول.',
   s1t: 'ابدأ بدون مفاتيح',
   s1sub: 'Kilo المجهول يعمل فور التثبيت. بدون تسجيل، بدون بطاقة.',
   a1t: '1 · افتح الشاشة في مشروعك',
@@ -1003,13 +1041,20 @@ NOIRA_AR.tuto = {
   b2pre: '# https://console.groq.com/keys (مجاني، 1 دقيقة)\nnoira login --groq <your-key>',
   b3t: '3 · Zen',
   b3pre: '# https://opencode.ai/zen (مجاني، 1 دقيقة)\nnoira login --zen <your-key>',
+  b4t: 'خدمات أخرى (GitHub، npm، Cloudflare…) · هنا تُلصق',
+  b4pre: 'noira connect   # يطلب المفتاح ويحفظه مشفراً',
   vt: '✓ تحقق',
   vpre: 'noira connect   # يتحقق من كل مزود عبر الشبكة الحقيقية',
   s3t: 'جلستك الأولى',
+  s3sub: 'انسخ هذا كما هو في طرفيتك:',
   c1t: '1 · البث + التأكيدات',
   c1pre: '# تصل الإجابة رمزاً فرمزاً؛ الخطير يطلب [y/n]',
   c2t: '2 · الجلسات والأوضاع',
   c2pre: '/sessions   # عرض\n/resume 1   # متابعة\n/plan · /build   # قراءة فقط / تنفيذ',
+  c2note: 'اضغط Enter. سترى كيف يفكر وينشئ الملف بأداة write ويُريك النتيجة. الخطير يطلب دائماً [y/n].',
+  s4t: 'ماذا يمكنك أن تطلب أيضاً',
+  s4sub: 'تحدث بشكل عادي. أمثلة ناجحة:',
+  d1pre: 'أصلح لي هذا الخطأ: <الصق الخطأ>\nاشرح ماذا تفعل هذه الدالة\nأضف اختبارات لـ s.js\nضع خطة قبل لمس أي شيء   # أو /plan داخل المحادثة\n/sessions   # عرض الجلسات ومتابعتها\nCtrl+C   # إلغاء (مرة أخرى للخروج)',
   c3t: '3 · النموذج والخروج',
   c3pre: '/model <id>   # تغيير النموذج\nCtrl+C   # إلغاء الدور (مرة أخرى للخروج)'
 };
@@ -1113,6 +1158,71 @@ NOIRA_EN.skillx = {
   gitflow: 'Prepare these changes on a branch with atomic commits.',
   lang: 'Rewrite this with TypeScript idioms.',
   tryit: 'Try it like this:'
+};
+NOIRA_PT.skillx = {
+  planning: 'Faz um plano para adicionar registo com email. Não toques no código ainda.',
+  review: 'Revê as minhas últimas mudanças e diz-me o que pode partir.',
+  security: 'Procura chaves ou tokens escritos diretamente no código.',
+  debug: 'Este teste falha: <cola a falha>. Encontra a causa mínima.',
+  testing: 'Escreve um teste que falhe sem a correção e passe com ela.',
+  refactor: 'Limpa esta função sem mudar o que ela faz.',
+  perf: 'Mede quanto demora esta função e torna-a mais rápida.',
+  docs: 'Documenta no README o que mudou neste commit.',
+  gitflow: 'Prepara estas mudanças num ramo com commits atómicos.',
+  lang: 'Reescreve isto com os idiomatismos do TypeScript.',
+  tryit: 'Experimenta assim:'
+};
+NOIRA_FR.skillx = {
+  planning: 'Fais un plan pour ajouter l’inscription par email. Ne touche pas encore au code.',
+  review: 'Relis mes derniers changements et dis-moi ce qui peut casser.',
+  security: 'Cherche les clés ou tokens écrits en dur dans le code.',
+  debug: 'Ce test échoue : <colle l’échec>. Trouve la cause minimale.',
+  testing: 'Écris un test qui échoue sans le correctif et passe avec.',
+  refactor: 'Nettoie cette fonction sans changer ce qu’elle fait.',
+  perf: 'Mesure combien de temps prend cette fonction et rends-la plus rapide.',
+  docs: 'Documente dans le README ce que ce commit a changé.',
+  gitflow: 'Prépare ces changements sur une branche avec des commits atomiques.',
+  lang: 'Réécris ceci avec les idiomes de TypeScript.',
+  tryit: 'Essaie comme ceci :'
+};
+NOIRA_DE.skillx = {
+  planning: 'Mach einen Plan, um Anmeldung per E-Mail hinzuzufügen. Fass den Code noch nicht an.',
+  review: 'Prüfe meine letzten Änderungen und sag mir, was kaputtgehen kann.',
+  security: 'Suche nach Schlüsseln oder Tokens, die direkt im Code stehen.',
+  debug: 'Dieser Test schlägt fehl: <Fehler einfügen>. Finde die kleinste Ursache.',
+  testing: 'Schreibe einen Test, der ohne den Fix fehlschlägt und mit ihm besteht.',
+  refactor: 'Räume diese Funktion auf, ohne zu ändern, was sie tut.',
+  perf: 'Miss, wie lange diese Funktion braucht, und mach sie schneller.',
+  docs: 'Dokumentiere im README, was dieser Commit geändert hat.',
+  gitflow: 'Bereite diese Änderungen in einem Branch mit atomaren Commits vor.',
+  lang: 'Schreibe das mit den Idiomen von TypeScript um.',
+  tryit: 'Probier es so:'
+};
+NOIRA_IT.skillx = {
+  planning: 'Fai un piano per aggiungere la registrazione via email. Non toccare ancora il codice.',
+  review: 'Rivedi le mie ultime modifiche e dimmi cosa può rompersi.',
+  security: 'Cerca chiavi o token scritti direttamente nel codice.',
+  debug: 'Questo test fallisce: <incolla l’errore>. Trova la causa minima.',
+  testing: 'Scrivi un test che fallisce senza la correzione e passa con essa.',
+  refactor: 'Pulisci questa funzione senza cambiare cosa fa.',
+  perf: 'Misura quanto impiega questa funzione e rendila più veloce.',
+  docs: 'Documenta nel README cosa ha cambiato questo commit.',
+  gitflow: 'Prepara queste modifiche in un branch con commit atomici.',
+  lang: 'Riscrivi questo con gli idiomi di TypeScript.',
+  tryit: 'Provalo così:'
+};
+NOIRA_AR.skillx = {
+  planning: 'ضع خطة لإضافة التسجيل بالبريد. لا تلمس الشيفرة بعد.',
+  review: 'راجع تغييراتي الأخيرة وأخبرني ما الذي قد ينكسر.',
+  security: 'ابحث عن مفاتيح أو رموز مكتوبة مباشرة في الشيفرة.',
+  debug: 'هذا الاختبار يفشل: <الصق الفشل>. جد السبب الأصغر.',
+  testing: 'اكتب اختباراً يفشل بدون الإصلاح وينجح معه.',
+  refactor: 'نظف هذه الدالة دون تغيير ما تفعله.',
+  perf: 'قس كم تستغرق هذه الدالة واجعلها أسرع.',
+  docs: 'وثّق في README ما غيّره هذا الكوميت.',
+  gitflow: 'جهّز هذه التغييرات في فرع بكوميتات ذرية.',
+  lang: 'أعد كتابة هذا بأساليب TypeScript.',
+  tryit: 'جرّبه هكذا:'
 };
 
 function noiraGetNested(obj, path) {

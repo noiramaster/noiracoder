@@ -884,7 +884,7 @@ func (m *Model) handleCommand(text string) bool {
 			m.addLine("  " + mark + " " + c.Name + " — " + lipgloss.NewStyle().Foreground(muted).Render(c.Note))
 		}
 		m.addLine("")
-		m.addLine(lipgloss.NewStyle().Foreground(muted).Render("  " + "Use: noira login --groq <key>  /  noira login --zen <key>"))
+		m.addLine(lipgloss.NewStyle().Foreground(muted).Render("  " + T(m.lang, "conn_use")))
 		m.addLine("")
 		return true
 	case "/connect":
@@ -901,9 +901,9 @@ func (m *Model) handleCommand(text string) bool {
 		topProviders := map[string]bool{"openrouter": true, "github_token": true, "cloudflare_api_token": true}
 		optsList := []optionItem{}
 		for _, c := range conns {
-			status := lipgloss.NewStyle().Foreground(muted).Render("(disconnected)")
+			status := lipgloss.NewStyle().Foreground(muted).Render(T(m.lang, "conn_disconnected"))
 			if c.Connected {
-				status = lipgloss.NewStyle().Foreground(green).Render("(connected)")
+				status = lipgloss.NewStyle().Foreground(green).Render(T(m.lang, "conn_connected"))
 			}
 			m.addLine("  " + status + " " + c.Name)
 			m.addLine("    " + lipgloss.NewStyle().Foreground(muted).Render(c.Note))
@@ -932,7 +932,7 @@ func (m *Model) handleCommand(text string) bool {
 			sid = parts[1]
 		}
 		if sid == "" {
-			m.addLine("No hay sesión activa. Usa /explain <session-id>")
+			m.addLine(T(m.lang, "explain_no_session"))
 			return true
 		}
 		explain, err := m.client.Explain(sid)

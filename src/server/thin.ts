@@ -612,7 +612,7 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
       try {
         const parsed = JSON.parse(await readBody(req)) as { serviceId?: string; value?: string };
         if (!parsed.serviceId || !parsed.value) {
-          json(res, 400, { error: "serviceId and value required" });
+          json(res, 400, { error: renderScreen(screenString(opts.lang, "err_field_required"), { field: "serviceId and value" }) });
           return;
         }
         const { validateCredential, storeCredential } = await import("../auth/credentials.js");
@@ -1054,13 +1054,13 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
         const parsed = JSON.parse(await readBody(req)) as { sessionId?: string };
         const sid = parsed.sessionId ?? activeTurn?.sessionId;
         if (!sid) {
-          json(res, 400, { error: "no active turn or sessionId required" });
+          json(res, 400, { error: renderScreen(screenString(opts.lang, "err_field_required"), { field: "sessionId" }) });
           return;
         }
         const metas = await store.list();
         const meta = metas.find((m) => m.id === sid);
         if (!meta || meta.turns.length === 0) {
-          json(res, 404, { error: "session not found or no turns" });
+          json(res, 404, { error: renderScreen(screenString(opts.lang, "err_session_not_found"), {}) });
           return;
         }
         const lastTurns = meta.turns.slice(-4);
