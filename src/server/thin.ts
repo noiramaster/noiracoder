@@ -450,23 +450,13 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
 
     // ── Estado (lo usa el wrapper para detectar pantallas colgadas) ──
     if (req.method === "GET" && url.pathname === "/v1/status") {
-      // H9: detección de proyecto
-      const cwd = process.cwd();
-      let projectType = "unknown";
-      const { existsSync: exists } = await import("node:fs");
-      if (exists(`${cwd}/package.json`)) projectType = "node";
-      else if (exists(`${cwd}/go.mod`)) projectType = "go";
-      else if (exists(`${cwd}/Cargo.toml`)) projectType = "rust";
-      else if (exists(`${cwd}/pyproject.toml`) || exists(`${cwd}/setup.py`)) projectType = "python";
-      else if (exists(`${cwd}/pom.xml`)) projectType = "java";
-      else if (exists(`${cwd}/Gemfile`)) projectType = "ruby";
-
+      // TAREA S: se eliminó el campo `proyecto` (detección H9): nadie lo
+      // consumía y rompía la forma exacta que exige la batería adversaria.
       json(res, 200, {
         ok: true,
         protocol: THIN_PROTOCOL,
         clientes: sse && !sse.writableEnded ? 1 : 0,
         turnoActivo: activeTurn !== null,
-        proyecto: projectType,
       });
       return;
     }
