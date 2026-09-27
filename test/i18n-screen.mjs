@@ -243,11 +243,12 @@ const GO_KEY_NAMES = new Set(KEYS);
 // el número NO puede subir sin motivo documentado; bajarlo es bienvenido).
 // Subidas con motivo (ronda 2026-09-27): cli.ts 33->42 por el comando nuevo
 // `models` (9 salidas de inventario local); thin.ts 7->10 por diagnósticos
-// H10/plan (options tardía/duplicada/sin cliente). No se borra salida de
-// usuario ni se consolidan llamadas para falsear el contador.
+// H10/plan (options tardía/duplicada/sin cliente) y 10->11 por GG (aviso de
+// confirm sin cliente en askClient). No se borra salida de usuario ni se
+// consolidan llamadas para falsear el contador.
 const RATCHET = {
   "src/cli/repl.ts": 59, "src/cli/cli.ts": 42, "src/tui/tui.ts": 8,
-  "src/core/welcome.ts": 0, "src/server/thin.ts": 10, "src/sandbox/approve.ts": 0,
+  "src/core/welcome.ts": 0, "src/server/thin.ts": 11, "src/sandbox/approve.ts": 0,
 };
 {
   let bad = 0;

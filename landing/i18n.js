@@ -31,7 +31,7 @@ var NOIRA_EN = {
   install: {
     title: 'Install', kicker: 'Minimal install',
     sub: 'You need Node 20+. No Docker, no mandatory account to start.',
-    w: 'Windows (PowerShell)', m: 'macOS / Linux', s3: 'Connect free (1 min per key)'
+    w: 'Windows (PowerShell)', m: 'macOS / Linux', s3: 'Want more quota? (optional)', r2t: 'Run it',
   },
   skills: { title: 'Skills', kicker: 'Built-in skills', sub: '10 specialists, zero plugins. Full documentation:', all: 'Full documentation' },
   cmds: {
@@ -92,7 +92,7 @@ var NOIRA_ES = {
   install: {
     title: 'Instalar', kicker: 'Instalación mínima',
     sub: 'Necesitas Node 20+. Sin Docker, sin cuenta obligatoria para empezar.',
-    w: 'Windows (PowerShell)', m: 'macOS / Linux', s3: 'Conecta gratis (1 min por clave)'
+    w: 'Windows (PowerShell)', m: 'macOS / Linux', s3: '¿Más cuota? (opcional)', r2t: 'Ejecútalo',
   },
   skills: { title: 'Skills', kicker: 'Skills integradas', sub: '10 especialistas, cero plugins. Documentación completa:', all: 'Documentación completa' },
   cmds: {
@@ -153,7 +153,7 @@ var NOIRA_PT = {
   install: {
     title: 'Instalar', kicker: 'Instalação mínima',
     sub: 'Você precisa de Node 20+. Sem Docker, sem conta obrigatória para começar.',
-    w: 'Windows (PowerShell)', m: 'macOS / Linux', s3: 'Conecte grátis (1 min por chave)'
+    w: 'Windows (PowerShell)', m: 'macOS / Linux', s3: 'Mais quota? (opcional)', r2t: 'Corre-o',
   },
   skills: { title: 'Skills', kicker: 'Skills integradas', sub: '10 especialistas, zero plugins. Documentação completa:', all: 'Documentação completa' },
   cmds: {
@@ -214,7 +214,7 @@ var NOIRA_FR = {
   install: {
     title: 'Installer', kicker: 'Installation minimale',
     sub: 'Vous avez besoin de Node 20+. Pas de Docker, pas de compte obligatoire pour commencer.',
-    w: 'Windows (PowerShell)', m: 'macOS / Linux', s3: 'Connectez gratuitement (1 min par clé)'
+    w: 'Windows (PowerShell)', m: 'macOS / Linux', s3: 'Plus de quota ? (optionnel)', r2t: 'Lance-le',
   },
   skills: { title: 'Skills', kicker: 'Skills intégrées', sub: '10 spécialistes, zéro plugins. Documentation complète :', all: 'Documentation complète' },
   cmds: {
@@ -275,7 +275,7 @@ var NOIRA_DE = {
   install: {
     title: 'Installieren', kicker: 'Minimale Installation',
     sub: 'Du brauchst Node 20+. Kein Docker, kein obligatorisches Konto zum Starten.',
-    w: 'Windows (PowerShell)', m: 'macOS / Linux', s3: 'Kostenlos verbinden (1 Min pro Schlüssel)'
+    w: 'Windows (PowerShell)', m: 'macOS / Linux', s3: 'Mehr Kontingent? (optional)', r2t: 'Starte es',
   },
   skills: { title: 'Skills', kicker: 'Integrierte Skills', sub: '10 Spezialisten, null Plugins. Vollständige Dokumentation:', all: 'Vollständige Dokumentation' },
   cmds: {
@@ -336,7 +336,7 @@ var NOIRA_IT = {
   install: {
     title: 'Installare', kicker: 'Installazione minima',
     sub: 'Hai bisogno di Node 20+. Niente Docker, niente account obbligatorio per iniziare.',
-    w: 'Windows (PowerShell)', m: 'macOS / Linux', s3: 'Connetti gratis (1 min per chiave)'
+    w: 'Windows (PowerShell)', m: 'macOS / Linux', s3: 'Più quota? (opzionale)', r2t: 'Avvialo',
   },
   skills: { title: 'Skills', kicker: 'Skills integrate', sub: '10 specialisti, zero plugin. Documentazione completa:', all: 'Documentazione completa' },
   cmds: {
@@ -397,7 +397,7 @@ var NOIRA_AR = {
   install: {
     title: 'تثبيت', kicker: 'تثبيت أدنى',
     sub: 'تحتاج Node 20+. بدون Docker، بدون حساب إجباري للبدء.',
-    w: 'Windows (PowerShell)', m: 'macOS / Linux', s3: 'اربط مجاناً (1 دقيقة لكل مفتاح)'
+    w: 'Windows (PowerShell)', m: 'macOS / Linux', s3: 'حصة أكبر؟ (اختياري)', r2t: 'شغّله',
   },
   skills: { title: 'المهارات', kicker: 'مهارات مدمجة', sub: '10 متخصصين، صفر إضافات. التوثيق الكامل:', all: 'التوثيق الكامل' },
   cmds: {
@@ -446,26 +446,33 @@ NOIRA_FR.copy = { btn: 'Copier', copied: '✓ Copié', toast: 'Copié dans le pr
 NOIRA_DE.copy = { btn: 'Kopieren', copied: '✓ Kopiert', toast: 'In Zwischenablage kopiert' };
 NOIRA_IT.copy = { btn: 'Copia', copied: '✓ Copiato', toast: 'Copiato negli appunti' };
 NOIRA_AR.copy = { btn: 'نسخ', copied: '✓ تم النسخ', toast: 'تم النسخ إلى الحافظة' };
-NOIRA_ES.install.preWin = '# instala Node 20+ desde nodejs.org, luego:\nnpm install -g noiracoder\nnoira login';
-NOIRA_ES.install.preNix = '# con Node 20+ ya instalado:\nnpm install -g noiracoder\nnoira login';
+NOIRA_ES.install.preWin = '# instala Node 20+ desde nodejs.org, luego:\nnpm install -g noiracoder';
+NOIRA_ES.install.preNix = '# con Node 20+ ya instalado:\nnpm install -g noiracoder';
+NOIRA_ES.install.preRun = '# sigue la guía en pantalla:\nnoira';
 NOIRA_ES.install.preKeys = 'noira login   # 1 clic: OpenRouter + Kilo\nnoira connect   # guía: Groq → Zen → GitHub → npm\nnoira "crea un hola mundo en mi proyecto"';
-NOIRA_EN.install.preWin = '# install Node 20+ from nodejs.org, then:\nnpm install -g noiracoder\nnoira login';
-NOIRA_EN.install.preNix = '# with Node 20+ already installed:\nnpm install -g noiracoder\nnoira login';
+NOIRA_EN.install.preWin = '# install Node 20+ from nodejs.org, then:\nnpm install -g noiracoder';
+NOIRA_EN.install.preNix = '# with Node 20+ already installed:\nnpm install -g noiracoder';
+NOIRA_EN.install.preRun = '# follow the on-screen guide:\nnoira';
 NOIRA_EN.install.preKeys = 'noira login   # 1 click: OpenRouter + Kilo\nnoira connect   # guide: Groq → Zen → GitHub → npm\nnoira "create a hello world in my project"';
-NOIRA_PT.install.preWin = '# instala o Node 20+ em nodejs.org, depois:\nnpm install -g noiracoder\nnoira login';
-NOIRA_PT.install.preNix = '# com Node 20+ já instalado:\nnpm install -g noiracoder\nnoira login';
+NOIRA_PT.install.preWin = '# instala o Node 20+ em nodejs.org, depois:\nnpm install -g noiracoder';
+NOIRA_PT.install.preNix = '# com Node 20+ já instalado:\nnpm install -g noiracoder';
+NOIRA_PT.install.preRun = '# segue o guia no ecrã:\nnoira';
 NOIRA_PT.install.preKeys = 'noira login   # 1 clique: OpenRouter + Kilo\nnoira connect   # guia: Groq → Zen → GitHub → npm\nnoira "cria um olá mundo no meu projeto"';
-NOIRA_FR.install.preWin = '# installe Node 20+ depuis nodejs.org, puis :\nnpm install -g noiracoder\nnoira login';
-NOIRA_FR.install.preNix = '# avec Node 20+ déjà installé :\nnpm install -g noiracoder\nnoira login';
+NOIRA_FR.install.preWin = '# installe Node 20+ depuis nodejs.org, puis :\nnpm install -g noiracoder';
+NOIRA_FR.install.preNix = '# avec Node 20+ déjà installé :\nnpm install -g noiracoder';
+NOIRA_FR.install.preRun = '# suis le guide à l\u2019écran :\nnoira';
 NOIRA_FR.install.preKeys = 'noira login   # 1 clic : OpenRouter + Kilo\nnoira connect   # guide : Groq → Zen → GitHub → npm\nnoira "crée un hello world dans mon projet"';
-NOIRA_DE.install.preWin = '# installiere Node 20+ von nodejs.org, dann:\nnpm install -g noiracoder\nnoira login';
-NOIRA_DE.install.preNix = '# mit bereits installiertem Node 20+:\nnpm install -g noiracoder\nnoira login';
+NOIRA_DE.install.preWin = '# installiere Node 20+ von nodejs.org, dann:\nnpm install -g noiracoder';
+NOIRA_DE.install.preNix = '# mit bereits installiertem Node 20+:\nnpm install -g noiracoder';
+NOIRA_DE.install.preRun = '# folge der Anleitung auf dem Bildschirm:\nnoira';
 NOIRA_DE.install.preKeys = 'noira login   # 1 Klick: OpenRouter + Kilo\nnoira connect   # Anleitung: Groq → Zen → GitHub → npm\nnoira "erstelle ein Hallo-Welt in meinem Projekt"';
-NOIRA_IT.install.preWin = '# installa Node 20+ da nodejs.org, poi:\nnpm install -g noiracoder\nnoira login';
-NOIRA_IT.install.preNix = '# con Node 20+ già installato:\nnpm install -g noiracoder\nnoira login';
+NOIRA_IT.install.preWin = '# installa Node 20+ da nodejs.org, poi:\nnpm install -g noiracoder';
+NOIRA_IT.install.preNix = '# con Node 20+ già installato:\nnpm install -g noiracoder';
+NOIRA_IT.install.preRun = '# segui la guida sullo schermo:\nnoira';
 NOIRA_IT.install.preKeys = 'noira login   # 1 clic: OpenRouter + Kilo\nnoira connect   # guida: Groq → Zen → GitHub → npm\nnoira "crea un hello world nel mio progetto"';
-NOIRA_AR.install.preWin = '# ثبّت Node 20+ من nodejs.org، ثم:\nnpm install -g noiracoder\nnoira login';
-NOIRA_AR.install.preNix = '# مع تثبيت Node 20+ مسبقاً:\nnpm install -g noiracoder\nnoira login';
+NOIRA_AR.install.preWin = '# ثبّت Node 20+ من nodejs.org، ثم:\nnpm install -g noiracoder';
+NOIRA_AR.install.preNix = '# مع تثبيت Node 20+ مسبقاً:\nnpm install -g noiracoder';
+NOIRA_AR.install.preRun = '# اتبع الدليل على الشاشة:\nnoira';
 NOIRA_AR.install.preKeys = 'noira login   # نقرة واحدة: OpenRouter + Kilo\nnoira connect   # دليل: Groq → Zen → GitHub → npm\nnoira "أنشئ hello world في مشروعي"';
 
 /* Sobre (cuerpos traducidos; p4 con enlace) */

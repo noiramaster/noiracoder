@@ -96,6 +96,9 @@ table.cmds td:first-child { font-family: var(--font-mono); color: var(--accent);
 .step h3 { font-family: var(--font-mono); font-size: .875rem; color: var(--fg); margin-bottom: .5rem; }
 .step pre { font-family: var(--font-mono); font-size: .8rem; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: .75rem 1rem; overflow-x: auto; color: var(--fg); margin-top: .5rem; }
 .step pre .c { color: var(--muted); }
+/* II: paso opcional plegable (mismo marco que .step, sin peso visual) */
+details.step summary { font-family: var(--font-mono); font-size: .875rem; color: var(--muted); cursor: pointer; }
+details.step[open] summary { color: var(--fg); margin-bottom: .5rem; }
 
 /* formularios (contacto, patrón exacto) */
 .field { width: 100%; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: .5rem 1rem; font-size: .875rem; color: var(--fg); font-family: var(--font-mono); margin-bottom: 1rem; }
