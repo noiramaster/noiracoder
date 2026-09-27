@@ -140,19 +140,27 @@ async function startGo() {
   motor.stderr?.on("data", (c) => { motorErr += String(c).slice(-2000); });
   const motorGone = new Promise((resolve) => motor.once("exit", (code) => resolve(code)));
 
-  // Espera /health (máx ~6 s).
+  // Espera /health (máx ~30 s, con aviso). TAREA Y: el arranque es
+  // sensible a carga (import 3 s + init; medido 2 s en tibio, 9-20 s en
+  // frío/con carga) y los 6 s fijos caían a Ink en máquinas cargadas.
+  // Ahora se espera de verdad y se dice qué pasa: nunca silencio.
   let healthy = false;
-  for (let i = 0; i < 30; i++) {
-    await new Promise((r) => setTimeout(r, 200));
+  let announced = false;
+  for (let i = 0; i < 100; i++) {
+    await new Promise((r) => setTimeout(r, 300));
     if (motor.exitCode !== null) break;
     try {
       const r = await fetch(`http://127.0.0.1:${port}/health`);
       if (r.ok) { healthy = true; break; }
     } catch { /* aún arrancando */ }
+    if (!announced && i >= 13) {
+      announced = true;
+      console.error("> Cargando el motor… (en frío puede tardar unos segundos, no toques nada)");
+    }
   }
   if (!healthy) {
     try { motor.kill(); } catch { /* ya muerto */ }
-    console.error("> El motor no arrancó a tiempo; se usa el respaldo Ink/Node.");
+    console.error("> El motor no arrancó a tiempo (30 s); se usa el respaldo Ink/Node.");
     // 2026-09-26: el motivo se imprimía como "> Sin terminal interactivo" o
     // caía mudo cuando `serve --thin` moría sin stderr (CLI empaquetada sin
     // dist/server/thin.js). Sin esto el diagnóstico era imposible y el
@@ -162,7 +170,7 @@ async function startGo() {
     } else if (motor.exitCode !== null) {
       console.error(`> Diagnóstico: el motor 'serve --thin' salió con código ${motor.exitCode} sin escribir stderr.`);
     } else {
-      console.error("> Diagnóstico: el motor siguió vivo pero /health no respondió en 6 s.");
+      console.error("> Diagnóstico: el motor siguió vivo pero /health no respondió en 30 s.");
     }
     if (motorErr) console.error(motorErr.split("\n").slice(-5).join("\n"));
     process.env.NOIRA_NOTICE = "Pantalla Go no disponible: el motor no arrancó. Sigues en el motor Node.";
@@ -197,8 +205,9 @@ async function startGo() {
     go.once("exit", (code) => resolve(code));
     go.once("error", (err) => resolve({ spawnError: err }));
   });
-  // Si la pantalla no conecta al motor en 10 s (colgada antes del SSE),
-  // se la mata y se cae a Ink con mensaje claro.
+  // Si la pantalla no conecta al motor en 30 s (colgada antes del SSE),
+  // se la mata y se cae a Ink con mensaje claro. TAREA Y: eran 10 s y en
+  // máquina cargada la Go tarda más en arrancar sin estar colgada.
   const noClientWatch = setTimeout(async () => {
     if (go.exitCode !== null) return;
     try {
@@ -207,12 +216,12 @@ async function startGo() {
       });
       const st = await r.json().catch(() => ({}));
       if (st && st.clientes === 0) {
-        console.error("> La pantalla Go no conectó en 10 s (colgada); se usa el respaldo Ink/Node.");
-        process.env.NOIRA_NOTICE = "Pantalla Go no disponible: no conectó en 10 s (colgada). Sigues en el motor Node.";
+        console.error("> La pantalla Go no conectó en 30 s (colgada); se usa el respaldo Ink/Node.");
+        process.env.NOIRA_NOTICE = "Pantalla Go no disponible: no conectó en 30 s (colgada). Sigues en el motor Node.";
         killTree(go);
       }
     } catch { /* el motor dirá; no decidir aquí */ }
-  }, 10000);
+  }, 30000);
   // Si el motor muere primero, mata la Go (sin huérfanos); la Go ya muestra fatal.
   void motorGone.then(() => killTree(go));
   const code = await goGone;
