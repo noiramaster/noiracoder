@@ -1,5 +1,25 @@
 [
   {
+    "slug": "paralelo-agentes-hoja",
+    "file": "2026-09-27-paralelo-agentes-hoja.html",
+    "date": "2026-09-27",
+    "category": "noiracoder",
+    "title_es": "NoiraCoder y los agentes paralelos en hoja: potencia y flexibilidad en la terminal",
+    "title_en": "Parallel Agents on a Single Sheet: Scaling NoiraCoder in the Terminal",
+    "title_pt": "NoiraCoder e o paradigma paralelo‑agentes‑hoja: otimizando o desenvolvimento no terminal",
+    "title_fr": "NoiraCoder : l'agent de code en terminal qui orchestre les agents parallèles sur la feuille",
+    "title_de": "Parallelisierung von NoiraCoder: Agenten, Blätter und Effizienz im Terminal",
+    "title_it": "NoiraCoder e il Paradigma dei Parallel‑Agent‑Leaf: una Nuova Frontiera nella Programmazione Terminale",
+    "title_ar": "نوارا كودر: الوكيل البرمجي في الطرفية وإستراتيجية الوكيل المتوازي والورقة",
+    "excerpt_es": "Descubre cómo NoiraCoder utiliza agentes paralelos tipo hoja para acelerar el desarrollo directamente desde la terminal.",
+    "excerpt_en": "Learn how to orchestrate multiple NoiraCoder agents on one terminal sheet to boost productivity and speed.",
+    "excerpt_pt": "Descubra como o modelo paralelo‑agentes‑hoja potencializa o NoiraCoder para acelerar tarefas de codificação diretamente no terminal.",
+    "excerpt_fr": "NoiraCoder permet de lancer plusieurs agents en parallèle grâce à la feuille de configuration paralelo‑agentes‑hoja.",
+    "excerpt_de": "NoiraCoder nutzt ein Blatt‑basiertes Parallel‑Agenten‑Modell, um Code‑Aufgaben im Terminal schneller zu erledigen.",
+    "excerpt_it": "Scopri come NoiraCoder utilizza agenti paralleli a forma di foglia per ottimizzare il flusso di lavoro in terminale.",
+    "excerpt_ar": "نوارا كودر يدمج الوكلاء المتوازيين مع نهج الورقة لتحقيق كود أكثر كفاءة."
+  },
+  {
     "slug": "diagnosticos-typescript-go-python",
     "file": "2026-09-26-diagnosticos-typescript-go-python.html",
     "date": "2026-09-26",
