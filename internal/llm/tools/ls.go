@@ -95,6 +95,14 @@ func (l *lsTool) Run(ctx context.Context, call ToolCall) (ToolResponse, error) {
 	}
 
 	searchPath := params.Path
+	// X3: sin config cargada, config.WorkingDirectory() hace panic y tumba
+	// el agente entero. Una herramienta debe devolver error recuperable,
+	// no colgar el proceso (el test ls_test lo demostraba).
+	if searchPath == "" || !filepath.IsAbs(searchPath) {
+		if config.Get() == nil {
+			return NewTextErrorResponse("working directory not configured (config not loaded)"), nil
+		}
+	}
 	if searchPath == "" {
 		searchPath = config.WorkingDirectory()
 	}
@@ -228,7 +236,10 @@ func createFileTree(sortedPaths []string) []*TreeNode {
 	pathMap := make(map[string]*TreeNode)
 
 	for _, path := range sortedPaths {
-		parts := strings.Split(path, string(filepath.Separator))
+		// X3: parte por AMBOS separadores. En Windows filepath.Separator es
+		// '\' pero llegan rutas con '/' (tests, MCP, globs) y al revés;
+		// partir solo por el nativo rompía el árbol en el otro SO.
+		parts := strings.FieldsFunc(path, func(r rune) bool { return r == '/' || r == '\\' })
 		currentPath := ""
 		var parentPath string
 

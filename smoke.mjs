@@ -2,10 +2,18 @@
  * Headless smoke test for NoiraCoder core (no network required).
  */
 import { T, LanguageSelector, detectLanguageFromPrompt } from "./dist/i18n/index.js";
+import { detectOsLang } from "./dist/i18n/detect.js";
 import { buildRolePolicy, buildRouter, crossCheck, shouldAutoCrossCheck } from "./dist/models/router.js";
 import { QuotaTracker, classify } from "./dist/models/catalog.js";
 import { pruneToolResult, buildSystemPrefix, maybeCompact } from "./dist/models/context.js";
 import { compilePolicy, decide, DEFAULT_POLICY } from "./dist/sandbox/policies.js";
+import { mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+
+// Directorios únicos por ejecución: antes se reusaba %TEMP%/opencode/... fijo
+// y un prefs.json ajeno (language=es de otra prueba) rompía "selector default".
+const smokeHome = mkdtempSync(join(tmpdir(), "noira-smoke-"));
 
 let pass = 0;
 let fail = 0;
@@ -20,8 +28,9 @@ check("detect cyrillic", detectLanguageFromPrompt("Какая погода се�
 check("detect arabic", detectLanguageFromPrompt("ما هي الخطة؟") === "ar");
 check("detect han", detectLanguageFromPrompt("我想写一个程序") === "zh");
 check("detect hiragana", detectLanguageFromPrompt("こんにちは世界") === "ja");
-const sel = new LanguageSelector("C:\\Users\\aissa\\AppData\\Local\\Temp\\opencode\\noira-prefs-test");
-check("selector default en", sel.getLanguage() === "en");
+const sel = new LanguageSelector(join(smokeHome, "prefs"));
+// M1.4: primer arranque sin prefs → idioma del SO (no "en" a la fuerza).
+check("selector default = SO", sel.getLanguage() === detectOsLang(), sel.getLanguage());
 
 const mk = (id, ctx, free) =>
   classify({ id, name: id, pricing: { prompt: free ? "0" : "5", completion: free ? "0" : "15" }, context_length: ctx, free });
@@ -29,7 +38,7 @@ const models = [mk("free-a", 128000, true), mk("free-b", 100000, true), mk("paid
 const freeModels = models.filter((m) => m.free);
 const rolePolicy = buildRolePolicy(models, freeModels);
 check("role policy populates", rolePolicy.orchestrator.length > 0);
-const quota = new QuotaTracker("C:\\Users\\aissa\\AppData\\Local\\Temp\\opencode\\noira-quota-test");
+const quota = new QuotaTracker(join(smokeHome, "quota"));
 await quota.load();
 const modelsById = new Map(models.map((m) => [m.id, m]));
 const router = buildRouter({ level: "medium", rolePolicy, modelsById, quota, freeOnly: true, limits: { "free-a": 50 }, warn: () => {} });

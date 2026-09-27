@@ -165,20 +165,42 @@ async function run() {
     assert("parallel toggle funciona", typeof p1.parallel === "boolean");
   }
 
-  // ── Test E: Múltiples sesiones concurrentes ──
-  console.log("\nTest E: Múltiples sesiones concurrentes");
+  // ── Test E: diseño single-turn (un turno activo global, intencional) ──
+  // El motor rechaza con 409 un segundo turno mientras hay uno en vuelo
+  // (src/server/thin.ts: POST /v1/turn con activeTurn). El test antiguo
+  // asumía paralelismo real y fallaba según el timing; ahora se afirma el
+  // contrato real: rechazo 409 en vuelo + éxito en secuencial.
+  console.log("\nTest E: single-turn intencional (409 en vuelo, ok en serie)");
   {
     const sid1 = await newSession();
     const sid2 = await newSession();
     assert("dos sesiones creadas", sid1 !== sid2);
 
-    // Ejecutar turnos en paralelo
-    const [r1, r2] = await Promise.all([
-      runTurn("Di 'sesion 1'", sid1),
-      runTurn("Di 'sesion 2'", sid2),
-    ]);
-    assert("ambos turnos completados", r1.done && r2.done);
-    assert("turnIds diferentes", r1.turnId !== r2.turnId);
+    const p1 = runTurn("Di 'sesion 1 lenta, detalla en tres frases'", sid1);
+    // Espera DETERMINISTA a que el turno 1 esté en vuelo (no sleep a ciegas).
+    let active = false;
+    for (let i = 0; i < 60 && !active; i++) {
+      await sleep(500);
+      try {
+        const st = await (await fetch(`${base}/v1/status`, { headers: H })).json();
+        active = st.turnoActivo === true;
+      } catch {}
+    }
+    assert("turno 1 en vuelo", active);
+
+    const rej = await fetch(`${base}/v1/turn`, { method: "POST", headers: H,
+      body: JSON.stringify({ message: "Di 'sesion 2'", sessionId: sid2, mode: "build" }) });
+    const rejBody = await rej.json().catch(() => ({}));
+    assert("segundo turno concurrente rechazado con 409", rej.status === 409, `fue=${rej.status}`);
+    assert("rechazo con forma err_turn_in_progress", typeof rejBody.turnId === "string", JSON.stringify(rejBody).slice(0, 80));
+
+    const r1 = await p1;
+    assert("primer turno completado", r1.done);
+
+    // En serie sí: tras terminar el primero, el segundo corre normal.
+    const r2 = await runTurn("Di 'sesion 2'", sid2);
+    assert("turno secuencial completado", r2.done);
+    assert("turnIds diferentes", !!r1.turnId && !!r2.turnId && r1.turnId !== r2.turnId);
   }
 
   // ── Resumen ──

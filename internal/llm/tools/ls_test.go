@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/opencode-ai/opencode/internal/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -28,6 +29,11 @@ func TestLsTool_Run(t *testing.T) {
 	tempDir, err := os.MkdirTemp("", "ls_tool_test")
 	require.NoError(t, err)
 	defer os.RemoveAll(tempDir)
+
+	// X3: las rutas vacías/relativas se resuelven contra la config; sin ella
+	// el producto devolvía panic ("config not loaded"). Se carga una mínima
+	// apuntando al fixture (el error de Load se ignora: cfg queda fijado).
+	_, _ = config.Load(tempDir, false)
 
 	// Create a test directory structure
 	testDirs := []string{
@@ -183,21 +189,15 @@ func TestLsTool_Run(t *testing.T) {
 	})
 
 	t.Run("handles relative path", func(t *testing.T) {
-		// Save original working directory
-		origWd, err := os.Getwd()
-		require.NoError(t, err)
-		defer func() {
-			os.Chdir(origWd)
-		}()
-		
-		// Change to a directory above the temp directory
-		parentDir := filepath.Dir(tempDir)
-		err = os.Chdir(parentDir)
-		require.NoError(t, err)
-		
+		// X3: las rutas relativas se resuelven contra config.WorkingDirectory
+		// (NO contra os.Getwd): el fixture vive dentro del dir cargado.
+		relDir := filepath.Join(tempDir, "reldir")
+		require.NoError(t, os.MkdirAll(relDir, 0755))
+		require.NoError(t, os.WriteFile(filepath.Join(relDir, "relfile.txt"), []byte("x"), 0644))
+
 		tool := NewLsTool()
 		params := LSParams{
-			Path: filepath.Base(tempDir),
+			Path: "reldir",
 		}
 
 		paramsJSON, err := json.Marshal(params)
@@ -210,10 +210,9 @@ func TestLsTool_Run(t *testing.T) {
 
 		response, err := tool.Run(context.Background(), call)
 		require.NoError(t, err)
-		
-		// Should list the temp directory contents
-		assert.Contains(t, response.Content, "dir1")
-		assert.Contains(t, response.Content, "file1.txt")
+
+		// Should list the relative directory contents
+		assert.Contains(t, response.Content, "relfile.txt")
 	})
 }
 
@@ -356,12 +355,14 @@ func TestPrintTree(t *testing.T) {
 	}
 	
 	result := printTree(tree, "/root")
-	
-	// Check the output format
-	assert.Contains(t, result, "- /root/")
-	assert.Contains(t, result, "  - dir1/")
+
+	// X3: el producto usa filepath.Separator nativo ('\' en Windows, '/' en
+	// unix); el test asumía '/' a piñón. Se espera el separador nativo.
+	sep := string(filepath.Separator)
+	assert.Contains(t, result, "- /root"+sep)
+	assert.Contains(t, result, "  - dir1"+sep)
 	assert.Contains(t, result, "    - file1.txt")
-	assert.Contains(t, result, "    - subdir/")
+	assert.Contains(t, result, "    - subdir"+sep)
 	assert.Contains(t, result, "      - file2.txt")
 	assert.Contains(t, result, "  - file3.txt")
 }
