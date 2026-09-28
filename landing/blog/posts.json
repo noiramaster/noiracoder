@@ -1,5 +1,25 @@
 [
   {
+    "slug": "cross-check-modelos-sensibles",
+    "file": "2026-09-28-cross-check-modelos-sensibles.html",
+    "date": "2026-09-28",
+    "category": "noiracoder",
+    "title_es": "Cross‑Check de Modelos Sensibles con NoiraCoder",
+    "title_en": "Cross-Checking Sensitive Models with NoiraCoder: A Terminal‑First Approach",
+    "title_pt": "Cross‑Check de Modelos Sensíveis com NoiraCoder",
+    "title_fr": "Cross‑check des modèles sensibles avec NoiraCoder",
+    "title_de": "Cross-Check von sensiblen Modellen mit NoiraCoder",
+    "title_it": "Cross‑Check di Modelli Sensibili con NoiraCoder",
+    "title_ar": "نورا كودر: التحقق المتقاطع للنماذج الحساسة في الطرفية",
+    "excerpt_es": "Aprende a validar y proteger modelos sensibles usando el agente de código en terminal NoiraCoder.",
+    "excerpt_en": "Learn how NoiraCoder streamlines cross‑checking of sensitive AI models directly from the command line.",
+    "excerpt_pt": "Descubra como usar o NoiraCoder para validar de forma segura modelos sensíveis em ambientes de terminal.",
+    "excerpt_fr": "Découvrez comment NoiraCoder facilite la validation croisée des modèles sensibles directement depuis le terminal.",
+    "excerpt_de": "NoiraCoder ermöglicht einen sicheren und automatisierten Cross‑Check von KI‑Modellen, die vertrauliche Daten verarbeiten.",
+    "excerpt_it": "Scopri come NoiraCoder aiuta a verificare la coerenza dei modelli sensibili direttamente dal terminale.",
+    "excerpt_ar": "اكتشف كيف يساعدك NoiraCoder في إجراء فحص متقاطع للنماذج الحساسة بسرعة وأمان."
+  },
+  {
     "slug": "paralelo-agentes-hoja",
     "file": "2026-09-27-paralelo-agentes-hoja.html",
     "date": "2026-09-27",
