@@ -67,7 +67,6 @@ export function parseArgs(argv: string[]): CliArgs {
         thin = true;
         break;
       case "--groq":
-      case "--cerebras":
       case "--mistral":
       case "--github":
       case "--nvidia":
@@ -177,7 +176,7 @@ export async function cliMain(argv: string[], meta?: { invokedAs?: string }): Pr
     case "login": {
       // `noira login --groq <key>` → guarda directo sin OAuth
       const loginArgs = args.prompt; // contiene "login --groq <key> ..." si hubo flags
-      const providerMap: Record<string, string> = { "--groq": "groq", "--cerebras": "cerebras", "--mistral": "mistral", "--github": "github", "--nvidia": "nvidia", "--cohere": "cohere", "--zen": "zen", "--huggingface": "huggingface", "--hf": "huggingface", "--vercel": "vercel", "--cloudflare": "cloudflare", "--npm": "npm_token", "--gitlab": "gitlab_token", "--bitbucket": "bitbucket_password", "--docker": "docker_token", "--pypi": "pypi_token", "--netlify": "netlify_token", "--rubygems": "rubygems_key" };
+      const providerMap: Record<string, string> = { "--groq": "groq", "--mistral": "mistral", "--github": "github", "--nvidia": "nvidia", "--cohere": "cohere", "--zen": "zen", "--huggingface": "huggingface", "--hf": "huggingface", "--vercel": "vercel", "--cloudflare": "cloudflare", "--npm": "npm_token", "--gitlab": "gitlab_token", "--bitbucket": "bitbucket_password", "--docker": "docker_token", "--pypi": "pypi_token", "--netlify": "netlify_token", "--rubygems": "rubygems_key" };
       for (const [flag, key] of Object.entries(providerMap)) {
         const idx = loginArgs.indexOf(flag);
         if (idx !== -1) {

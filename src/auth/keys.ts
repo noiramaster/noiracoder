@@ -11,7 +11,7 @@ import { interactiveSignIn } from "./oauth.js";
 import { encryptSecrets, decryptSecrets, looksPlainJson } from "./crypto.js";
 
 export type ProviderKeyId =
-  | "openrouter" | "groq" | "cerebras" | "mistral" | "github" | "nvidia" | "cohere" | "cloudflare" | "huggingface" | "zen" | "vercel" | "kilo";
+  | "openrouter" | "groq" | "mistral" | "github" | "nvidia" | "cohere" | "cloudflare" | "huggingface" | "zen" | "vercel" | "kilo" | "iflow" | "zai";
 
 export function configDir(): string {
   // NOIRARC_HOME equivale a home (como Go y sessions.ts).
@@ -40,7 +40,6 @@ export async function loadAllKeys(): Promise<Record<string, string | undefined>>
   return {
     openrouter: data.openrouter || process.env.OPENROUTER_API_KEY || undefined,
     groq: data.groq || process.env.GROQ_API_KEY || undefined,
-    cerebras: data.cerebras || process.env.CEREBRAS_API_KEY || undefined,
     mistral: data.mistral || process.env.MISTRAL_API_KEY || undefined,
     github: data.github || process.env.GITHUB_TOKEN || undefined,
     nvidia: data.nvidia || process.env.NVIDIA_API_KEY || undefined,
@@ -50,6 +49,8 @@ export async function loadAllKeys(): Promise<Record<string, string | undefined>>
     huggingface: data.huggingface || data.hf || process.env.HF_TOKEN || process.env.HUGGINGFACE_API_KEY || undefined,
     zen: data.zen || process.env.ZEN_API_KEY || undefined,
     zenBaseUrl: data.zenBaseUrl || process.env.ZEN_BASE_URL || undefined,
+    iflow: data.iflow || process.env.IFLOW_API_KEY || undefined,
+    zai: data.zai || process.env.ZAI_API_KEY || undefined,
     vercel: data.vercel || process.env.VERCEL_TOKEN || undefined,
     kilo: data.kilo || process.env.KILO_API_KEY || undefined,
     kiloBaseUrl: data.kiloBaseUrl || process.env.KILO_BASE_URL || undefined,

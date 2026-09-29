@@ -206,6 +206,6 @@ export async function recomputeRules(reason: string): Promise<LearnedRules | nul
 
 /** Nivel efectivo: explícito del usuario manda; si no, regla aprendida. */
 export function resolveLevel(task: TaskType, explicit: string | null, rules: LearnedRules | null, fallback: string): string {
-  if (explicit) return fallback;
+  if (explicit) return explicit;
   return rules?.defaultLevelByTask[task]?.level ?? fallback;
 }

@@ -173,7 +173,45 @@ export async function storeCredential(serviceId: string, value: string): Promise
 /** Validate a credential against the real service API. Returns { ok, error? }. */
 export async function validateCredential(serviceId: string, value: string): Promise<{ ok: boolean; error?: string }> {
   try {
+    // WW: validador genérico para proveedores de modelos OpenAI-compatibles
+    // (lista de modelos con la clave; gratis, sin gastar cuota).
+    const validateModelList = async (url: string): Promise<{ ok: boolean; error?: string }> => {
+      const r = await fetch(url, { headers: { Authorization: `Bearer ${value}` } });
+      if (r.status === 401 || r.status === 403) return { ok: false, error: "Clave inválida (HTTP " + r.status + ")" };
+      if (!r.ok) return { ok: false, error: `Error HTTP ${r.status}` };
+      try {
+        const j = await r.json() as any;
+        const data = Array.isArray(j) ? j : j?.data;
+        if (Array.isArray(data) && data.length === 0) return { ok: false, error: "Sin modelos" };
+        return { ok: true };
+      } catch {
+        return { ok: false, error: "Respuesta no válida" };
+      }
+    };
     switch (serviceId) {
+      case "openrouter": {
+        // Endpoint oficial de info de clave (gratis, no gasta).
+        const r = await fetch("https://openrouter.ai/api/v1/auth/key", {
+          headers: { Authorization: `Bearer ${value}` },
+        });
+        if (r.ok) return { ok: true };
+        if (r.status === 401 || r.status === 403) return { ok: false, error: "Clave inválida (HTTP " + r.status + ")" };
+        return { ok: false, error: `Error HTTP ${r.status}` };
+      }
+      case "groq":
+        return validateModelList("https://api.groq.com/openai/v1/models");
+      case "zen": {
+        const { loadAllKeys } = await import("./keys.js");
+        const keys = await loadAllKeys();
+        const base = (keys.zenBaseUrl || "https://api.zen.ai/v1").replace(/\/+$/, "");
+        return validateModelList(`${base}/models`);
+      }
+      case "nvidia":
+        return validateModelList("https://integrate.api.nvidia.com/v1/models");
+      case "iflow":
+        return validateModelList("https://apis.iflow.cn/v1/models");
+      case "zai":
+        return validateModelList("https://api.z.ai/api/paas/v4/models");
       case "github_token": {
         const r = await fetch("https://api.github.com/user", {
           headers: { Authorization: `Bearer ${value}`, "User-Agent": "NoiraCoder/0.1" },

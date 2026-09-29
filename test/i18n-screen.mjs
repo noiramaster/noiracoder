@@ -88,6 +88,9 @@ const KEYS = Object.keys(T.en);
     "es:learn_row", "es:learn_stat", "pt:learn_row", "pt:learn_stat",
     "fr:learn_row", "fr:learn_stat", "de:learn_row", "de:learn_stat",
     "it:learn_row", "it:learn_stat", "ar:learn_row", "ar:learn_stat",
+    // connect_all_n: "({n})" simbólico, sin palabras en ningún idioma
+    "es:connect_all_n", "pt:connect_all_n", "fr:connect_all_n",
+    "de:connect_all_n", "it:connect_all_n", "ar:connect_all_n",
   ]);
   let bad = 0;
   for (const l of LANGS) {

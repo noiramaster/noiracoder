@@ -66,6 +66,7 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
   let sse: ServerResponse | null = null;
   let activeTurn: ActiveTurn | null = null;
   let preferredModel: string | undefined;
+  let preferredLevel: string | undefined; // ZZ: /level lo cambia en caliente
   let titleAuto = true; // M2.8: /title auto|off
   const pendingConfirms = new Map<string, PendingConfirm>();
   const pendingOptions = new Map<string, PendingOptions>(); // H10
@@ -192,10 +193,11 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
     const planMode = mode === "plan";
 
     // H1: nivel efectivo y registro (fuera del try para alcanzar el catch).
+    // ZZ: preferredLevel (comando /level) gana al nivel de arranque.
     const { classifyTask, recordTurn, getLearned, resolveLevel } = await import("./learn.js");
     const learned = await getLearned();
     const task = classifyTask(message);
-    const effLevel = resolveLevel(task, opts.levelExplicit ? opts.level : null, learned, opts.level);
+    const effLevel = resolveLevel(task, preferredLevel ?? (opts.levelExplicit ? opts.level : null), learned, opts.level);
     if (effLevel !== opts.level) opts.log.info(`[learn] nivel auto ${effLevel} para ${task} (regla con evidencia)`);
     const t0 = Date.now();
     let switches = 0;
@@ -468,10 +470,14 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
     // ── Catálogo de pantalla (M1.1, protocolo v2): la Go no trae
     // diccionarios; pide sus cadenas aquí. Fallback exacto → base → en.
     if (req.method === "GET" && url.pathname === "/v1/i18n") {
-      const { screenStrings } = await import("../i18n/screen.js");
+      const { screenStrings, renderScreen } = await import("../i18n/screen.js");
       const asked = url.searchParams.get("lang") ?? "en";
       const { lang, strings } = screenStrings(asked);
-      json(res, 200, { lang, strings });
+      // TT2: welcome_line3 es plantilla con {level}; se sirve con el nivel
+      // VIVO (preferredLevel de /level gana al de arranque), nunca "low" fijo.
+      const liveLevel = preferredLevel ?? opts.level ?? "low";
+      const tpl = strings.welcome_line3 ?? "";
+      json(res, 200, { lang, strings: { ...strings, welcome_line3: renderScreen(tpl, { level: liveLevel }) } });
       return;
     }
 
@@ -570,15 +576,20 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
       try {
         const { loadAllKeys } = await import("../auth/keys.js");
         const { getAllCredentials } = await import("../auth/credentials.js");
+        const { SERVICE_REGISTRY } = await import("../auth/credentials.js");
         const keys = await loadAllKeys();
         const creds = await getAllCredentials();
 
-        // Model providers
+        // Model providers (WW: OpenRouter es BYOK como el resto; Cerebras
+        // fuera — pide tarjeta. keyUrl verificado en la ronda WW).
         const modelProviders = [
-          { id: "kilo", name: "Kilo (anonymous)", note: "200 req/hora, sin clave", category: "model" as const },
-          { id: "openrouter", name: "OpenRouter", note: "25+ modelos free", category: "model" as const },
-          { id: "groq", name: "Groq", note: "~1000 req/día por modelo", category: "model" as const },
-          { id: "zen", name: "Zen", note: "Modelos free rotativos", category: "model" as const },
+          { id: "kilo", name: "Kilo (anonymous)", note: "200 req/hora, sin clave", category: "model" as const, keyUrl: "" },
+          { id: "openrouter", name: "OpenRouter", note: "25+ modelos free", category: "model" as const, keyUrl: "https://openrouter.ai/keys" },
+          { id: "groq", name: "Groq", note: "~1000 req/día por modelo", category: "model" as const, keyUrl: "https://console.groq.com/keys" },
+          { id: "zen", name: "Zen", note: "Modelos free rotativos", category: "model" as const, keyUrl: "https://opencode.ai/zen" },
+          { id: "nvidia", name: "NVIDIA NIM", note: "Gratis para prototipar, 40 req/min, sin tarjeta", category: "model" as const, keyUrl: "https://build.nvidia.com/" },
+          { id: "iflow", name: "iFlow", note: "Gratis. OJO: la clave caduca a los 7 días", category: "model" as const, keyUrl: "https://platform.iflow.cn/" },
+          { id: "zai", name: "Z.AI", note: "Modelos GLM con clave de z.ai", category: "model" as const, keyUrl: "https://z.ai/manage-apikey/apikey-list" },
         ];
 
         // Service credentials
@@ -600,6 +611,7 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
           })),
           ...serviceCreds.map((s) => ({
             ...s,
+            keyUrl: SERVICE_REGISTRY.find((r) => r.storageKey === s.id)?.keyUrl ?? "",
             connected: !!creds[s.id] || !!(s.id === "github_token" && process.env.GITHUB_TOKEN),
           })),
         ];
@@ -612,6 +624,12 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
     }
 
     // H8: POST /v1/connect — validate + store a credential
+    // WW: las claves de MODELOS van a keys.json (storeKey), que es lo que
+    // leen el pool y el estado "connected". Antes iban al fichero de
+    // credenciales de servicios, donde el pool nunca miraba: se guardaban
+    // pero no entraban en rotación (bug silencioso). Los servicios siguen
+    // en credenciales.
+    const MODEL_KEY_IDS = new Set(["openrouter", "groq", "zen", "nvidia", "iflow", "zai", "kilo", "mistral"]);
     if (req.method === "POST" && url.pathname === "/v1/connect") {
       try {
         const parsed = JSON.parse(await readBody(req)) as { serviceId?: string; value?: string };
@@ -625,7 +643,12 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
           json(res, 400, { ok: false, error: result.error });
           return;
         }
-        await storeCredential(parsed.serviceId, parsed.value);
+        if (MODEL_KEY_IDS.has(parsed.serviceId)) {
+          const { storeKey } = await import("../auth/keys.js");
+          await storeKey(parsed.serviceId, parsed.value);
+        } else {
+          await storeCredential(parsed.serviceId, parsed.value);
+        }
         json(res, 200, { ok: true, stored: parsed.serviceId });
       } catch (e) {
         json(res, 500, { error: e instanceof Error ? e.message : String(e) });
@@ -643,6 +666,24 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
         preferredModel = parsed.id;
         send("model.switch", { turnId: null, de: "(router)", a: parsed.id, motivo: "manual" });
         json(res, 200, { ok: true, preferido: preferredModel });
+      } catch (e) {
+        json(res, 400, { error: e instanceof Error ? e.message : String(e) });
+      }
+      return;
+    }
+
+    // WW/ZZ: POST /v1/level — /level cambia el nivel en caliente
+    // (preferredLevel gana al de arranque en resolveLevel).
+    if (req.method === "POST" && url.pathname === "/v1/level") {
+      try {
+        const parsed = JSON.parse(await readBody(req)) as { level?: string };
+        const LVLS = ["low", "medium", "high", "max", "offline"];
+        if (!parsed.level || !LVLS.includes(parsed.level)) {
+          json(res, 400, { error: `level debe ser uno de: ${LVLS.join("|")}` });
+          return;
+        }
+        preferredLevel = parsed.level;
+        json(res, 200, { ok: true, level: preferredLevel });
       } catch (e) {
         json(res, 400, { error: e instanceof Error ? e.message : String(e) });
       }

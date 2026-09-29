@@ -192,6 +192,7 @@ type ProviderConnection struct {
 	ID        string `json:"id"`
 	Name      string `json:"name"`
 	Note      string `json:"note"`
+	KeyURL    string `json:"keyUrl"`
 	Connected bool   `json:"connected"`
 }
 
@@ -231,6 +232,28 @@ func (c *Client) Connect(serviceID string, value string) (bool, string) {
 		return false, resp.Error
 	}
 	return resp.Ok, ""
+}
+
+// ZZ: Level cambia el nivel en caliente (POST /v1/level).
+func (c *Client) Level(level string) (string, string) {
+	st, b, err := c.req("POST", "/v1/level", map[string]any{
+		"level": level,
+	})
+	if err != nil {
+		return "", err.Error()
+	}
+	var resp struct {
+		Ok    bool   `json:"ok"`
+		Level string `json:"level"`
+		Error string `json:"error,omitempty"`
+	}
+	if err := json.Unmarshal(b, &resp); err != nil {
+		return "", string(b)
+	}
+	if st != 200 || !resp.Ok {
+		return "", resp.Error
+	}
+	return resp.Level, ""
 }
 
 // GG: Deploy publica vía deployTool del motor (con su confirmación vía SSE).

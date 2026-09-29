@@ -31,6 +31,7 @@ type confirmState struct {
 type optionItem struct {
 	Key         string
 	Label       string
+	URL         string
 	Recommended bool
 }
 
@@ -43,9 +44,9 @@ type optionsState struct {
 
 // H8: connect state — waiting for API key input after provider selection
 type connectState struct {
-	serviceID string
+	serviceID   string
 	serviceName string
-	keyURL    string
+	keyURL      string
 }
 
 type Model struct {
@@ -78,6 +79,17 @@ type Model struct {
 	mouseOn     bool
 	renaming    bool
 	connectMode *connectState // H8: waiting for API key input
+	level       string        // ZZ: nivel vivo del motor (hello); /level lo cambia
+	wizard      *wizardState  // WW: asistente "conectar todas" (nil = inactivo)
+	lastConns   []ProviderConnection // WW: último listado de /connect (para "__all__")
+}
+
+// WW: cola del asistente guiado de /connect.
+type wizardState struct {
+	queue []ProviderConnection
+	cur   ProviderConnection
+	done  int
+	total int
 }
 
 var (
@@ -488,6 +500,14 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.panel.pendingGen++
 				return m, nil
 			}
+			// WW: Esc cancela la espera de clave (y el asistente "conectar
+			// todas"); connect_retry ya lo promete y antes no se cumplía.
+			if m.connectMode != nil {
+				m.connectMode = nil
+				m.wizard = nil
+				m.setStatus()
+				return m, nil
+			}
 			// Esc fuera del panel: cae al input (comportamiento actual).
 			return m, nil
 		case tea.KeyEnter:
@@ -521,6 +541,7 @@ func (m *Model) doEnter() (tea.Model, tea.Cmd) {
 	if m.connectMode != nil {
 		cm := m.connectMode
 		m.connectMode = nil
+		wiz := m.wizard // WW: el asistente sobrevive a la espera de clave
 		m.addLine("> " + maskKey(text))
 		m.thinking = true
 		m.setStatus()
@@ -529,9 +550,16 @@ func (m *Model) doEnter() (tea.Model, tea.Cmd) {
 			m.thinking = false
 			if ok {
 				m.addLine(lipgloss.NewStyle().Foreground(gold).Render("  ✓ " + cm.serviceName + " " + T(m.lang, "connect_ok")))
+				if wiz != nil {
+					wiz.done++
+					m.nextWizardStep()
+				}
 			} else {
 				m.addLine(lipgloss.NewStyle().Foreground(red).Render("  ✗ " + T(m.lang, "connect_fail") + ": " + errMsg))
 				m.addLine(lipgloss.NewStyle().Foreground(muted).Render("  " + T(m.lang, "connect_retry")))
+				if wiz != nil {
+					m.retryWizardStep()
+				}
 			}
 			m.setStatus()
 			if m.program != nil {
@@ -560,7 +588,7 @@ func (m *Model) doEnter() (tea.Model, tea.Cmd) {
 }
 
 // slashCmds son los comandos con / (M1.3: nombres fijos en inglés).
-var slashCmds = []string{"/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/lang", "/title", "/learn", "/mouse", "/copy", "/mcp", "/parallel", "/agents", "/connections", "/connect", "/explain", "/deploy", "/logout", "/login", "/quit"}
+var slashCmds = []string{"/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/level", "/lang", "/title", "/learn", "/mouse", "/copy", "/mcp", "/parallel", "/agents", "/connections", "/connect", "/explain", "/deploy", "/logout", "/login", "/quit"}
 
 // slashDesc devuelve la descripción corta del comando (JJ: una por comando,
 // del catálogo; si falta, solo el comando).
@@ -611,7 +639,7 @@ func (m *Model) resolveOptionsLocal(o *optionsState, idx int, cancel bool) {
 		if o.id == "welcome" {
 			setWelcomeSeen()
 		}
-		if o.id != "connect-form" && o.id != "welcome" {
+		if o.id != "connect-form" && o.id != "welcome" && o.id != "level" {
 			go func() {
 				_ = m.client.Options(o.id, "")
 			}()
@@ -622,14 +650,23 @@ func (m *Model) resolveOptionsLocal(o *optionsState, idx int, cancel bool) {
 		return
 	}
 	item := o.items[idx]
-	if o.id != "connect-form" && o.id != "welcome" {
+	if o.id != "connect-form" && o.id != "welcome" && o.id != "level" {
 		go func() {
 			_ = m.client.Options(o.id, item.Key)
 		}()
 	}
 	// H8: if this is the connect form, enter connect mode
 	if o.id == "connect-form" {
+		// WW: primera entrada = asistente guiado por todos los pendientes.
+		if item.Key == "__all__" {
+			m.startWizard(m.lastConns)
+			return
+		}
 		m.enterConnectForm(item)
+	}
+	// ZZ: /level con el mismo componente de opciones.
+	if o.id == "level" {
+		m.setLevel(item.Key)
 	}
 	// HH: bienvenida (conectar OAuth o seguir).
 	if o.id == "welcome" {
@@ -643,10 +680,94 @@ func (m *Model) enterConnectForm(item optionItem) {
 	m.connectMode = &connectState{
 		serviceID:   item.Key,
 		serviceName: item.Label,
+		keyURL:      item.URL,
 	}
 	m.addLine("")
+	// WW: enlace directo visible al pegar la clave.
+	if item.URL != "" {
+		m.addLine("    " + lipgloss.NewStyle().Foreground(accent).Render(item.URL))
+	}
 	m.addLine(lipgloss.NewStyle().Foreground(accent).Bold(true).Render("  " + T(m.lang, "connect_prompt_key")))
 	m.addLine("")
+}
+
+// WW: "Conectar todas" — asistente guiado paso a paso por cada entrada no
+// conectada (nombre + nota + enlace + pegado + validación + salto auto).
+func (m *Model) startWizard(conns []ProviderConnection) {
+	queue := []ProviderConnection{}
+	for _, c := range conns {
+		if c.ID == "kilo" || c.Connected {
+			continue
+		}
+		queue = append(queue, c)
+	}
+	if len(queue) == 0 {
+		return
+	}
+	m.wizard = &wizardState{queue: queue, total: len(queue)}
+	m.addLine("")
+	m.addLine(lipgloss.NewStyle().Foreground(gold).Bold(true).Render("  " + T(m.lang, "connect_all") + " " + F(m.lang, "connect_all_n", map[string]string{"n": fmt.Sprint(len(queue))})))
+	m.addLine("")
+	m.nextWizardStep()
+}
+
+// WW: avanza al siguiente pendiente (salto automático tras cada ok).
+func (m *Model) nextWizardStep() {
+	wiz := m.wizard
+	if wiz == nil {
+		return
+	}
+	if len(wiz.queue) == 0 {
+		m.wizard = nil
+		m.addLine("")
+		m.addLine(lipgloss.NewStyle().Foreground(gold).Render("  " + F(m.lang, "connect_all_done", map[string]string{"done": fmt.Sprint(wiz.done), "total": fmt.Sprint(wiz.total)})))
+		m.addLine("")
+		m.setStatus()
+		return
+	}
+	cur := wiz.queue[0]
+	wiz.queue = wiz.queue[1:]
+	m.enterWizardStep(cur)
+}
+
+// WW: reintento del mismo paso tras fallo (otra clave o Esc para salir).
+func (m *Model) retryWizardStep() {
+	if m.wizard == nil {
+		return
+	}
+	m.enterWizardStep(m.wizard.cur)
+}
+
+func (m *Model) enterWizardStep(c ProviderConnection) {
+	if m.wizard != nil {
+		m.wizard.cur = c
+	}
+	m.addLine("")
+	m.addLine("  " + lipgloss.NewStyle().Foreground(green).Render("✓ " + c.Name))
+	m.addLine("    " + lipgloss.NewStyle().Foreground(muted).Render(c.Note))
+	if c.KeyURL != "" {
+		m.addLine("    " + lipgloss.NewStyle().Foreground(accent).Render(c.KeyURL))
+	}
+	m.connectMode = &connectState{serviceID: c.ID, serviceName: c.Name, keyURL: c.KeyURL}
+	m.addLine(lipgloss.NewStyle().Foreground(accent).Bold(true).Render("  " + T(m.lang, "connect_prompt_key")))
+	m.addLine("")
+	m.setStatus()
+}
+
+// ZZ: fija el nivel en caliente vía motor.
+func (m *Model) setLevel(l string) bool {
+	lvl, errMsg := m.client.Level(l)
+	if errMsg != "" {
+		m.addLine(T(m.lang, "err_model") + errMsg)
+		return true
+	}
+	if lvl == "" {
+		lvl = l
+	}
+	m.level = lvl
+	m.addLine(F(m.lang, "level_set", map[string]string{"level": lvl}))
+	m.setStatus()
+	return true
 }
 
 // HH: bienvenida de primer arranque con el componente H10 (flechas,
@@ -1015,9 +1136,11 @@ func (m *Model) handleCommand(text string) bool {
 		m.addLine("")
 		m.addLine(lipgloss.NewStyle().Foreground(gold).Bold(true).Render("  " + T(m.lang, "connect_title")))
 		m.addLine("")
+		m.lastConns = conns
 		// Top providers that are most commonly used
 		topProviders := map[string]bool{"openrouter": true, "github_token": true, "cloudflare_api_token": true}
 		optsList := []optionItem{}
+		pending := 0
 		for _, c := range conns {
 			status := lipgloss.NewStyle().Foreground(muted).Render(T(m.lang, "conn_disconnected"))
 			if c.Connected {
@@ -1025,12 +1148,24 @@ func (m *Model) handleCommand(text string) bool {
 			}
 			m.addLine("  " + status + " " + c.Name)
 			m.addLine("    " + lipgloss.NewStyle().Foreground(muted).Render(c.Note))
+			// WW: enlace directo a la página de la clave (viene del motor).
+			if c.KeyURL != "" && !c.Connected {
+				m.addLine("    " + lipgloss.NewStyle().Foreground(accent).Render(c.KeyURL))
+			}
 			if c.ID != "kilo" {
 				m.addLine("    " + lipgloss.NewStyle().Foreground(accent).Render(T(m.lang, "connect_get_key")))
 				isTop := topProviders[c.ID] || topProviders[c.ID+"_token"]
-				optsList = append(optsList, optionItem{Key: c.ID, Label: c.Name, Recommended: isTop && !c.Connected})
+				optsList = append(optsList, optionItem{Key: c.ID, Label: c.Name, URL: c.KeyURL, Recommended: isTop && !c.Connected})
+				if !c.Connected {
+					pending++
+				}
 			}
 			m.addLine("")
+		}
+		// WW: "Conectar todas" como primera entrada: asistente guiado por
+		// cada proveedor no conectado. La lista individual se mantiene.
+		if pending > 0 {
+			optsList = append([]optionItem{{Key: "__all__", Label: T(m.lang, "connect_all"), Recommended: true}}, optsList...)
 		}
 		// Si hay opciones pendientes, usar H10 options
 		if len(optsList) > 0 {
@@ -1236,6 +1371,22 @@ func (m *Model) handleCommand(text string) bool {
 		m.addLine(lipgloss.NewStyle().Foreground(muted).Render("  "+T(m.lang, "agents_parallel_hint")))
 		m.addLine("")
 		return true
+	case "/level":
+		// ZZ: low|medium|high|max|offline en caliente (mismo H10 de opciones).
+		if len(parts) == 1 {
+			items := []optionItem{}
+			for _, l := range []string{"low", "medium", "high", "max", "offline"} {
+				items = append(items, optionItem{Key: l, Label: l, Recommended: l == m.level})
+			}
+			m.options = &optionsState{
+				id:     "level",
+				prompt: T(m.lang, "level_select"),
+				items:  items,
+				idx:    0,
+			}
+			return true
+		}
+		return m.setLevel(parts[1])
 	case "/model":
 		if len(parts) < 2 {
 			m.addLine(F(m.lang, "model_usage", map[string]string{"model": m.modelName}))
@@ -1273,7 +1424,7 @@ func (m *Model) handleCommand(text string) bool {
 	// H9: unknown command — suggest similar commands
 	input := parts[0]
 	similar := []string{}
-	known := []string{"/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/lang", "/title", "/learn", "/mouse", "/copy", "/mcp", "/parallel", "/agents", "/connections", "/connect", "/explain", "/deploy", "/logout", "/login", "/quit"}
+	known := []string{"/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/level", "/lang", "/title", "/learn", "/mouse", "/copy", "/mcp", "/parallel", "/agents", "/connections", "/connect", "/explain", "/deploy", "/logout", "/login", "/quit"}
 	for _, k := range known {
 		if strings.HasPrefix(k, input) || strings.Contains(k, input) {
 			similar = append(similar, k)
@@ -1314,6 +1465,10 @@ func (m *Model) onEvent(ev Event) {
 		m.modelName = str(ev, "modelo")
 		if m.modelName == "" || m.modelName == "(router)" {
 			m.modelName = str(ev, "level")
+		}
+		// ZZ: nivel vivo del motor (lo muestra la bienvenida y lo usa /level).
+		if lv := str(ev, "level"); lv != "" {
+			m.level = lv
 		}
 		m.addLine("")
 		m.addLine(lipgloss.NewStyle().Foreground(gold).Bold(true).Render("  > NOIRACODER") +
@@ -1610,6 +1765,15 @@ func (m *Model) View() string {
 			runewidth.Truncate(T(m.lang, "mouse_hint"), m.chatW, ""))
 	}
 	st := lipgloss.NewStyle().Foreground(muted).Render(m.status)
+	// WW: aviso permanente y discreto de Kilo en la línea baja (solo acento
+	// dorado de marca). Misma línea si cabe; si no, línea propia. Va ANTES
+	// de fixedNL para que la cuenta de líneas siga exacta.
+	kh := lipgloss.NewStyle().Foreground(accent).Render(T(m.lang, "kilo_hint"))
+	if m.chatW > 0 && runewidth.StringWidth(m.status)+2+runewidth.StringWidth(T(m.lang, "kilo_hint")) <= m.chatW {
+		st = st + "  " + kh
+	} else {
+		st = st + "\n" + kh
+	}
 	// fixedNL son los "\n" del frame SIN la caja de diálogo (los dos "\n"
 	// que la envuelven cuentan aquí). Con nl() la cuenta es exacta.
 	fixedNL := nl(head) + 1 + nl(welcome) + nl(body) +

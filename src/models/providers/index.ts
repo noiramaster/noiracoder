@@ -1,10 +1,11 @@
 /**
- * Multi-provider FUNCIONAL — 10+ gateways free verificados 2026.
+ * Multi-provider FUNCIONAL — gateways free verificados 2026.
  * Todos OpenAI-compatibles salvo donde se anota. Si un provider falla, el resto sigue.
- * Investigación: Groq, Cerebras, Mistral, GitHub Models, NVIDIA NIM, Cloudflare, Cohere,
- * OpenRouter y Zen/OpenCode Zen. Zen endpoint no estándar → graceful fallback.
+ * Investigación: Groq, Mistral, GitHub Models, NVIDIA NIM, Cloudflare, Cohere,
+ * OpenRouter, iFlow y Zen/OpenCode Zen, Z.AI. Zen endpoint no estándar → graceful fallback.
  * HITO 4: Kilo Gateway (https://api.kilo.ai/api/gateway) — primero del pool,
  * anónimo con modelos `:free` (200 req/h por IP), con clave catálogo completo.
+ * WW: Cerebras fuera (pide tarjeta para el trial, rompe "sin tarjeta").
  */
 
 import type { ModelInfo } from "../../types.js";
@@ -14,7 +15,6 @@ export type ProviderId =
   | "openrouter"
   | "groq"
   | "kilo"
-  | "cerebras"
   | "mistral"
   | "github"
   | "nvidia"
@@ -22,6 +22,8 @@ export type ProviderId =
   | "cloudflare"
   | "huggingface"
   | "zen"
+  | "iflow"
+  | "zai"
   | "ollama";
 
 export interface ProviderClient {
@@ -98,7 +100,6 @@ export function buildProviderPool(keys: Record<string, string | undefined>): Pro
   pool.push(new KiloClient(keys.kilo, keys.kiloBaseUrl));
   if (keys.openrouter) pool.push(createOpenRouterClient(keys.openrouter));
   if (keys.groq) pool.push(new GenericOpenAIClient("groq", "Groq", { apiKey: keys.groq, baseURL: "https://api.groq.com/openai/v1" }));
-  if (keys.cerebras) pool.push(new GenericOpenAIClient("cerebras", "Cerebras", { apiKey: keys.cerebras, baseURL: "https://api.cerebras.ai/v1" }));
   if (keys.mistral) pool.push(new GenericOpenAIClient("mistral", "Mistral", { apiKey: keys.mistral, baseURL: "https://api.mistral.ai/v1" }));
   if (keys.github) pool.push(new GenericOpenAIClient("github", "GitHub Models", { apiKey: keys.github, baseURL: "https://models.inference.ai.azure.com" }));
   if (keys.nvidia) pool.push(new GenericOpenAIClient("nvidia", "NVIDIA NIM", { apiKey: keys.nvidia, baseURL: "https://integrate.api.nvidia.com/v1" }));
@@ -106,6 +107,9 @@ export function buildProviderPool(keys: Record<string, string | undefined>): Pro
   if (keys.cloudflare) pool.push(new GenericOpenAIClient("cloudflare", "Cloudflare", { apiKey: keys.cloudflare, baseURL: "https://api.cloudflare.com/client/v4/accounts/" + (keys.cloudflareAccountId ?? "") + "/ai/v1" }));
   // Zen / OpenCode Zen — endpoint no estándar, si falla no rompe pool
   if (keys.zen) pool.push(new GenericOpenAIClient("zen", "Zen", { apiKey: keys.zen, baseURL: keys.zenBaseUrl ?? "https://api.zen.ai/v1" }));
+  // WW: iFlow (apis.iflow.cn/v1, OpenAI-compatible) y Z.AI (api.z.ai/api/paas/v4).
+  if (keys.iflow) pool.push(new GenericOpenAIClient("iflow", "iFlow", { apiKey: keys.iflow, baseURL: "https://apis.iflow.cn/v1" }));
+  if (keys.zai) pool.push(new GenericOpenAIClient("zai", "Z.AI", { apiKey: keys.zai, baseURL: "https://api.z.ai/api/paas/v4" }));
   // HuggingFace no tiene /models OpenAI — no va al pool de listModels, solo como fallback chat si se pide
   return pool;
 }
@@ -157,6 +161,21 @@ export function classifyProviderModels(providerId: ProviderId, models: ModelInfo
     // Groq publica precios nominales pero sirve el catálogo en free tier
     // (límites por modelo). Se confirma con llamadas reales, no con pricing.
     return models.map((m) => normalize(m, true));
+  }
+  if (providerId === "nvidia") {
+    // WW: build.nvidia.com es gratis para prototipar (hasta 40 req/min,
+    // sin facturación por token). Todo el catálogo cuenta como free.
+    return models.map((m) => normalize(m, true));
+  }
+  if (providerId === "iflow") {
+    // WW: iFlow sirve sus modelos en acceso libre. Todo cuenta como free.
+    return models.map((m) => normalize(m, true));
+  }
+  if (providerId === "zai") {
+    // WW: Z.AI publica GLM-*-Flash como Free (docs.z.ai pricing); el resto
+    // es pay-as-you-go. Solo los *-flash cuentan como free (conservador:
+    // mejor no rutear de pago que quemar saldo ajeno).
+    return models.map((m) => normalize(m, /flash/i.test(m.id)));
   }
   if (providerId === "zen") {
     return models.map((m) => normalize(m, /free/i.test(m.id) || KNOWN_ZEN_FREE.has(m.id)));
