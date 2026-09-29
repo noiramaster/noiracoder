@@ -10,9 +10,19 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	zone "github.com/lrstanley/bubblezone"
 	"github.com/opencode-ai/opencode/internal/thinclient"
+	"github.com/opencode-ai/opencode/internal/version"
 )
 
 func main() {
+	// GATE E: --version imprime versión + sha embebido SIN necesitar
+	// NOIRA_PORT/NOIRA_TOKEN (check-release.mjs lo usa para verificar que
+	// el binario corresponde al commit a publicar).
+	for _, a := range os.Args[1:] {
+		if a == "--version" || a == "-v" {
+			fmt.Println(version.Version + " " + version.GitSha)
+			return
+		}
+	}
 	port := os.Getenv("NOIRA_PORT")
 	token := os.Getenv("NOIRA_TOKEN")
 	if port == "" || token == "" {

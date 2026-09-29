@@ -22,11 +22,20 @@ const TARGETS = [
 ];
 
 let fail = 0;
+// GATE E: embeber el git sha en cada binario (ver build-thin.mjs).
+let gitSha = "dev";
+try {
+  const rh = spawnSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" });
+  if (rh.status === 0 && /^[0-9a-f]{40}$/.test(rh.stdout.trim())) gitSha = rh.stdout.trim();
+  else console.error(`[build:thin:all] aviso: sin git sha (uso "dev").`);
+} catch {
+  console.error(`[build:thin:all] aviso: git no disponible (uso "dev").`);
+}
 for (const t of TARGETS) {
   const outDir = join(root, "npm", t.pkg, "bin");
   mkdirSync(outDir, { recursive: true });
   const out = join(outDir, t.bin);
-  const r = spawnSync("go", ["build", "-trimpath", "-ldflags", "-s -w", "-o", out, "./cmd/noira-thin"],
+  const r = spawnSync("go", ["build", "-trimpath", "-ldflags", `-s -w -X github.com/opencode-ai/opencode/internal/version.GitSha=${gitSha}`, "-o", out, "./cmd/noira-thin"],
     { cwd: root, stdio: "pipe", env: { ...process.env, CGO_ENABLED: "0", GOOS: t.goos, GOARCH: t.goarch } });
   if (r.status !== 0) {
     console.error(`[build:thin:all] FALLO ${t.pkg}: ${(r.stderr || []).toString().slice(0, 400)}`);

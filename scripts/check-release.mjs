@@ -10,6 +10,7 @@
  * paquete se empaqueta sin motor thin o sin binario verificado.
  */
 import { readFileSync, existsSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -86,6 +87,63 @@ function checkLocalArtifacts() {
 
 checkLocalArtifacts();
 if (ARTIFACTS_ONLY) process.exit(0);
+
+// GATE E (TAREA QQ, 2026-09-29) — los binarios de plataforma deben
+// corresponder al commit HEAD que se va a publicar: cada uno lleva el git
+// sha embebido vía ldflags (-X .../internal/version.GitSha, ver
+// scripts/build-thin*.mjs + `noira-thin --version`). El bug 0.2.0-vs-0.2.2
+// pasó porque solo se comprobaba que la VERSIÓN existiera, nunca el
+// CONTENIDO (bienvenida vieja + menú "/" cortado en el instalado real).
+// Solo en prepublish completo: los npm/*/bin no se versionan (los genera
+// build:thin:all DESPUÉS del commit). Fail-closed: sin git o sin binarios,
+// bloquea.
+{
+  let head;
+  try {
+    head = execFileSync("git", ["rev-parse", "HEAD"], { cwd: pkgDir, encoding: "utf8" }).trim();
+    if (!/^[0-9a-f]{40}$/.test(head)) throw new Error(`sha raro: ${head}`);
+  } catch (e) {
+    console.error(`[prepublish] BLOQUEADO (GATE E): no se pudo leer el git HEAD (${e instanceof Error ? e.message : e}).`);
+    process.exit(1);
+  }
+  const BINS = [
+    { rel: "npm/noiracoder-win32-x64/bin/noira-thin.exe", exec: true },
+    { rel: "npm/noiracoder-darwin-x64/bin/noira-thin", exec: false },
+    { rel: "npm/noiracoder-darwin-arm64/bin/noira-thin", exec: false },
+    { rel: "npm/noiracoder-linux-x64/bin/noira-thin", exec: false },
+  ];
+  const stale = [];
+  for (const b of BINS) {
+    const p = join(pkgDir, b.rel);
+    if (!existsSync(p)) {
+      stale.push(`${b.rel} (falta: corre scripts/build-thin-all.mjs tras el commit)`);
+      continue;
+    }
+    if (!readFileSync(p).includes(head)) {
+      stale.push(`${b.rel} (no contiene HEAD ${head.slice(0, 12)}: binario viejo, reconstruye)`);
+      continue;
+    }
+    if (b.exec) {
+      let out = "";
+      try {
+        out = execFileSync(p, ["--version"], { encoding: "utf8", timeout: 15000 }).trim();
+      } catch (e) {
+        stale.push(`${b.rel} (--version falló: ${e instanceof Error ? e.message : e})`);
+        continue;
+      }
+      if (!out.includes(head)) {
+        stale.push(`${b.rel} (--version no trae HEAD: "${out.slice(0, 80)}")`);
+        continue;
+      }
+    }
+    console.error(`[prepublish] ok (GATE E): ${b.rel} corresponde a HEAD ${head.slice(0, 12)}.`);
+  }
+  if (stale.length > 0) {
+    console.error(`[prepublish] BLOQUEADO (GATE E): binarios que NO corresponden al commit ${head.slice(0, 12)}:`);
+    for (const s of stale) console.error(`[prepublish]   - ${s}`);
+    process.exit(1);
+  }
+}
 
 function fetchText(url, redirects = 5) {
   return new Promise((resolve, reject) => {

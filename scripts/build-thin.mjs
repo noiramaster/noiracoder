@@ -12,7 +12,17 @@ import { createHash } from "node:crypto";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const out = process.platform === "win32" ? "bin/noira-thin.exe" : "bin/noira-thin";
-const r = spawnSync("go", ["build", "-trimpath", "-ldflags", "-s -w", "-o", out, "./cmd/noira-thin"],
+// GATE E: embeber el git sha para que check-release.mjs verifique que el
+// binario corresponde al commit a publicar (no un resto viejo).
+let gitSha = "dev";
+try {
+  const r = spawnSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" });
+  if (r.status === 0 && /^[0-9a-f]{40}$/.test(r.stdout.trim())) gitSha = r.stdout.trim();
+  else console.error(`[build:thin] aviso: sin git sha (uso "dev"): ${(r.stderr || "").toString().slice(0, 120)}`);
+} catch (e) {
+  console.error(`[build:thin] aviso: git no disponible (uso "dev").`);
+}
+const r = spawnSync("go", ["build", "-trimpath", "-ldflags", `-s -w -X github.com/opencode-ai/opencode/internal/version.GitSha=${gitSha}`, "-o", out, "./cmd/noira-thin"],
   { cwd: root, stdio: "inherit", env: { ...process.env, CGO_ENABLED: "0" } });
 if (r.status !== 0) {
   console.error("[build:thin] falló la compilación (¿Go instalado? https://go.dev).");

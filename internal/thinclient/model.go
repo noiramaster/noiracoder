@@ -673,13 +673,16 @@ func (m *Model) maybeWelcome() {
 	}
 }
 
-// renderWelcomeBlock pinta título + Kilo como bloque estático (HH).
+// renderWelcomeBlock pinta título + Kilo + nivel vivo como bloque estático (HH).
+// TT2: welcome_line3 llega del motor con el nivel real ya sustituido
+// (/v1/i18n); antes el catálogo traía "low" fijo y ni se pintaba.
 func (m *Model) renderWelcomeBlock() string {
 	if m.options == nil || m.options.id != "welcome" {
 		return ""
 	}
 	return lipgloss.NewStyle().Foreground(accent).Bold(true).Render("  " + T(m.lang, "welcome_title")) + "\n" +
-		lipgloss.NewStyle().Foreground(green).Render("  ✓ " + T(m.lang, "welcome_kilo")) + "\n"
+		lipgloss.NewStyle().Foreground(green).Render("  ✓ " + T(m.lang, "welcome_kilo")) + "\n" +
+		lipgloss.NewStyle().Foreground(muted).Render("  " + T(m.lang, "welcome_line3")) + "\n"
 }
 
 // chooseWelcome resuelve la bienvenida (Enter, número o clic).
