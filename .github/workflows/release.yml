@@ -38,11 +38,14 @@ jobs:
         run: |
           mkdir -p dist-go
           export CGO_ENABLED=0
-          GOOS=windows GOARCH=amd64 go build -trimpath -ldflags "-s -w" -o dist-go/noira-thin-Windows-x86_64.exe ./cmd/noira-thin
-          GOOS=linux GOARCH=amd64 go build -trimpath -ldflags "-s -w" -o dist-go/noira-thin-Linux-x86_64 ./cmd/noira-thin
-          GOOS=linux GOARCH=arm64 go build -trimpath -ldflags "-s -w" -o dist-go/noira-thin-Linux-arm64 ./cmd/noira-thin
-          GOOS=darwin GOARCH=amd64 go build -trimpath -ldflags "-s -w" -o dist-go/noira-thin-Darwin-x86_64 ./cmd/noira-thin
-          GOOS=darwin GOARCH=arm64 go build -trimpath -ldflags "-s -w" -o dist-go/noira-thin-Darwin-arm64 ./cmd/noira-thin
+          # GATE E: mismo sha embebido que en local (build-thin-all.mjs);
+          # el tag corre sobre el commit publicado, github.sha es ese commit.
+          LDF="-s -w -X github.com/opencode-ai/opencode/internal/version.GitSha=${{ github.sha }}"
+          GOOS=windows GOARCH=amd64 go build -trimpath -ldflags "$LDF" -o dist-go/noira-thin-Windows-x86_64.exe ./cmd/noira-thin
+          GOOS=linux GOARCH=amd64 go build -trimpath -ldflags "$LDF" -o dist-go/noira-thin-Linux-x86_64 ./cmd/noira-thin
+          GOOS=linux GOARCH=arm64 go build -trimpath -ldflags "$LDF" -o dist-go/noira-thin-Linux-arm64 ./cmd/noira-thin
+          GOOS=darwin GOARCH=amd64 go build -trimpath -ldflags "$LDF" -o dist-go/noira-thin-Darwin-x86_64 ./cmd/noira-thin
+          GOOS=darwin GOARCH=arm64 go build -trimpath -ldflags "$LDF" -o dist-go/noira-thin-Darwin-arm64 ./cmd/noira-thin
           cp NOTICE dist-go/NOTICE.txt
           ls -la dist-go/
 
