@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NoiraCoder: Cómo conservar tu cuota gratuita y no agotarla | NOIRACODER</title>
+<meta name="description" content="Descubre estrategias simples para usar la cuota gratuita de NoiraCoder sin quedarte sin recursos.">
+<link rel="canonical" href="https://noiracoder.pages.dev/blog/2026-09-29-cuota-gratuita-como-no-agotarla.html">
+<meta property="og:title" content="NoiraCoder: Cómo conservar tu cuota gratuita y no agotarla — NOIRACODER">
+<meta property="og:description" content="Descubre estrategias simples para usar la cuota gratuita de NoiraCoder sin quedarte sin recursos.">
+<meta property="og:site_name" content="NOIRACODER">
+<meta property="og:url" content="https://noiracoder.pages.dev/blog/2026-09-29-cuota-gratuita-como-no-agotarla.html">
+<meta property="og:type" content="article">
+<meta name="robots" content="index, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<script src="/i18n.js" defer></script>
+<script src="/copy.js" defer></script>
+<script>var NOIRA_POST = {"date":"2026-09-29","title_es":"NoiraCoder: Cómo conservar tu cuota gratuita y no agotarla","excerpt_es":"Descubre estrategias simples para usar la cuota gratuita de NoiraCoder sin quedarte sin recursos.","body_es":"<p>NoiraCoder es un agente de código que funciona directamente en la terminal, ofreciendo una cuota gratuita que permite a los desarrolladores experimentar sin coste.</p><h2>Entiende tu cuota gratuita</h2><p>La cuota se mide en número de peticiones o en tiempo de procesamiento; cada comando que envías consume una pequeña parte. Puedes consultar tu consumo actual con el comando <code>noiracoder --status</code>.</p><h2>Buenas prácticas para no agotarla</h2><p>Limita el uso a consultas esenciales, reutiliza scripts y agrupa varias tareas en un solo comando. Por ejemplo, en lugar de lanzar varios <code>noiracoder --run</code>, combina los scripts en un archivo y ejecútalo una sola vez.</p><p>Además, aprovecha la caché local: guarda los resultados de compilaciones y pruebas para evitar repetir operaciones costosas. Con estos hábitos, mantendrás tu cuota disponible por más tiempo.</p>","title_en":"Free Quota: How Not to Exhaust Your NoiraCoder Terminal Agent","excerpt_en":"Learn practical tips to keep your NoiraCoder free quota alive while maximizing productivity.","body_en":"<p>NoiraCoder offers a generous free quota that lets developers run AI‑assisted code directly from the terminal without paying a dime. However, the quota can disappear quickly if you’re not careful, leaving you without the instant assistance you rely on.</p>\n<h2>Understand the Limits</h2>\n<p>The free tier grants a fixed number of token credits per month. Each request to the AI, whether for code generation, debugging, or documentation, consumes a portion of those credits. Knowing how many tokens a typical command uses helps you plan your sessions.</p>\n<h2>Best Practices to Preserve Your Quota</h2>\n<p>1. <strong>Batch Requests</strong>: Combine related questions into a single prompt instead of sending many small ones. This reduces overhead tokens.</p>\n<pre><code>noiracoder \\\"Explain the algorithm and generate the Python implementation for Dijkstra's shortest path.\\\"\n</code></pre>\n<p>2. <strong>Use Local Caching</strong>: Save the output of frequent queries in a local file and reuse it instead of asking the model again.</p>\n<p>3. <strong>Limit Temperature</strong>: Lower the temperature setting for deterministic outputs, which often require fewer tokens to reach a satisfactory answer.</p>\n<p>By following these strategies, you can stretch your free quota for months, keeping NoiraCoder as a reliable sidekick in your development workflow.</p>","title_pt":"Como preservar a sua quota gratuita no NoiraCoder","excerpt_pt":"Descubra estratégias simples para não esgotar a quota gratuita do NoiraCoder e manter sua produtividade.","body_pt":"<p>O NoiraCoder é um agente de código que funciona diretamente no terminal, oferecendo recursos avançados de geração e refatoração de código com rapidez e precisão.</p>\n<h2>Entenda a sua quota gratuita</h2>\n<p>A quota gratuita corresponde a um número limitado de solicitações de geração por mês; cada comando <code>noiracoder generate</code> consome parte desse limite, por isso é essencial usá‑lo de forma consciente.</p>\n<h2>Dicas práticas para não esgotar a quota</h2>\n<p>Use prompts claros e específicos, aproveite o modo de inspeção (<code>noiracoder inspect</code>) antes de gerar código completo e mantenha trechos reutilizáveis em arquivos locais, chamando‑os com <code>noiracoder include</code>. Um exemplo de comando eficiente é:</p>\n<pre><code>noiracoder generate --lang python --prompt \"Função para calcular fatorial\"</code></pre>\n<p>Seguindo essas estratégias, você maximiza o valor da sua quota gratuita e mantém a produtividade alta sem custos adicionais.</p>","title_fr":"Comment préserver votre quota gratuit avec NoiraCoder","excerpt_fr":"Découvrez des astuces simples pour ne jamais épuiser votre quota gratuit sur NoiraCoder.","body_fr":"<p>NoiraCoder est un agent de code qui s'exécute directement dans votre terminal, offrant une puissance impressionnante sans quitter votre environnement de développement. Cependant, son modèle gratuit repose sur un quota mensuel limité, et le dépasser peut interrompre votre flux de travail.</p><h2>Comprendre le quota gratuit</h2><p>Le quota gratuit de NoiraCoder correspond à un nombre d'appels API ou à une durée d'exécution cumulée chaque mois. Chaque requête, même petite, consomme une fraction de ce quota. Il est donc essentiel de savoir combien vous utilisez afin d'éviter les surprises.</p><h2>Bonnes pratiques pour économiser</h2><p>Adoptez les stratégies suivantes : limitez les appels redondants, regroupez les tâches similaires et utilisez la mise en cache locale. Vous pouvez également définir un seuil d'alerte dans votre script pour être averti avant d'atteindre la limite.</p><pre><code># Exemple de vérification du quota avant chaque appel\nif remaining_quota > 10:\n    response = noiracoder.run(command)\nelse:\n    print(\"Quota presque épuisé, reportez l'opération.\")\n</code></pre><p>En suivant ces recommandations, vous profiterez pleinement des capacités de NoiraCoder tout en préservant votre quota gratuit, garantissant ainsi une productivité continue tout au long du mois.</p>","title_de":"NoiraCoder: So schonst du dein kostenloses Kontingent","excerpt_de":"Erfahre, wie du das kostenlose Kontingent von NoiraCoder optimal nutzt, ohne es zu verbrauchen.","body_de":"<p>NoiraCoder ist ein leistungsstarker Code‑Agent, der direkt im Terminal läuft und Entwicklern hilft, schneller zu programmieren. Viele Nutzer starten mit dem kostenlosen Kontingent, das jedoch begrenzt ist. Um langfristig von den Vorteilen zu profitieren, solltest du wissen, wie du dieses Kontingent schonen kannst.</p><h2>Verwende gezielte Anfragen</h2><p>Stelle klare, präzise Fragen, damit NoiraCoder sofort die passende Code‑Snippet liefert. Vage Anfragen führen häufig zu mehreren Rückfragen und verbrauchen unnötig Tokens. Beispiel:</p><pre><code>noiracoder \"Erstelle eine Python‑Funktion, die die Fibonacci‑Zahlen bis n berechnet\"</code></pre><p>Durch das Hinzufügen von Schlüsselwörtern wie \"Python\", \"Funktion\" und \"Fibonacci\" erhältst du sofort das gewünschte Ergebnis.</p><h2>Nutze lokale Caches</h2><p>Speichere häufig genutzte Code‑Snippets in einer eigenen Bibliothek. Wenn du ein bereits generiertes Muster erneut brauchst, greife auf deinen lokalen Cache zu, anstatt NoiraCoder erneut zu belasten. Das spart nicht nur Tokens, sondern beschleunigt auch deine Entwicklungszeit.</p><p>Zusätzlich kannst du das integrierte <code>--cache</code>-Flag von NoiraCoder aktivieren, um automatisch wiederverwendbare Ergebnisse zu speichern:</p><pre><code>noiracoder --cache \"Erstelle eine SQL‑Abfrage für Benutzer, die sich in den letzten 30 Tagen angemeldet haben\"</code></pre><p>Durch diese einfachen Strategien bleibt dein kostenloses Kontingent erhalten und du kannst NoiraCoder über einen längeren Zeitraum hinweg effektiv einsetzen.</p>","title_it":"NoiraCoder: Come gestire la quota gratuita senza esaurirla","excerpt_it":"Scopri le migliori strategie per utilizzare al massimo la quota gratuita di NoiraCoder senza consumarla rapidamente.","body_it":"<p>NoiraCoder è un agente di codice da terminale che offre una quota gratuita per sperimentare le sue funzionalità avanzate. Tuttavia, molti utenti finiscono per consumare questa risorsa preziosa più rapidamente di quanto previsto. In questo articolo ti spieghiamo come ottimizzare l'uso della quota gratuita e mantenere la produttività a lungo termine.</p><h2>1. Pianifica le tue richieste</h2><p>Prima di inviare un comando a NoiraCoder, valuta se è realmente necessario. Raggruppa le operazioni simili in un unico script o file di configurazione, così da ridurre il numero di chiamate separate. Un esempio pratico è l'uso di <code>pre</code> per combinare più operazioni di refactoring in un unico batch:</p><pre><code># Refactoring batch\nnoiracoder --refactor src/**/*.js --dry-run\nnoiracoder --apply-changes</code></pre><h2>2. Sfrutta la modalità offline</h2><p>NoiraCoder permette di eseguire analisi statiche in locale, senza consumare la quota cloud. Attiva la modalità offline con il flag <code>--offline</code> per operazioni di linting o formattazione che non richiedono l'AI. In questo modo la quota rimane disponibile per le attività più complesse, come la generazione di codice basata su descrizioni naturali.</p><p>Seguendo questi semplici accorgimenti, potrai prolungare la tua esperienza gratuita con NoiraCoder, massimizzando l'efficienza e riducendo i costi operativi.","title_ar":"نورا كودر: كيفية الحفاظ على الحصة المجانية في الطرفية","excerpt_ar":"تعرف على استراتيجيات ذكية لتجنب استهلاك الحصة المجانية بسرعة.","body_ar":"<p>نورا كودر هو وكيل برمجي يعمل داخل الطرفية، يقدم لك إمكانات كتابة واختبار الشفرات بسرعة. مع النسخة المجانية، يحصل المستخدمون على حصة محدودة من الاستعلامات اليومية، لذا من الضروري معرفة كيفية إدارة هذه الحصة بفعالية.</p><h2>فهم الحصة المجانية</h2><p>تُحسب الحصة بناءً على عدد الطلبات التي تُرسلها إلى الخادم. كل استعلام، سواء كان لتوليد كود أو لتصحيح خطأ، يستهلك جزءًا من الحصة. لذلك، يجب أن تكون على دراية بكمية الاستهلاك قبل كل عملية.</p><h2>نصائح لتقليل الاستهلاك</h2><p>1. استخدم الأوامر المجمعة لتوليد عدة أسطر من الشفرة في طلب واحد.<br/>2. راجع الكود يدويًا قبل طلب المساعدة لتقليل الأخطاء المتكررة.<br/>3. استفد من خاصية التخزين المؤقت للنتائج لتجنب طلب نفس الاستعلام مرتين.</p><pre><code># التحقق من الحصة المتبقية\nnoiracoder --quota-status</code></pre><p>بهذه الطريقة، يمكنك مراقبة استهلاكك اليومي واتخاذ إجراءات تصحيحية فورًا. باتباع هذه الإرشادات، ستحافظ على حصة مجانية أطول وتستمتع بتجربة تطوير أكثر سلاسة.</p>"};</script>
+</head>
+<body>
+<header class="site-header"><div class="wrap-head">
+  <a href="/" class="logo">&gt; NOIRACODER</a>
+  <nav class="main-nav">
+    <a class="navlink" href="/docs/skills.html" data-i18n="nav.skills">Skills</a>
+    <a class="navlink" href="/docs/tutoriales.html" data-i18n="nav.tutorials">Tutoriales</a>
+    <a class="navlink" href="/blog/" data-i18n="nav.blog">Blog</a>
+    <a class="navlink" href="/contacto.html" data-i18n="nav.contact">Contacto</a>
+    <a class="navlink" href="/docs/tutoriales.html#instalar" data-i18n="nav.login">Instalar</a>
+    <a class="btn-signup" href="/#instalar" data-i18n="nav.signup">Empezar</a>
+    <div class="langswitch"><button aria-label="language">[<span class="cur">EN</span> ▾]</button><div class="menu">
+      <button data-lang="en">EN</button><button data-lang="es">ES</button><button data-lang="pt">PT</button><button data-lang="fr">FR</button><button data-lang="de">DE</button><button data-lang="it">IT</button><button data-lang="ar">AR</button>
+    </div></div>
+  </nav>
+  <div class="mobile-only">
+    <div class="langswitch"><button aria-label="language">[<span class="cur">EN</span> ▾]</button><div class="menu">
+      <button data-lang="en">EN</button><button data-lang="es">ES</button><button data-lang="pt">PT</button><button data-lang="fr">FR</button><button data-lang="de">DE</button><button data-lang="it">IT</button><button data-lang="ar">AR</button>
+    </div></div>
+    <button class="menu-btn" data-menu-btn>[=]</button>
+  </div>
+</div>
+<div class="mobile-menu" data-mobile-menu>
+  <a href="/docs/skills.html" data-i18n="nav.skills">Skills</a>
+  <a href="/docs/tutoriales.html" data-i18n="nav.tutorials">Tutoriales</a>
+  <a href="/blog/" data-i18n="nav.blog">Blog</a>
+  <a href="/contacto.html" data-i18n="nav.contact">Contacto</a>
+  <a href="/docs/tutoriales.html#instalar" data-i18n="nav.login">Instalar</a>
+  <a href="/#instalar" data-i18n="nav.signup">Empezar</a>
+</div></header>
+<main class="wrap-page">
+  <div class="mono" style="font-size:.75rem;color:var(--muted)">Blog · 2026-09-29 · 4 min</div>
+  <h1 class="mono" style="font-size:1.875rem;font-weight:700;margin:.75rem 0 1rem" id="post-title"></h1>
+  <article class="post-body" id="post-body"></article>
+  <p style="margin-top:2rem"><a class="link-accent" href="/">← Volver</a> · <a class="link-accent" href="/blog/">Todos</a></p>
+</main>
+<footer class="site-footer">
+  <div class="cols">
+    <div><h4 class="brand">&gt; NOIRACODER</h4><p class="brandp" data-i18n="footer.brand">…</p></div>
+    <div><h4 data-i18n="footer.products">Ecosistema</h4><ul>
+      <li><a href="https://noiramaster.pages.dev/" target="_blank" rel="noopener">Noiramaster</a></li>
+    </ul></div>
+    <div><h4 data-i18n="footer.resources">Recursos</h4><ul>
+      <li><a href="/blog/" data-i18n="nav.blog">Blog</a></li>
+      <li><a href="/sobre.html" data-i18n="nav.about">Sobre NoiraCoder</a></li>
+      <li><a href="/legal.html" data-i18n="nav.legal">Legal</a></li>
+      <li><a href="/terminos.html" data-i18n="nav.terms">Términos</a></li>
+      <li><a href="/privacidad.html" data-i18n="nav.privacy">Privacidad</a></li>
+    </ul></div>
+    <div><h4 data-i18n="footer.community">Comunidad</h4><div class="social">
+      <a href="https://x.com/noiramaster" target="_blank" rel="noopener" aria-label="X"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+      <a href="https://www.instagram.com/noiramaster/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0z"/></svg></a>
+      <a href="https://www.reddit.com/user/AddendumIll3987/" target="_blank" rel="noopener" aria-label="Reddit"><svg viewBox="0 0 24 24"><path d="M12 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 01-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 01.042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 014.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 01.14-.197.35.35 0 01.238-.042l2.906.617a1.214 1.214 0 011.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249z"/></svg></a>
+    </div></div>
+    <div><h4 data-i18n="footer.languages">Idiomas</h4><div class="langrow">
+      <button data-lang="es">ES</button><button data-lang="en">EN</button><button data-lang="pt">PT</button><button data-lang="fr">FR</button><button data-lang="de">DE</button><button data-lang="it">IT</button><button data-lang="ar">AR</button>
+    </div></div>
+  </div>
+  <div class="bottombar"><p>&gt; Noira © <span class="year">2026</span> · <span data-i18n="footer.copyright">Todos los derechos reservados.</span></p></div>
+</footer>
+<script>
+document.querySelectorAll('.year').forEach(function (e) { e.textContent = new Date().getFullYear(); });
+document.addEventListener('DOMContentLoaded', function () {
+  renderPost();
+});
+document.addEventListener('noira-lang', function () {
+  renderPost();
+});
+function renderPost() {
+  var lang = (typeof noiraGetLang === 'function') ? noiraGetLang() : 'en';
+  var title = NOIRA_POST['title_' + lang] || NOIRA_POST.title_en || NOIRA_POST.title_es;
+  var body = NOIRA_POST['body_' + lang] || NOIRA_POST.body_en || NOIRA_POST.body_es;
+  document.getElementById('post-title').textContent = title;
+  document.getElementById('post-body').innerHTML = body;
+  document.title = (title + ' | NOIRACODER');
+}
+</script>
+</body>
+</html>
