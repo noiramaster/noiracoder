@@ -1,5 +1,25 @@
 [
   {
+    "slug": "login-logout-higiene-de-claves",
+    "file": "2026-09-30-login-logout-higiene-de-claves.html",
+    "date": "2026-09-30",
+    "category": "noiracoder",
+    "title_es": "Login, logout y la higiene de claves con NoiraCoder",
+    "title_en": "Login‑Logout and Password Hygiene with NoiraCoder",
+    "title_pt": "NoiraCoder: boas práticas de login, logout e higiene de chaves no terminal",
+    "title_fr": "NoiraCoder : bonnes pratiques de connexion, déconnexion et hygiène des clés",
+    "title_de": "NoiraCoder: Sicherer Login‑Logout und Schlüssel‑Hygiene im Terminal",
+    "title_it": "NoiraCoder: Best Practices di Login, Logout e Igiene delle Chiavi",
+    "title_ar": "نصائح NoiraCoder لإدارة تسجيل الدخول وتسجيل الخروج وحماية كلمات المرور",
+    "excerpt_es": "Descubre cómo NoiraCoder simplifica la gestión segura de credenciales en la terminal.",
+    "excerpt_en": "Master secure session handling and password hygiene in the terminal with NoiraCoder’s built‑in tools.",
+    "excerpt_pt": "Descubra como usar o NoiraCoder para proteger suas credenciais durante login, logout e gerenciamento de chaves.",
+    "excerpt_fr": "Adoptez une hygiène rigoureuse des clés pour sécuriser vos sessions avec NoiraCoder.",
+    "excerpt_de": "Erfahren Sie, wie NoiraCoder automatisierte Login‑ und Logout‑Prozesse mit strenger Schlüssel‑Hygiene kombiniert.",
+    "excerpt_it": "Scopri come gestire in modo sicuro login, logout e la pulizia delle chiavi con NoiraCoder.",
+    "excerpt_ar": "تعلم كيف يضمن NoiraCoder أمان جلساتك عبر ممارسات نظافة كلمات المرور."
+  },
+  {
     "slug": "cuota-gratuita-como-no-agotarla",
     "file": "2026-09-29-cuota-gratuita-como-no-agotarla.html",
     "date": "2026-09-29",
