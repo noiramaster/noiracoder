@@ -57,10 +57,10 @@
     "typescript": "^5.6.0"
   },
   "optionalDependencies": {
-    "@noiramaster/noiracoder-win32-x64": "0.2.2",
-    "noiracoder-darwin-x64": "0.2.2",
-    "noiracoder-darwin-arm64": "0.2.2",
-    "noiracoder-linux-x64": "0.2.2"
+    "@noiramaster/noiracoder-win32-x64": "0.2.3",
+    "noiracoder-darwin-x64": "0.2.3",
+    "noiracoder-darwin-arm64": "0.2.3",
+    "noiracoder-linux-x64": "0.2.3"
   },
   "main": "index.js",
   "directories": {
