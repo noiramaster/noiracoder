@@ -1,5 +1,25 @@
 [
   {
+    "slug": "serve-api-local-editor",
+    "file": "2026-10-01-serve-api-local-editor.html",
+    "date": "2026-10-01",
+    "category": "noiracoder",
+    "title_es": "NoiraCoder y la herramienta serve-api-local-editor: potencia tu flujo de trabajo en la terminal",
+    "title_en": "Boost Your Development Workflow with NoiraCoder's serve-api-local-editor",
+    "title_pt": "NoiraCoder: Servindo sua API localmente com o editor integrado",
+    "title_fr": "NoiraCoder : l’agent de code terminal qui transforme votre éditeur local en API serveur",
+    "title_de": "Serve-API-Local-Editor mit NoiraCoder",
+    "title_it": "NoiraCoder e il nuovo comando serve-api-local-editor: sviluppo locale più veloce",
+    "title_ar": "NoiraCoder: محرّك السطر الأوامر لتعديل API محليًا",
+    "excerpt_es": "NoiraCoder y serve-api-local-editor se combinan para crear una API local que permite editar archivos desde la terminal de forma sencilla.",
+    "excerpt_en": "Discover how NoiraCoder's serve-api-local-editor streamlines local API development directly from your terminal.",
+    "excerpt_pt": "Descubra como usar o NoiraCoder para rodar sua API localmente enquanto edita o código direto no terminal.",
+    "excerpt_fr": "Découvrez comment NoiraCoder simplifie le développement d’une API locale directement depuis votre terminal.",
+    "excerpt_de": "Entdecke, wie NoiraCoder das lokale Editieren und Testen von APIs direkt im Terminal ermöglicht.",
+    "excerpt_it": "Scopri come il comando serve-api-local-editor di NoiraCoder semplifica lo sviluppo di API direttamente dal terminale.",
+    "excerpt_ar": "اكتشف كيف يسهّل NoiraCoder تشغيل وتحرير واجهات API محلية مباشرة من الطرفية."
+  },
+  {
     "slug": "login-logout-higiene-de-claves",
     "file": "2026-09-30-login-logout-higiene-de-claves.html",
     "date": "2026-09-30",
