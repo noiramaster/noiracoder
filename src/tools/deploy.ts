@@ -88,13 +88,17 @@ export function deployTool(): ToolDefinition<DeployArgs> {
       const vercel = (await findVercelBinary(ctx.cwd)) ?? "vercel";
 
       const runArgv = (argv: string[]): Promise<string> => new Promise((resolve, reject) => {
-        execFileP(vercel, argv, {
+        // FFF#26: signal aborta el hijo (deploy cancelable desde la pantalla).
+        if (ctx.signal?.aborted) { reject(new Error("[cancel] deploy abortado antes de arrancar")); return; }
+        const child = execFileP(vercel, argv, {
           cwd: ctx.cwd,
           env: { ...process.env, ...(token ? { VERCEL_TOKEN: token } : {}) },
           maxBuffer: 16 * 1024 * 1024,
           timeout: 300_000,
           shell: process.platform === "win32",
+          ...(ctx.signal ? { signal: ctx.signal } : {}),
         }).then((r) => resolve(r.stdout)).catch((e: unknown) => reject(e));
+        void child;
       });
 
       try {

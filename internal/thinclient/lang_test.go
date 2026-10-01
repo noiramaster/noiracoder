@@ -75,14 +75,15 @@ func TestPluralCategory(t *testing.T) {
 func TestFitStatus40(t *testing.T) {
 	SetCatalog(map[string]string{
 		"st_model": "Modell", "st_mode": "Modus", "st_session": "Sitzung",
-		"st_quota": "Quote",
+		"st_quota": "Quote {used}/{total}",
 	})
 	m := &Model{
 		lang:      "de",
 		modelName: "nvidia/nemotron-3-ultra-550b-a55b:free",
 		mode:      "build",
 		sessName:  "Eine sehr lange Sitzungsbezeichnung zum Kürzen",
-		quotaPct:  8,
+		quotaUsed:  8,
+		quotaTotal: 100,
 		width:     40,
 		chatW:     40,
 	}
@@ -96,7 +97,7 @@ func TestFitStatus40(t *testing.T) {
 			t.Errorf("línea >40: %q", ln)
 		}
 	}
-	if !strings.Contains(m.status, "Modus: build") || !strings.Contains(m.status, "8%") {
+	if !strings.Contains(m.status, "Modus: build") || !strings.Contains(m.status, "8/100") {
 		t.Errorf("modo/cuota intactos: %q", m.status)
 	}
 	// CJK: ancho doble cuenta x2.
@@ -124,5 +125,56 @@ func TestDetectLang(t *testing.T) {
 	os.WriteFile(filepath.Join(dir, ".noirarc", "prefs.json"), []byte(`{"language":"pt-BR"}`), 0o644)
 	if got := DetectLang(); got != "pt-BR" {
 		t.Errorf("prefs pt-BR debe pasar tal cual (fallback en motor), fue %s", got)
+	}
+}
+
+func TestQuotaLow(t *testing.T) {
+	cases := []struct {
+		used, total int
+		want        bool
+	}{
+		{0, 100, false},
+		{89, 100, false},
+		{90, 100, true},
+		{95, 100, true},
+		{100, 100, true},
+		{120, 100, true},
+		{0, 0, false},
+		{5, 0, false},
+		{2600, 2600, true},
+		{2339, 2600, false},
+		{2341, 2600, true},
+	}
+	for _, c := range cases {
+		if got := quotaLow(c.used, c.total); got != c.want {
+			t.Errorf("quotaLow(%d,%d) = %v, quiero %v", c.used, c.total, got, c.want)
+		}
+	}
+}
+
+func TestShortModel(t *testing.T) {
+	cases := []struct{ in, want string }{
+		{"nvidia/nemotron-3-ultra-253b-v1:free", "nemotron-3-ultra-253b-v1"},
+		{"groq/llama-3.3-70b-versatile", "llama-3.3-70b-versatile"},
+		{"(router)", "(router)"},
+		{"max", "max"},
+		{"openai/gpt-oss-20b:free", "gpt-oss-20b"},
+	}
+	for _, c := range cases {
+		if got := shortModel(c.in); got != c.want {
+			t.Errorf("shortModel(%q) = %q, quiero %q", c.in, got, c.want)
+		}
+	}
+}
+
+func TestColorDiff(t *testing.T) {
+	in := "cambio en a.ts\n+linea nueva\n-linea vieja\n+++ encabezado\n--- encabezado\n contexto"
+	got := colorDiff(in)
+	if !strings.Contains(got, "linea nueva") || !strings.Contains(got, "linea vieja") {
+		t.Errorf("colorDiff pierde contenido: %q", got)
+	}
+	lines := strings.Split(got, "\n")
+	if len(lines) != 6 {
+		t.Fatalf("colorDiff debe conservar 6 líneas, da %d: %q", len(lines), got)
 	}
 }

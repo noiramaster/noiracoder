@@ -67,6 +67,12 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
   let activeTurn: ActiveTurn | null = null;
   let preferredModel: string | undefined;
   let preferredLevel: string | undefined; // ZZ: /level lo cambia en caliente
+  let deployAbort: AbortController | null = null; // FFF#26: cancela el deploy
+  // B2: cola de tareas (memoria; se pierde al reiniciar el motor).
+  interface QueuedTask { id: string; texto: string; estado: string; resultado: string }
+  const taskQueue: QueuedTask[] = [];
+  let queueSeq = 0;
+  let queueBusy = false;
   let titleAuto = true; // M2.8: /title auto|off
   const pendingConfirms = new Map<string, PendingConfirm>();
   const pendingOptions = new Map<string, PendingOptions>(); // H10
@@ -203,6 +209,8 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
     let switches = 0;
     let lastModel = preferredModel ?? "(router)";
     const toolsUsed = new Set<string>();
+    // B1#5: evidencia de que se probó algo (bash con test/spec/lint/check/build).
+    let testedEvidence = false;
 
     const remoteConfirm = async (msg: string): Promise<boolean> => {
       const detail = msg.split("\n")[0].slice(0, 500);
@@ -328,6 +336,20 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
             if (activeTurn?.id === turnId) activeTurn.lastToolStartAt = Date.now();
             send("turn.tool_start", { turnId, nombre: ev.name, detalle: ev.preview });
           } else {
+            // B1#5: un bash/test que corrió con éxito cuenta como "probado".
+            if (!ev.error && (ev.name === "bash" || ev.name === "diagnostics") &&
+              /test|spec|lint|check|build|tsc|pytest|jest|vitest|go test/i.test(String(ev.preview ?? ""))) {
+              testedEvidence = true;
+            }
+            // B1#4: el plan vivo va a la pantalla como checklist.
+            if (ev.name === "plan") {
+              void (async () => {
+                try {
+                  const { getPlan } = await import("../tools/plan.js");
+                  send("plan.update", { turnId, items: getPlan() });
+                } catch { /* el texto del plan ya va en el stream */ }
+              })();
+            }
             send("turn.tool_end", {
               turnId,
               nombre: ev.name,
@@ -347,11 +369,16 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
         },
         onQuotaEvent: (q) => {
           touch();
+          // EEE: la pantalla suma TODOS los proveedores (q ya es combinado
+          // en el router); se envían números, no solo %. Sin alarmas aquí.
           send("model.quota", {
             turnId,
             proveedor: "gratis-combinada",
             usadoPct: q.usadoPct,
-            aviso: q.usadoPct >= 85 ? "cuota casi agotada" : null,
+            usado: q.total - q.restante,
+            restante: q.restante,
+            total: q.total,
+            aviso: null,
           });
         },
       });
@@ -366,7 +393,62 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
       if (switches > 0) summaryParts.push(`switches: ${switches}`);
       summaryParts.push(`model: ${lastModel}`);
       summaryParts.push(`time: ${((Date.now() - t0) / 1000).toFixed(1)}s`);
-      send("turn.summary", { turnId, resumen: summaryParts.join(" | ") });
+      const editedFiles = toolsUsed.has("write") || toolsUsed.has("edit") || toolsUsed.has("delete_file");
+      // B1#5: etiqueta honesta de confianza (heurística visible, no promesa).
+      const confianza = !editedFiles ? "readonly" : testedEvidence ? "verified" : "unverified";
+      const segundos = Math.round((Date.now() - t0) / 1000);
+      send("turn.summary", {
+        turnId, resumen: summaryParts.join(" | "),
+        herramientas: [...toolsUsed], pasos: result.steps, segundos,
+        modelo: lastModel, nivel: effLevel, confianza,
+      });
+      // B1#9: aviso de deshacer tras cambios (el undo real ya existe).
+      if (editedFiles) send("undo.hint", { turnId });
+      // B1#1: 2-3 sugerencias heurísticas (sin coste LLM). Fire-and-forget:
+      // la pantalla las muestra y al elegir RELLENA el input (no auto-envía).
+      if (sse && !sse.writableEnded) {
+        const { screenString } = await import("../i18n/screen.js");
+        const t = (k: string) => screenString(opts.lang, k);
+        const sug: Array<{ key: string; label: string }> = [];
+        if (editedFiles && !testedEvidence) {
+          sug.push({ key: t("followup_tests"), label: t("followup_tests") });
+          sug.push({ key: t("followup_diff"), label: t("followup_diff") });
+          sug.push({ key: t("followup_explain"), label: t("followup_explain") });
+        } else if (editedFiles) {
+          sug.push({ key: t("followup_diff"), label: t("followup_diff") });
+          sug.push({ key: t("followup_explain"), label: t("followup_explain") });
+        }
+        if (sug.length > 0) {
+          send("options.request", {
+            optionsId: `followup-${turnId}`, opciones: sug,
+            prompt: t("followup_prompt"), timeoutMs: 0,
+          });
+        }
+      }
+      // B2#12: hooks opcionales (~/.noirarc/hooks.json {"afterEdit": "cmd"}).
+      // Apagado por defecto (sin fichero = nada). El comando pasa por la
+      // MISMA policy que bash (lo que pida confirmación se deniega en
+      // segundo plano); nunca toca las reglas, solo reutiliza la vía.
+      if (editedFiles) {
+        try {
+          const { readFile } = await import("node:fs/promises");
+          const { join } = await import("node:path");
+          const { homedir } = await import("node:os");
+          const raw = await readFile(join(process.env.NOIRARC_HOME ?? homedir(), ".noirarc", "hooks.json"), "utf8");
+          const cmd = (JSON.parse(raw) as { afterEdit?: unknown }).afterEdit;
+          if (typeof cmd === "string" && cmd.trim()) {
+            const { bashTool } = await import("../tools/bash.js");
+            const out = await bashTool().handler(
+              { command: cmd.slice(0, 500), cwd: process.cwd(), timeoutMs: 120000 },
+              {
+                cwd: process.cwd(), confirmDestructive: true,
+                confirm: async () => false, log: opts.log,
+              },
+            );
+            send("hook.done", { turnId, salida: String(out).slice(0, 1500) });
+          }
+        } catch { /* sin hooks o comando denegado: silencio, nunca bloquea */ }
+      }
       // M2.8: título en 2º plano (no bloquea; 1 llamada + 1 regen; cuenta cuota).
       void maybeTitle(meta.id, message, sessionId);
       // H1.1: registra el turno (metadatos, sin contenido) + recompute perezoso.
@@ -394,6 +476,26 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
           send("turn.text", { turnId, delta: `\n[hint] ${consecutiveFailures} fallos consecutivos. Prueba: /model <otro>` });
           opts.log.warn(`[thin] ${consecutiveFailures} fallos consecutivos — sugiriendo cambio de modelo`);
         }
+        // B1#5: también al fallar hay veredicto (trabajo parcial sin probar).
+        const editedFilesErr = toolsUsed.has("write") || toolsUsed.has("edit") || toolsUsed.has("delete_file");
+        const confianzaErr = !editedFilesErr ? "readonly" : testedEvidence ? "verified" : "unverified";
+        send("turn.summary", {
+          turnId, resumen: `error tras ${((Date.now() - t0) / 1000).toFixed(1)}s`,
+          herramientas: [...toolsUsed], pasos: 0, segundos: Math.round((Date.now() - t0) / 1000),
+          modelo: lastModel, nivel: effLevel, confianza: confianzaErr,
+        });
+        // B1#1: sugerencias tras error (reintentar / ver log).
+        if (sse && !sse.writableEnded) {
+          const { screenString } = await import("../i18n/screen.js");
+          const t = (k: string) => screenString(opts.lang, k);
+          send("options.request", {
+            optionsId: `followup-${turnId}`, opciones: [
+              { key: t("followup_retry"), label: t("followup_retry") },
+              { key: t("followup_seelog"), label: t("followup_seelog") },
+            ],
+            prompt: t("followup_prompt"), timeoutMs: 0,
+          });
+        }
         void recordTurn({
           session: sessionId, task, level: effLevel, model: lastModel,
           retries: switches, ms: Date.now() - t0, ok: false, tools: [...toolsUsed],
@@ -401,6 +503,34 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
       }
     } finally {
       if (activeTurn?.id === turnId) activeTurn = null;
+    }
+  };
+
+  // B2: bombea la cola (una tarea cada vez, solo sin turno del usuario).
+  const pumpQueue = async (): Promise<void> => {
+    if (queueBusy || activeTurn) return;
+    const next = taskQueue.find((t) => t.estado === "pendiente");
+    if (!next) return;
+    if (!sse || sse.writableEnded) return;
+    queueBusy = true;
+    next.estado = "encurso";
+    try {
+      const metas = await store.list();
+      let sessionId = metas[0]?.id;
+      if (!sessionId) {
+        const meta = await store.create(opts.level, process.cwd(), `cola: ${next.texto.slice(0, 40)}`);
+        sessionId = meta.id;
+      }
+      send("queue.start", { id: next.id, texto: next.texto });
+      await runTurn(randomUUID(), sessionId, next.texto, "build");
+      next.estado = "lista";
+      next.resultado = "ver chat";
+    } catch (e) {
+      next.estado = "error";
+      next.resultado = (e instanceof Error ? e.message : String(e)).slice(0, 200);
+    } finally {
+      queueBusy = false;
+      void pumpQueue();
     }
   };
 
@@ -494,7 +624,17 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
       });
       res.write(": conectado\n\n");
       sse = res;
-      send("hello", { protocol: THIN_PROTOCOL, motor: "node-ts", modelo: preferredModel ?? opts.level ?? "low", level: opts.level ?? "low" });
+      // GGG: nº de proveedores reales conectados (sin Kilo anónimo) para
+      // que la pantalla oculte el aviso cuando ya hay claves.
+      let conectados = 0;
+      try {
+        const { loadAllKeys } = await import("../auth/keys.js");
+        const keys = await loadAllKeys();
+        for (const k of ["openrouter", "groq", "zen", "nvidia", "iflow", "zai", "mistral"]) {
+          if ((keys as Record<string, string | undefined>)[k]) conectados++;
+        }
+      } catch { /* sin claves = 0, nunca bloquea el hello */ }
+      send("hello", { protocol: THIN_PROTOCOL, motor: "node-ts", modelo: preferredModel ?? opts.level ?? "low", level: opts.level ?? "low", conectados });
       const hb = setInterval(() => {
         try {
           res.write(": ping\n\n");
@@ -1018,6 +1158,56 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
       return;
     }
 
+    // B2: comandos personalizados (~/.noirarc/commands/*.md).
+    if (req.method === "GET" && url.pathname === "/v1/cmds") {
+      const { loadCommands } = await import("../commands.js");
+      const comandos = (await loadCommands()).map((c) => ({ nombre: c.nombre, desc: c.desc }));
+      json(res, 200, { comandos });
+      return;
+    }
+    if (req.method === "POST" && url.pathname === "/v1/cmd") {
+      try {
+        const parsed = JSON.parse(await readBody(req)) as { nombre?: string; args?: string };
+        const { loadCommands, expandCmd } = await import("../commands.js");
+        const def = (await loadCommands()).find((c) => c.nombre === (parsed.nombre ?? "").toLowerCase());
+        if (!def) {
+          json(res, 404, { error: `comando no existe: ${parsed.nombre ?? ""} (ver /cmds)` });
+          return;
+        }
+        json(res, 200, { ok: true, prompt: expandCmd(def, parsed.args ?? "") });
+      } catch (e) {
+        json(res, 400, { error: e instanceof Error ? e.message : String(e) });
+      }
+      return;
+    }
+
+    // B2: cola de tareas en segundo plano (secuencial, visible, en memoria).
+    // Una tarea en curso + N en espera; al terminar una arranca la siguiente
+    // SOLA si no hay turno del usuario (nunca pisa un turno activo).
+    if (req.method === "GET" && url.pathname === "/v1/queue") {
+      json(res, 200, { tareas: taskQueue });
+      return;
+    }
+    if (req.method === "POST" && url.pathname === "/v1/queue") {
+      try {
+        const parsed = JSON.parse(await readBody(req)) as { texto?: string };
+        const texto = (parsed.texto ?? "").trim().slice(0, 2000);
+        if (!texto) {
+          json(res, 400, { error: renderScreen(screenString(opts.lang, "err_field_required"), { field: "texto" }) });
+          return;
+        }
+        queueSeq++;
+        const id = `q${queueSeq}`;
+        taskQueue.push({ id, texto, estado: "pendiente", resultado: "" });
+        if (taskQueue.length > 20) taskQueue.splice(0, taskQueue.length - 20);
+        json(res, 200, { ok: true, id });
+        void pumpQueue();
+      } catch (e) {
+        json(res, 400, { error: e instanceof Error ? e.message : String(e) });
+      }
+      return;
+    }
+
     // GG: confirmación directa del servidor (fuera de turno). Igual que
     // remoteConfirm pero a nivel de servidor para /v1/deploy y /v1/login:
     // SSE confirm.request + espera con timeout; sin cliente se DENIEGA
@@ -1041,22 +1231,37 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
     // GG: POST /v1/deploy — paridad con /deploy del REPL (deployTool con su
     // gate de confirmación, ahora vía askClient). Respuesta larga: el deploy
     // real puede tardar minutos; el cliente espera (como un turno).
+    // FFF#26: abort compartido para cancelar desde la pantalla.
     if (req.method === "POST" && url.pathname === "/v1/deploy") {
       try {
         const parsed = JSON.parse(await readBody(req)) as { target?: string; dryRun?: boolean };
         const { deployTool } = await import("../tools/deploy.js");
+        deployAbort = new AbortController();
         const out = await deployTool().handler(
           { target: parsed.target ?? "vercel", dryRun: parsed.dryRun ?? false },
           {
             cwd: process.cwd(),
             confirmDestructive: true,
             confirm: askClient,
+            signal: deployAbort.signal,
             log: opts.log,
           },
         );
+        deployAbort = null;
         json(res, 200, { ok: !out.startsWith("[error]") && !out.startsWith("[cancel]") && !out.startsWith("[denied]"), output: out });
       } catch (e) {
+        deployAbort = null;
         json(res, 400, { error: e instanceof Error ? e.message : String(e) });
+      }
+      return;
+    }
+    if (req.method === "POST" && url.pathname === "/v1/deploy/cancel") {
+      if (deployAbort) {
+        deployAbort.abort();
+        deployAbort = null;
+        json(res, 200, { ok: true });
+      } else {
+        json(res, 404, { error: screenString(opts.lang, "deploy_no_active") });
       }
       return;
     }
@@ -1086,7 +1291,12 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
       try {
         const { interactiveSignIn } = await import("../auth/oauth.js");
         const { storeKey } = await import("../auth/keys.js");
-        const r = await interactiveSignIn({ label: "NoiraCoder" });
+        // FFF#25: si el navegador no abre, la URL llega por SSE (login.url)
+        // y el callback SIGUE escuchando (no se aborta el flujo).
+        const r = await interactiveSignIn({
+          label: "NoiraCoder",
+          onManualUrl: (url) => send("login.url", { url }),
+        });
         await storeKey("openrouter", r.key);
         json(res, 200, { ok: true, msg: `OpenRouter conectado (user ${r.user_id ?? "?"})` });
       } catch (e) {

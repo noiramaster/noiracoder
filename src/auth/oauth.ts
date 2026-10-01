@@ -97,7 +97,7 @@ export async function exchangeCode(opts: {
  *
  * Falls back to "display the URL path" (paste-mode) if a browser open fails.
  */
-export async function interactiveSignIn(opts?: { label?: string; port?: number; timeoutMs?: number }): Promise<KeyExchangeResponse> {
+export async function interactiveSignIn(opts?: { label?: string; port?: number; timeoutMs?: number; onManualUrl?: (url: string) => void }): Promise<KeyExchangeResponse> {
   const port = opts?.port ?? 0;
   const timeoutMs = opts?.timeoutMs ?? 10 * 60 * 1000; // 10 min
 
@@ -149,13 +149,10 @@ export async function interactiveSignIn(opts?: { label?: string; port?: number; 
       console.log(`[auth] ${url}`);
       const opened = tryOpen(url);
       if (!opened) {
-        server.close();
-        reject(
-          new Error(
-            `No pude abrir el navegador. Abre esta URL en tu navegador:\n\n${url}`
-          )
-        );
-        return;
+        // FFF#25: el navegador no abrió — se avisa con la URL pero el
+        // callback SIGUE escuchando (el timeout de 10 min sigue armado).
+        // Sin esto la URL moría con el servidor y no servía para nada.
+        try { opts?.onManualUrl?.(url); } catch { /* aviso best-effort */ }
       }
       setTimeout(() => {
         server.close();

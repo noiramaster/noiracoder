@@ -22,6 +22,8 @@ export interface ToolCallContext {
   options?: (optsList: Array<{ key: string; label: string; recommended?: boolean }>, prompt: string) => Promise<string>;
   /** Sensitive-path detector for policy. */
   isSensitive?: (path: string) => boolean;
+  /** FFF#26: aborta la herramienta en curso (deploy cancelable). Opcional. */
+  signal?: AbortSignal;
   log: import("../core/logger.js").Logger;
 }
 

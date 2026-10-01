@@ -256,6 +256,133 @@ func (c *Client) Level(level string) (string, string) {
 	return resp.Level, ""
 }
 
+// B1: Undo/redo reales (snapshots del motor). Devuelve mensaje o error.
+func (c *Client) UndoRedo(redo bool) (string, string) {
+	path := "/v1/undo"
+	if redo {
+		path = "/v1/redo"
+	}
+	st, b, err := c.req("POST", path, map[string]any{})
+	if err != nil {
+		return "", err.Error()
+	}
+	var resp struct {
+		Ok      bool `json:"ok"`
+		Detalle struct {
+			Ok      bool   `json:"ok"`
+			Message string `json:"message"`
+		} `json:"detalle"`
+		Error string `json:"error,omitempty"`
+	}
+	if err := json.Unmarshal(b, &resp); err != nil {
+		return "", string(b)
+	}
+	if st != 200 || !resp.Ok || !resp.Detalle.Ok {
+		if resp.Error != "" {
+			return "", resp.Error
+		}
+		return "", resp.Detalle.Message
+	}
+	return resp.Detalle.Message, ""
+}
+
+// FFF#26: cancela un deploy en curso (mata el proceso hijo en el motor).
+func (c *Client) DeployCancel() string {
+	st, b, err := c.req("POST", "/v1/deploy/cancel", map[string]any{})
+	if err != nil {
+		return err.Error()
+	}
+	if st != 200 {
+		return string(b)
+	}
+	return ""
+}
+
+// B2: cola de tareas en segundo plano (secuencial, visible).
+type QueuedTask struct {
+	ID        string `json:"id"`
+	Texto     string `json:"texto"`
+	Estado    string `json:"estado"`
+	Resultado string `json:"resultado,omitempty"`
+}
+
+func (c *Client) QueueList() ([]QueuedTask, string) {
+	st, b, err := c.req("GET", "/v1/queue", nil)
+	if err != nil {
+		return nil, err.Error()
+	}
+	if st != 200 {
+		return nil, string(b)
+	}
+	var resp struct {
+		Tareas []QueuedTask `json:"tareas"`
+	}
+	if err := json.Unmarshal(b, &resp); err != nil {
+		return nil, string(b)
+	}
+	return resp.Tareas, ""
+}
+
+func (c *Client) QueueAdd(texto string) (string, string) {
+	st, b, err := c.req("POST", "/v1/queue", map[string]any{"texto": texto})
+	if err != nil {
+		return "", err.Error()
+	}
+	var resp struct {
+		Ok    string `json:"id"`
+		Error string `json:"error,omitempty"`
+	}
+	if err := json.Unmarshal(b, &resp); err != nil {
+		return "", string(b)
+	}
+	if st != 200 {
+		return "", resp.Error
+	}
+	return resp.Ok, ""
+}
+
+// B2: comandos personalizados (~/.noirarc/commands/*.md).
+type CustomCmd struct {
+	Nombre string `json:"nombre"`
+	Desc   string `json:"desc"`
+}
+
+func (c *Client) Cmds() ([]CustomCmd, string) {
+	st, b, err := c.req("GET", "/v1/cmds", nil)
+	if err != nil {
+		return nil, err.Error()
+	}
+	if st != 200 {
+		return nil, string(b)
+	}
+	var resp struct {
+		Comandos []CustomCmd `json:"comandos"`
+	}
+	if err := json.Unmarshal(b, &resp); err != nil {
+		return nil, string(b)
+	}
+	return resp.Comandos, ""
+}
+
+func (c *Client) CmdExpand(nombre, args string) (string, string) {
+	st, b, err := c.req("POST", "/v1/cmd", map[string]any{"nombre": nombre, "args": args})
+	if err != nil {
+		return "", err.Error()
+	}
+	var resp struct {
+		Ok     bool   `json:"ok"`
+		Prompt string `json:"prompt"`
+		Error  string `json:"error,omitempty"`
+	}
+	if err := json.Unmarshal(b, &resp); err != nil {
+		return "", string(b)
+	}
+	if st != 200 || !resp.Ok {
+		return "", resp.Error
+	}
+	return resp.Prompt, ""
+}
+
 // GG: Deploy publica vía deployTool del motor (con su confirmación vía SSE).
 func (c *Client) Deploy(target string) (bool, string) {
 	st, b, err := c.req("POST", "/v1/deploy", map[string]any{

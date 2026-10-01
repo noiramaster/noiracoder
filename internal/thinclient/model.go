@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/charmbracelet/bubbles/textarea"
 	"github.com/charmbracelet/bubbles/viewport"
@@ -58,7 +59,8 @@ type Model struct {
 	status      string
 	modelName   string
 	mode        string
-	quotaPct    int
+	quotaUsed   int
+	quotaTotal  int
 	sessionID   string
 	sessName    string
 	turnID      string
@@ -80,8 +82,27 @@ type Model struct {
 	renaming    bool
 	connectMode *connectState // H8: waiting for API key input
 	level       string        // ZZ: nivel vivo del motor (hello); /level lo cambia
+	conectados  int           // GGG: proveedores reales conectados (Kilo condicional)
 	wizard      *wizardState  // WW: asistente "conectar todas" (nil = inactivo)
 	lastConns   []ProviderConnection // WW: último listado de /connect (para "__all__")
+	lastWork    *workSummary  // B1: último trabajo (para /how + confianza)
+	planItems   []string      // B1: checklist del plan (evento plan.update)
+	showHow     bool          // B1: detalle de /how visible
+	turnStart   time.Time     // B1: inicio del turno (BEL si >120s)
+	ringBell    bool          // B1: campana pendiente al terminar turno largo
+	deployStart time.Time     // F6: inicio del deploy (contador + cancelar)
+	deployOn    bool          // F6: deploy en curso (Ctrl+C cancela, no sale)
+	findPat     string        // B1: filtro activo de /find ("" = sin filtro)
+}
+
+// B1: resumen de trabajo para /how y etiqueta de confianza.
+type workSummary struct {
+	tools []string
+	steps int
+	secs  int
+	model string
+	level string
+	conf  string // verified|unverified|readonly
 }
 
 // WW: cola del asistente guiado de /connect.
@@ -150,6 +171,8 @@ func (m *Model) MouseOn() bool { return m.mouseOn }
 func (m *Model) Init() tea.Cmd { return textarea.Blink }
 
 func (m *Model) addLine(s string) {
+	// B1: un mensaje nuevo invalida el filtro de /find (vuelve al completo).
+	m.findPat = ""
 	m.messages = append(m.messages, Sanitize(s))
 	if len(m.messages) > 500 {
 		m.messages = m.messages[len(m.messages)-500:]
@@ -158,35 +181,48 @@ func (m *Model) addLine(s string) {
 	m.viewport.GotoBottom()
 }
 
+// CCC: addBubbleLine añade una línea con indicador de rol (burbuja simple)
+// role: "user" = derecha (▶), "assistant" = izquierda (◀), "system" = centro (•)
+// Usa solo caracteres y color de acento (#FBBF24), nada de fondos SGR
+// que se rompen en ConPTY (quirk documentado).
+func (m *Model) addBubbleLine(role, text string) {
+	var prefix string
+	switch role {
+	case "user":
+		prefix = lipgloss.NewStyle().Foreground(accent).Render("▶ ")
+	case "assistant":
+		prefix = lipgloss.NewStyle().Foreground(accent).Render("◀ ")
+	default:
+		prefix = lipgloss.NewStyle().Foreground(muted).Render("• ")
+	}
+	m.addLine(prefix + text)
+}
+
 func (m *Model) setStatus() {
 	// M3.3: status bar mejorada con separadores y barra de cuota visual.
-	modelStr := m.modelName
+	// FFF#11: nombre corto legible en vez del id crudo (el completo sigue
+	// en /model y en los logs).
+	modelStr := shortModel(m.modelName)
 	if m.modelName != "(router)" {
-		modelStr = lipgloss.NewStyle().Foreground(accent).Render(m.modelName)
+		modelStr = lipgloss.NewStyle().Foreground(accent).Render(shortModel(m.modelName))
 	}
 	parts := []string{
 		lipgloss.NewStyle().Foreground(muted).Render(T(m.lang, "st_model")) + ": " + modelStr,
 		lipgloss.NewStyle().Foreground(muted).Render(T(m.lang, "st_mode")) + ": " + m.mode,
 		lipgloss.NewStyle().Foreground(muted).Render(T(m.lang, "st_session")) + ": " + or(m.sessName, "—"),
 	}
-	if m.quotaPct > 0 {
-		// M3.3: barra de cuota visual (█ vacío).
-		filled := m.quotaPct / 10
-		empty := 10 - filled
-		bar := strings.Repeat("█", filled) + strings.Repeat("░", empty)
-		barColor := green
-		if m.quotaPct >= 80 {
-			barColor = yellow
+	if m.quotaTotal > 0 {
+		// EEE: solo el número (usado/total combinado); dorado normal,
+		// rojo SOLO en el último 10% restante. Sin alarmas.
+		qColor := accent
+		if quotaLow(m.quotaUsed, m.quotaTotal) {
+			qColor = red
 		}
-		if m.quotaPct >= 95 {
-			barColor = red
-		}
-		parts = append(parts, lipgloss.NewStyle().Foreground(muted).Render(T(m.lang, "st_quota")+": ")+
-			lipgloss.NewStyle().Foreground(barColor).Render(bar)+
-			lipgloss.NewStyle().Foreground(muted).Render(fmt.Sprintf(" %d%%", m.quotaPct)))
+		parts = append(parts, lipgloss.NewStyle().Foreground(qColor).Render(
+			F(m.lang, "st_quota", map[string]string{"used": fmt.Sprint(m.quotaUsed), "total": fmt.Sprint(m.quotaTotal)})))
 	}
 	if m.thinking {
-		parts = append(parts, F(m.lang, "st_thinking", map[string]string{"model": m.modelName}))
+		parts = append(parts, F(m.lang, "st_thinking", map[string]string{"model": shortModel(m.modelName)}))
 	}
 	if m.turnID != "" {
 		parts = append(parts, T(m.lang, "st_turn"))
@@ -228,7 +264,7 @@ func fitStatus(parts []string, width int, m *Model) string {
 	if sessBudget < 6 {
 		sessBudget = 6
 	}
-	parts[0] = modelLabel + runewidth.Truncate(m.modelName, modelBudget, "…")
+	parts[0] = modelLabel + runewidth.Truncate(shortModel(m.modelName), modelBudget, "…")
 	sess := or(m.sessName, "—")
 	parts[2] = sessLabel + runewidth.Truncate(sess, sessBudget, "…")
 	joined = strings.Join(parts, " · ")
@@ -243,6 +279,77 @@ func fitStatus(parts []string, width int, m *Model) string {
 		rest2 = append(rest2, parts[3:]...)
 	}
 	return line1 + "\n" + strings.Join(rest2, " · ")
+}
+
+// colorDiff pinta líneas de diff: "+" verde, "-" rojo (B1). Solo display,
+// no toca el contenido (el Sanitize ya pasó en addLine; aquí va directo).
+func colorDiff(s string) string {
+	lines := strings.Split(s, "\n")
+	for i, ln := range lines {
+		if len(ln) > 1 && ln[0] == '+' && ln[1] != '+' {
+			lines[i] = lipgloss.NewStyle().Foreground(green).Render(ln)
+		} else if len(ln) > 1 && ln[0] == '-' && ln[1] != '-' {
+			lines[i] = lipgloss.NewStyle().Foreground(red).Render(ln)
+		}
+	}
+	return strings.Join(lines, "\n")
+}
+
+// renderPlan pinta la checklist del plan (B1): [x] verde, [ ] tenue.
+// Vacío si no hay plan. Máximo 6 filas + resto contado (sin catálogo:
+// "[", "]", "x" y números no son texto traducible).
+func (m *Model) renderPlan() string {
+	if len(m.planItems) == 0 {
+		return ""
+	}
+	out := []string{lipgloss.NewStyle().Foreground(muted).Render("  " + T(m.lang, "plan_title"))}
+	shown := m.planItems
+	extra := 0
+	if len(shown) > 6 {
+		extra = len(shown) - 6
+		shown = shown[:6]
+	}
+	for _, it := range shown {
+		done := strings.HasPrefix(it, "x ")
+		label := it
+		if done {
+			label = it[2:]
+		}
+		mark := "[ ]"
+		if done {
+			mark = lipgloss.NewStyle().Foreground(green).Render("[x]")
+		}
+		out = append(out, "  "+mark+" "+label)
+	}
+	if extra > 0 {
+		out = append(out, F(m.lang, "plan_more", map[string]string{"n": fmt.Sprint(extra)}))
+	}
+	// Con "\n" final para separar del chat (nl() lo cuenta exacto).
+	return strings.Join(out, "\n") + "\n"
+}
+
+// shortModel acorta un id crudo a nombre legible (FFF#11): quita el
+// proveedor y los sufijos :free/:... "(router)" y niveles pasan intactos.
+func shortModel(id string) string {
+	if i := strings.LastIndex(id, "/"); i >= 0 {
+		id = id[i+1:]
+	}
+	if i := strings.Index(id, ":"); i >= 0 {
+		id = id[:i]
+	}
+	return id
+}
+
+// quotaLow dice si queda el último 10% (o menos) de cuota: SOLO entonces
+// el número va en rojo (EEE). Puros ints, testeable sin catálogo.
+func quotaLow(used, total int) bool {
+	if total <= 0 {
+		return false
+	}
+	if used < 0 {
+		used = 0
+	}
+	return (total-used)*10 <= total
 }
 
 func or(a, b string) string {
@@ -272,6 +379,10 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case evMsg:
 		m.onEvent(msg.ev)
+		if m.ringBell {
+			m.ringBell = false
+			return m, bellCmd
+		}
 		return m, nil
 
 	case pendingTimeoutMsg:
@@ -430,6 +541,14 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 				return m, nil
 			case s == "enter":
+				// B1: en sugerencias, Enter con texto escrito ENVÍA el texto
+				// (no se come el comando); con input vacío elige la opción.
+				// Números/flechas/clic siguen eligiendo siempre.
+				if m.options != nil && strings.HasPrefix(m.options.id, "followup") &&
+					strings.TrimSpace(m.input.Value()) != "" {
+					m.options = nil
+					return m.doEnter()
+				}
 				o := m.options
 				m.resolveOptionsLocal(o, o.idx, false)
 				return m, nil
@@ -457,6 +576,15 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				go func() {
 					_ = m.client.Cancel(id)
 				}()
+				return m, nil
+			}
+			// FFF#26: Ctrl+C durante un deploy lo cancela (no sale de Noira).
+			if m.deployOn {
+				m.deployOn = false
+				m.thinking = false
+				m.addLine(T(m.lang, "deploy_cancelled"))
+				go func() { m.client.DeployCancel() }()
+				m.setStatus()
 				return m, nil
 			}
 			return m, tea.Quit
@@ -491,6 +619,15 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.client.SetUi(m.panel.Open, m.sessionID)
 			m.relayout()
 			m.setStatus()
+			return m, nil
+		case tea.KeyCtrlK:
+			// B1: paleta de comandos: abre el menú "/" listo para filtrar.
+			// Mismo componente H10 que "/", sin diálogos nuevos.
+			if m.confirm == nil && m.turnID == "" {
+				m.panel.Focus = false
+				m.input.SetValue("/")
+				m.syncSlash()
+			}
 			return m, nil
 		case tea.KeyEsc:
 			if m.panel.Focus {
@@ -588,7 +725,7 @@ func (m *Model) doEnter() (tea.Model, tea.Cmd) {
 }
 
 // slashCmds son los comandos con / (M1.3: nombres fijos en inglés).
-var slashCmds = []string{"/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/level", "/lang", "/title", "/learn", "/mouse", "/copy", "/mcp", "/parallel", "/agents", "/connections", "/connect", "/explain", "/deploy", "/logout", "/login", "/quit"}
+var slashCmds = []string{"/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/level", "/lang", "/title", "/learn", "/mouse", "/copy", "/mcp", "/parallel", "/agents", "/connections", "/connect", "/explain", "/deploy", "/logout", "/login", "/quit", "/how", "/undo", "/redo", "/find", "/cmd", "/cmds", "/later", "/tasks"}
 
 // slashDesc devuelve la descripción corta del comando (JJ: una por comando,
 // del catálogo; si falta, solo el comando).
@@ -639,7 +776,7 @@ func (m *Model) resolveOptionsLocal(o *optionsState, idx int, cancel bool) {
 		if o.id == "welcome" {
 			setWelcomeSeen()
 		}
-		if o.id != "connect-form" && o.id != "welcome" && o.id != "level" {
+		if o.id != "connect-form" && o.id != "welcome" && o.id != "level" && !strings.HasPrefix(o.id, "followup") {
 			go func() {
 				_ = m.client.Options(o.id, "")
 			}()
@@ -650,7 +787,7 @@ func (m *Model) resolveOptionsLocal(o *optionsState, idx int, cancel bool) {
 		return
 	}
 	item := o.items[idx]
-	if o.id != "connect-form" && o.id != "welcome" && o.id != "level" {
+	if o.id != "connect-form" && o.id != "welcome" && o.id != "level" && !strings.HasPrefix(o.id, "followup") {
 		go func() {
 			_ = m.client.Options(o.id, item.Key)
 		}()
@@ -667,6 +804,10 @@ func (m *Model) resolveOptionsLocal(o *optionsState, idx int, cancel bool) {
 	// ZZ: /level con el mismo componente de opciones.
 	if o.id == "level" {
 		m.setLevel(item.Key)
+	}
+	// B1: sugerencias de seguimiento: rellenan el input (no auto-envían).
+	if strings.HasPrefix(o.id, "followup") {
+		m.input.SetValue(item.Key)
 	}
 	// HH: bienvenida (conectar OAuth o seguir).
 	if o.id == "welcome" {
@@ -807,13 +948,16 @@ func (m *Model) renderWelcomeBlock() string {
 }
 
 // chooseWelcome resuelve la bienvenida (Enter, número o clic).
+// FFF: la primera opción abre /connect genérico (Kilo + BYOK); el OAuth
+// de OpenRouter sigue disponible vía /login. Nada de camino obligatorio.
 func (m *Model) chooseWelcome(key string) {
 	setWelcomeSeen()
 	m.options = nil
 	if key != "connect" {
 		return
 	}
-	m.doLogin()
+	m.input.SetValue("/connect")
+	m.doEnter()
 }
 
 // doLogin lanza el OAuth en el servidor y pinta el resultado. Compartido
@@ -1216,10 +1360,17 @@ func (m *Model) handleCommand(text string) bool {
 		}
 		m.addLine(lipgloss.NewStyle().Foreground(accent).Render("  " + T(m.lang, "deploy_running")))
 		m.thinking = true
+		m.deployOn = true
+		m.deployStart = time.Now()
 		m.setStatus()
 		go func() {
 			ok, out := m.client.Deploy(target)
 			m.thinking = false
+			m.deployOn = false
+			if !m.deployStart.IsZero() {
+				m.addLine(lipgloss.NewStyle().Foreground(muted).Render("  " + F(m.lang, "deploy_elapsed", map[string]string{"s": fmt.Sprint(int(time.Since(m.deployStart).Seconds()))})))
+				m.deployStart = time.Time{}
+			}
 			for _, ln := range strings.Split(strings.TrimSpace(out), "\n") {
 				if strings.TrimSpace(ln) != "" {
 					m.addLine("  " + ln)
@@ -1387,6 +1538,125 @@ func (m *Model) handleCommand(text string) bool {
 			return true
 		}
 		return m.setLevel(parts[1])
+	case "/how":
+		// B1: muestra/oculta cómo trabajó el último turno.
+		if m.lastWork == nil {
+			m.addLine(T(m.lang, "how_empty"))
+			return true
+		}
+		m.showHow = !m.showHow
+		if m.showHow {
+			w := m.lastWork
+			m.addLine(lipgloss.NewStyle().Foreground(muted).Render("  " + F(m.lang, "how_detail", map[string]string{
+				"tools": strings.Join(w.tools, ", "),
+				"steps": fmt.Sprint(w.steps),
+				"model": w.model, "level": w.level,
+				"s":     fmt.Sprint(w.secs)})))
+		}
+		return true
+	case "/undo":
+		msg, errMsg := m.client.UndoRedo(false)
+		if errMsg != "" {
+			m.addLine(T(m.lang, "err_line") + errMsg)
+			return true
+		}
+		m.addLine(Sanitize(msg))
+		m.refreshPanel()
+		return true
+	case "/redo":
+		msg, errMsg := m.client.UndoRedo(true)
+		if errMsg != "" {
+			m.addLine(T(m.lang, "err_line") + errMsg)
+			return true
+		}
+		m.addLine(Sanitize(msg))
+		m.refreshPanel()
+		return true
+	case "/find":
+		// B1: busca en el historial del chat (solo esta vista).
+		if len(parts) < 2 {
+			m.findPat = ""
+			m.viewport.SetContent(strings.Join(m.messages, "\n"))
+			m.viewport.GotoBottom()
+			m.addLine(T(m.lang, "find_usage"))
+			return true
+		}
+		q := strings.ToLower(strings.Join(parts[1:], " "))
+		m.findPat = q
+		hits := []string{}
+		for _, ln := range m.messages {
+			if strings.Contains(strings.ToLower(Sanitize(ln)), q) {
+				hits = append(hits, ln)
+			}
+		}
+		if len(hits) == 0 {
+			m.addLine(F(m.lang, "find_empty", map[string]string{"q": q}))
+			m.findPat = ""
+			return true
+		}
+		m.viewport.SetContent(F(m.lang, "find_done", map[string]string{
+			"n": fmt.Sprint(len(hits)), "total": fmt.Sprint(len(m.messages))}) +
+			"\n" + strings.Join(hits, "\n"))
+		m.viewport.GotoBottom()
+		return true
+	case "/cmds":
+		// B2: lista comandos personalizados.
+		cmds, errMsg := m.client.Cmds()
+		if errMsg != "" {
+			m.addLine(T(m.lang, "err_line") + errMsg)
+			return true
+		}
+		if len(cmds) == 0 {
+			m.addLine(T(m.lang, "cmds_empty"))
+			return true
+		}
+		for _, c := range cmds {
+			m.addLine("  /cmd " + c.Nombre + " — " + c.Desc)
+		}
+		return true
+	case "/cmd":
+		// B2: expande un comando personalizado y lo envía como turno
+		// normal (mismas confirmaciones, sin saltarse nada).
+		if len(parts) < 2 {
+			m.addLine(T(m.lang, "cmd_usage"))
+			return true
+		}
+		prompt, errMsg := m.client.CmdExpand(parts[1], strings.Join(parts[2:], " "))
+		if errMsg != "" {
+			m.addLine(T(m.lang, "err_line") + errMsg)
+			return true
+		}
+		m.input.SetValue(prompt)
+		m.doEnter()
+		return true
+	case "/later":
+		// B2: encola una tarea para después (no bloquea).
+		if len(parts) < 2 {
+			m.addLine(T(m.lang, "queue_usage"))
+			return true
+		}
+		id, errMsg := m.client.QueueAdd(strings.Join(parts[1:], " "))
+		if errMsg != "" {
+			m.addLine(T(m.lang, "err_line") + errMsg)
+			return true
+		}
+		m.addLine(F(m.lang, "queue_added", map[string]string{"id": id}))
+		return true
+	case "/tasks":
+		// B2: estado visible de la cola.
+		ts, errMsg := m.client.QueueList()
+		if errMsg != "" {
+			m.addLine(T(m.lang, "err_line") + errMsg)
+			return true
+		}
+		if len(ts) == 0 {
+			m.addLine(T(m.lang, "queue_empty"))
+			return true
+		}
+		for _, t := range ts {
+			m.addLine("  [" + t.Estado + "] " + t.ID + " " + t.Texto)
+		}
+		return true
 	case "/model":
 		if len(parts) < 2 {
 			m.addLine(F(m.lang, "model_usage", map[string]string{"model": m.modelName}))
@@ -1424,7 +1694,7 @@ func (m *Model) handleCommand(text string) bool {
 	// H9: unknown command — suggest similar commands
 	input := parts[0]
 	similar := []string{}
-	known := []string{"/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/level", "/lang", "/title", "/learn", "/mouse", "/copy", "/mcp", "/parallel", "/agents", "/connections", "/connect", "/explain", "/deploy", "/logout", "/login", "/quit"}
+	known := []string{"/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/level", "/lang", "/title", "/learn", "/mouse", "/copy", "/mcp", "/parallel", "/agents", "/connections", "/connect", "/explain", "/deploy", "/logout", "/login", "/quit", "/how", "/undo", "/redo", "/find", "/cmd", "/cmds", "/later", "/tasks"}
 	for _, k := range known {
 		if strings.HasPrefix(k, input) || strings.Contains(k, input) {
 			similar = append(similar, k)
@@ -1447,6 +1717,14 @@ func (m *Model) sendTurn(text string) {	turnID, sessID, err := m.client.Turn(m.s
 	}
 	m.sessionID = sessID
 	m.turnID = turnID
+	m.turnStart = time.Now()
+}
+
+// bellCmd hace sonar la campana del terminal (Windows Terminal la reproduce).
+// B1: solo al terminar turnos largos (>120s), sin mensajes.
+func bellCmd() tea.Msg {
+	fmt.Print("\a")
+	return nil
 }
 
 func str(ev Event, k string) string {
@@ -1454,6 +1732,48 @@ func str(ev Event, k string) string {
 		if s, ok := v.(string); ok {
 			return s
 		}
+	}
+	return ""
+}
+
+// strSlice lee un array de strings del evento (para listas del motor).
+func strSlice(ev Event, k string) []string {
+	v, ok := ev.Data[k]
+	if !ok {
+		return nil
+	}
+	arr, ok := v.([]interface{})
+	if !ok {
+		return nil
+	}
+	out := []string{}
+	for _, e := range arr {
+		if s, ok := e.(string); ok {
+			out = append(out, s)
+		}
+	}
+	return out
+}
+
+// num lee un número del evento (JSON los trae como float64).
+func num(ev Event, k string) float64 {
+	if v, ok := ev.Data[k]; ok {
+		if f, ok := v.(float64); ok {
+			return f
+		}
+	}
+	return 0
+}
+
+// confKey traduce la confianza del motor a clave de catálogo (o vacío).
+func confKey(conf string) string {
+	switch conf {
+	case "verified":
+		return "conf_verified"
+	case "unverified":
+		return "conf_unverified"
+	case "readonly":
+		return "conf_readonly"
 	}
 	return ""
 }
@@ -1469,6 +1789,10 @@ func (m *Model) onEvent(ev Event) {
 		// ZZ: nivel vivo del motor (lo muestra la bienvenida y lo usa /level).
 		if lv := str(ev, "level"); lv != "" {
 			m.level = lv
+		}
+		// GGG: aviso Kilo solo sin proveedores conectados.
+		if n, ok := ev.Data["conectados"].(float64); ok {
+			m.conectados = int(n)
 		}
 		m.addLine("")
 		m.addLine(lipgloss.NewStyle().Foreground(gold).Bold(true).Render("  > NOIRACODER") +
@@ -1493,30 +1817,30 @@ func (m *Model) onEvent(ev Event) {
 		m.maybeWelcome()
 		m.setStatus()
 	case "turn.echo":
-		// M4.2: eco inmediato del mensaje del usuario.
+		// M4.2: eco inmediato del mensaje del usuario (burbuja simple).
 		if msg := str(ev, "message"); msg != "" {
-			m.messages = append(m.messages, "> "+Sanitize(msg))
-			m.viewport.SetContent(strings.Join(m.messages, "\n"))
-			m.viewport.GotoBottom()
+			m.addBubbleLine("user", msg)
 		}
 	case "turn.thinking":
-		// M4.2: indicador de que el modelo está procesando.
-		m.addLine(T(m.lang, "turn_thinking"))
+		// M4.2: indicador de que el modelo está procesando (burbuja assistant).
+		m.addBubbleLine("assistant", T(m.lang, "turn_thinking"))
 	case "turn.silence":
 		// M4.2: aviso de silencio prolongado.
 		m.addLine(F(m.lang, "turn_silence", map[string]string{
 			"hint": str(ev, "hint"), "ms": fmt.Sprintf("%v", ev.Data["ms"]),
 		}))
 	case "turn.text":
-		if d, ok := ev.Data["delta"].(string); ok && len(m.messages) > 0 {
-			last := len(m.messages) - 1
-			if strings.HasPrefix(m.messages[last], "> ") {
-				m.messages = append(m.messages, "")
-				last++
+		if d, ok := ev.Data["delta"].(string); ok {
+			if len(m.messages) == 0 || !strings.HasPrefix(m.messages[len(m.messages)-1], "◀ ") {
+				// Primer chunk: crear nueva línea de burbuja assistant
+				m.addBubbleLine("assistant", Sanitize(d))
+			} else {
+				// Chunks siguientes: append a la última burbuja
+				last := len(m.messages) - 1
+				m.messages[last] += Sanitize(d)
+				m.viewport.SetContent(strings.Join(m.messages, "\n"))
+				m.viewport.GotoBottom()
 			}
-			m.messages[last] += Sanitize(d)
-			m.viewport.SetContent(strings.Join(m.messages, "\n"))
-			m.viewport.GotoBottom()
 		}
 	case "model.switch":
 		m.modelName = Sanitize(or(str(ev, "a"), m.modelName))
@@ -1543,11 +1867,22 @@ func (m *Model) onEvent(ev Event) {
 	case "options.result":
 		m.addLine(F(m.lang, "confirm_result", map[string]string{"reason": str(ev, "choice") + ": " + str(ev, "motivo")}))
 	case "model.quota":
-		if v, ok := ev.Data["usadoPct"].(float64); ok {
-			m.quotaPct = int(v)
-		}
-		if a := str(ev, "aviso"); a != "" {
-			m.addLine(F(m.lang, "quota_warn", map[string]string{"notice": a}))
+		// EEE: números combinados de TODOS los proveedores. El aviso
+		// como línea de chat se suprime: solo el número, sin alarmas.
+		if t, ok := ev.Data["total"].(float64); ok && int(t) > 0 {
+			m.quotaTotal = int(t)
+			if r, ok := ev.Data["restante"].(float64); ok {
+				m.quotaUsed = m.quotaTotal - int(r)
+				if m.quotaUsed < 0 {
+					m.quotaUsed = 0
+				}
+				if m.quotaUsed > m.quotaTotal {
+					m.quotaUsed = m.quotaTotal
+				}
+			}
+		} else if v, ok := ev.Data["usadoPct"].(float64); ok {
+			m.quotaTotal = 100
+			m.quotaUsed = int(v)
 		}
 		m.setStatus()
 	case "confirm.result":
@@ -1576,8 +1911,48 @@ func (m *Model) onEvent(ev Event) {
 	case "turn.end":
 		m.thinking = false
 		m.turnID = ""
+		// B1: campana solo en turnos largos (>120s), sin mensajes.
+		if !m.turnStart.IsZero() && time.Since(m.turnStart) > 120*time.Second {
+			m.ringBell = true
+		}
+		m.turnStart = time.Time{}
 		m.setStatus()
 		m.refreshPanel()
+	case "turn.summary":
+		// B1: guarda el trabajo (para /how) y pinta veredicto + apunte.
+		tools := strSlice(ev, "herramientas")
+		m.lastWork = &workSummary{
+			tools: tools,
+			steps: int(num(ev, "pasos")),
+			secs:  int(num(ev, "segundos")),
+			model: str(ev, "modelo"),
+			level: str(ev, "nivel"),
+			conf:  str(ev, "confianza"),
+		}
+		if ckey := confKey(m.lastWork.conf); ckey != "" {
+			m.addLine(lipgloss.NewStyle().Foreground(green).Render("✓ " + T(m.lang, ckey)))
+		}
+		m.addLine(lipgloss.NewStyle().Foreground(muted).Render("  " + F(m.lang, "how_line", map[string]string{
+			"s": fmt.Sprint(m.lastWork.secs), "n": fmt.Sprint(len(tools))})))
+	case "undo.hint":
+		m.addLine(lipgloss.NewStyle().Foreground(muted).Render("  " + T(m.lang, "undo_hint")))
+	case "hook.done":
+		// B2: salida del hook afterEdit (si el usuario lo configuró).
+		m.addLine(lipgloss.NewStyle().Foreground(muted).Render("  " + T(m.lang, "hook_done")))
+		for _, ln := range strings.Split(str(ev, "salida"), "\n") {
+			if strings.TrimSpace(ln) != "" {
+				m.addLine("  " + ln)
+			}
+		}
+	case "plan.update":
+		// B1: checklist del plan (el motor manda el estado vivo).
+		m.planItems = strSlice(ev, "items")
+		m.setStatus()
+	case "login.url":
+		// FFF#25: el navegador no abrió; la URL sirve a mano (el callback
+		// sigue escuchando en el motor, no es un error).
+		m.addLine(lipgloss.NewStyle().Foreground(accent).Render("  " + T(m.lang, "login_url")))
+		m.addLine("  " + str(ev, "url"))
 	}
 }
 
@@ -1754,6 +2129,8 @@ func (m *Model) View() string {
 	body := m.viewport.View()
 	// HH: bloque estático de bienvenida (título + Kilo) entre filete y chat.
 	welcome := m.renderWelcomeBlock()
+	// B1: checklist del plan entre bienvenida y chat (vacío = 0 líneas).
+	plan := m.renderPlan()
 	// La entrada/hints/estado no dependen del diálogo: se construyen antes
 	// para medir el frame (HALLAZGO menú corto, ver fitBox).
 	boxIn := lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(accent).Padding(0, 2)
@@ -1766,23 +2143,25 @@ func (m *Model) View() string {
 	}
 	st := lipgloss.NewStyle().Foreground(muted).Render(m.status)
 	// WW: aviso permanente y discreto de Kilo en la línea baja (solo acento
-	// dorado de marca). Misma línea si cabe; si no, línea propia. Va ANTES
-	// de fixedNL para que la cuenta de líneas siga exacta.
-	kh := lipgloss.NewStyle().Foreground(accent).Render(T(m.lang, "kilo_hint"))
-	if m.chatW > 0 && runewidth.StringWidth(m.status)+2+runewidth.StringWidth(T(m.lang, "kilo_hint")) <= m.chatW {
-		st = st + "  " + kh
-	} else {
-		st = st + "\n" + kh
+	// dorado de marca). GGG: desaparece con 1+ proveedores conectados.
+	// Va ANTES de fixedNL para que la cuenta de líneas siga exacta.
+	if m.conectados == 0 {
+		kh := lipgloss.NewStyle().Foreground(accent).Render(T(m.lang, "kilo_hint"))
+		if m.chatW > 0 && runewidth.StringWidth(m.status)+2+runewidth.StringWidth(T(m.lang, "kilo_hint")) <= m.chatW {
+			st = st + "  " + kh
+		} else {
+			st = st + "\n" + kh
+		}
 	}
 	// fixedNL son los "\n" del frame SIN la caja de diálogo (los dos "\n"
 	// que la envuelven cuentan aquí). Con nl() la cuenta es exacta.
-	fixedNL := nl(head) + 1 + nl(welcome) + nl(body) +
+	fixedNL := nl(head) + 1 + nl(welcome) + nl(plan) + nl(body) +
 		1 + 1 + nl(in) + 2 + nl(hints) + nl(extra) + 1 + nl(st)
 	var dlg string
 	if m.confirm != nil {
 		box := lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(accent).Padding(1, 2)
 		dlg = "\n" + box.Render(lipgloss.NewStyle().Bold(true).Foreground(accent).Render(T(m.lang, "confirm_q"))+"\n"+
-			m.confirm.detail+"\n\n"+T(m.lang, "confirm_yn")) + "\n"
+			colorDiff(m.confirm.detail)+"\n\n"+T(m.lang, "confirm_yn")) + "\n"
 	}
 	// H10: opciones seleccionables — diálogo. El menú de "/" (M) reutiliza la
 	// MISMA caja para que se comporten igual: acento, cursor visible, clic.
@@ -1796,7 +2175,7 @@ func (m *Model) View() string {
 	}
 	// La entrada es el elemento con el foco: borde en acento para que se vea
 	// dónde estás. Padding lateral 2 para que respire.
-	chat := head + "\n" + welcome + body + dlg + "\n" + in + "\n\n" + hints + extra + "\n" + st
+	chat := head + "\n" + welcome + plan + body + dlg + "\n" + in + "\n\n" + hints + extra + "\n" + st
 	// M2: lateral al lado (ancho) o como hoja (estrecho). Scan envuelve
 	// las zonas de clic para el ratón.
 	if m.panel.Open && m.width >= MinFullWidth {
