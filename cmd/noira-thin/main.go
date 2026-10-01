@@ -19,7 +19,7 @@ func main() {
 	// el binario corresponde al commit a publicar).
 	for _, a := range os.Args[1:] {
 		if a == "--version" || a == "-v" {
-			fmt.Println(version.Version + " " + version.GitSha)
+			fmt.Println(version.Version + " " + version.GitSha + " " + version.GoContentHash)
 			return
 		}
 	}

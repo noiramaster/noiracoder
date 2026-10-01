@@ -88,22 +88,22 @@ function checkLocalArtifacts() {
 checkLocalArtifacts();
 if (ARTIFACTS_ONLY) process.exit(0);
 
-// GATE E (TAREA QQ, 2026-09-29) — los binarios de plataforma deben
-// corresponder al commit HEAD que se va a publicar: cada uno lleva el git
-// sha embebido vía ldflags (-X .../internal/version.GitSha, ver
-// scripts/build-thin*.mjs + `noira-thin --version`). El bug 0.2.0-vs-0.2.2
-// pasó porque solo se comprobaba que la VERSIÓN existiera, nunca el
-// CONTENIDO (bienvenida vieja + menú "/" cortado en el instalado real).
-// Solo en prepublish completo: los npm/*/bin no se versionan (los genera
-// build:thin:all DESPUÉS del commit). Fail-closed: sin git o sin binarios,
-// bloquea.
+// GATE E v2 (TAREA HHH) — los binarios de plataforma deben contener el hash
+// del CONTENIDO Go actual (scripts/go-content-hash.mjs, embebido vía ldflags
+// -X .../internal/version.GoContentHash; ver scripts/build-thin*.mjs).
+// El gate v1 comparaba el sha de commit: un `git pull --rebase` (p. ej. el
+// post diario del blog, que solo toca landing/) cambiaba el HEAD sin cambiar
+// ni una línea Go y bloqueaba binarios funcionalmente idénticos — 3 veces el
+// mismo patrón. Con hash de contenido, solo un cambio real en cmd/,
+// internal/, go.mod o go.sum invalida el binario.
+// Solo en prepublish completo. Fail-closed: sin hash o sin binarios, bloquea.
 {
-  let head;
+  let contentHash;
   try {
-    head = execFileSync("git", ["rev-parse", "HEAD"], { cwd: pkgDir, encoding: "utf8" }).trim();
-    if (!/^[0-9a-f]{40}$/.test(head)) throw new Error(`sha raro: ${head}`);
+    contentHash = execFileSync(process.execPath, [join(pkgDir, "scripts", "go-content-hash.mjs")], { cwd: pkgDir, encoding: "utf8" }).trim();
+    if (!/^[0-9a-f]{64}$/.test(contentHash)) throw new Error(`hash raro: ${contentHash}`);
   } catch (e) {
-    console.error(`[prepublish] BLOQUEADO (GATE E): no se pudo leer el git HEAD (${e instanceof Error ? e.message : e}).`);
+    console.error(`[prepublish] BLOQUEADO (GATE E): no se pudo calcular el hash de contenido Go (${e instanceof Error ? e.message : e}).`);
     process.exit(1);
   }
   const BINS = [
@@ -119,8 +119,8 @@ if (ARTIFACTS_ONLY) process.exit(0);
       stale.push(`${b.rel} (falta: corre scripts/build-thin-all.mjs tras el commit)`);
       continue;
     }
-    if (!readFileSync(p).includes(head)) {
-      stale.push(`${b.rel} (no contiene HEAD ${head.slice(0, 12)}: binario viejo, reconstruye)`);
+    if (!readFileSync(p).includes(contentHash)) {
+      stale.push(`${b.rel} (no contiene el hash de contenido ${contentHash.slice(0, 12)}: Go cambió, reconstruye)`);
       continue;
     }
     if (b.exec) {
@@ -131,15 +131,15 @@ if (ARTIFACTS_ONLY) process.exit(0);
         stale.push(`${b.rel} (--version falló: ${e instanceof Error ? e.message : e})`);
         continue;
       }
-      if (!out.includes(head)) {
-        stale.push(`${b.rel} (--version no trae HEAD: "${out.slice(0, 80)}")`);
+      if (!out.includes(contentHash)) {
+        stale.push(`${b.rel} (--version no trae el hash: "${out.slice(0, 100)}")`);
         continue;
       }
     }
-    console.error(`[prepublish] ok (GATE E): ${b.rel} corresponde a HEAD ${head.slice(0, 12)}.`);
+    console.error(`[prepublish] ok (GATE E): ${b.rel} contenido ${contentHash.slice(0, 12)} verificado.`);
   }
   if (stale.length > 0) {
-    console.error(`[prepublish] BLOQUEADO (GATE E): binarios que NO corresponden al commit ${head.slice(0, 12)}:`);
+    console.error(`[prepublish] BLOQUEADO (GATE E): binarios con contenido Go distinto al actual (${contentHash.slice(0, 12)}):`);
     for (const s of stale) console.error(`[prepublish]   - ${s}`);
     process.exit(1);
   }

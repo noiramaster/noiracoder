@@ -12,8 +12,9 @@ import { createHash } from "node:crypto";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const out = process.platform === "win32" ? "bin/noira-thin.exe" : "bin/noira-thin";
-// GATE E: embeber el git sha para que check-release.mjs verifique que el
-// binario corresponde al commit a publicar (no un resto viejo).
+// GATE E v2: embeber git sha (procedencia) + hash de CONTENIDO Go
+// (scripts/go-content-hash.mjs). El gate comprueba el contenido: un rebase
+// que no toque Go no invalida el binario.
 let gitSha = "dev";
 try {
   const r = spawnSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" });
@@ -22,7 +23,15 @@ try {
 } catch (e) {
   console.error(`[build:thin] aviso: git no disponible (uso "dev").`);
 }
-const r = spawnSync("go", ["build", "-trimpath", "-ldflags", `-s -w -X github.com/opencode-ai/opencode/internal/version.GitSha=${gitSha}`, "-o", out, "./cmd/noira-thin"],
+let contentHash = "dev";
+try {
+  const r = spawnSync(process.execPath, [join(root, "scripts", "go-content-hash.mjs")], { cwd: root, encoding: "utf8" });
+  if (r.status === 0 && /^[0-9a-f]{64}$/.test(r.stdout.trim())) contentHash = r.stdout.trim();
+  else console.error(`[build:thin] aviso: sin hash de contenido (uso "dev").`);
+} catch (e) {
+  console.error(`[build:thin] aviso: hash de contenido no disponible (uso "dev").`);
+}
+const r = spawnSync("go", ["build", "-trimpath", "-ldflags", `-s -w -X github.com/opencode-ai/opencode/internal/version.GitSha=${gitSha} -X github.com/opencode-ai/opencode/internal/version.GoContentHash=${contentHash}`, "-o", out, "./cmd/noira-thin"],
   { cwd: root, stdio: "inherit", env: { ...process.env, CGO_ENABLED: "0" } });
 if (r.status !== 0) {
   console.error("[build:thin] falló la compilación (¿Go instalado? https://go.dev).");

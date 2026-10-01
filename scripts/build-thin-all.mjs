@@ -22,7 +22,8 @@ const TARGETS = [
 ];
 
 let fail = 0;
-// GATE E: embeber el git sha en cada binario (ver build-thin.mjs).
+// GATE E v2: git sha (procedencia) + hash de CONTENIDO Go (lo que el gate
+// comprueba; ver scripts/go-content-hash.mjs y build-thin.mjs).
 let gitSha = "dev";
 try {
   const rh = spawnSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" });
@@ -31,11 +32,19 @@ try {
 } catch {
   console.error(`[build:thin:all] aviso: git no disponible (uso "dev").`);
 }
+let contentHash = "dev";
+try {
+  const rc = spawnSync(process.execPath, [join(root, "scripts", "go-content-hash.mjs")], { cwd: root, encoding: "utf8" });
+  if (rc.status === 0 && /^[0-9a-f]{64}$/.test(rc.stdout.trim())) contentHash = rc.stdout.trim();
+  else console.error(`[build:thin:all] aviso: sin hash de contenido (uso "dev").`);
+} catch {
+  console.error(`[build:thin:all] aviso: hash de contenido no disponible (uso "dev").`);
+}
 for (const t of TARGETS) {
   const outDir = join(root, "npm", t.pkg, "bin");
   mkdirSync(outDir, { recursive: true });
   const out = join(outDir, t.bin);
-  const r = spawnSync("go", ["build", "-trimpath", "-ldflags", `-s -w -X github.com/opencode-ai/opencode/internal/version.GitSha=${gitSha}`, "-o", out, "./cmd/noira-thin"],
+  const r = spawnSync("go", ["build", "-trimpath", "-ldflags", `-s -w -X github.com/opencode-ai/opencode/internal/version.GitSha=${gitSha} -X github.com/opencode-ai/opencode/internal/version.GoContentHash=${contentHash}`, "-o", out, "./cmd/noira-thin"],
     { cwd: root, stdio: "pipe", env: { ...process.env, CGO_ENABLED: "0", GOOS: t.goos, GOARCH: t.goarch } });
   if (r.status !== 0) {
     console.error(`[build:thin:all] FALLO ${t.pkg}: ${(r.stderr || []).toString().slice(0, 400)}`);
