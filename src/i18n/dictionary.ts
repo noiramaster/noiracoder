@@ -32,6 +32,14 @@ export interface Messages {
   quotaExhausted: string;
   /** HITO 4.7 (opcional: resto de locales caen al inglés vía T()). */
   freeWarning?: string;
+  /** FFF#40: banner/panel Ink (resto cae a EN). Sin estos, el Ink mezclaba ES+EN. */
+  bannerOffline?: string;
+  bannerAwaiting?: string;
+  bannerReady?: string;
+  bannerNoSessions?: string;
+  bannerCmdsNew?: string;
+  bannerRecent?: string;
+  bannerResumeHint?: string;
   routerLevelPrefix: string;
   /** M1.7: mensaje propio ante error externo (resto cae a EN). */
   errorExternal?: string;
@@ -49,6 +57,13 @@ export const DEFAULT_LANGUAGE = "en";
 
 export const MESSAGES: Record<string, Messages> = {
   en: {
+    bannerOffline: "> Offline — local models active",
+    bannerAwaiting: "> Awaiting connection... (use /login to connect)",
+    bannerReady: "> Ready.",
+    bannerNoSessions: "> No sessions yet. Start typing to create one.",
+    bannerCmdsNew: "Commands: /login · /new · /level · /help",
+    bannerRecent: "> Recent sessions:",
+    bannerResumeHint: "/resume [index] · /new · /search · /level · /help",
     langUnsupported: "Language not supported ({lang}), falling back to English.",
     langDetected: "Language detected: {lang}",
     langSelectorPrompt: "Choose your language. Enter a code from: {codes} (blank to keep {lang}):",
@@ -84,6 +99,13 @@ export const MESSAGES: Record<string, Messages> = {
     optionSecurityDeny: "No",
   },
   es: {
+    bannerOffline: "> Sin conexión — modelos locales activos",
+    bannerAwaiting: "> Esperando conexión... (usa /login para conectar)",
+    bannerReady: "> Listo.",
+    bannerNoSessions: "> Aún no hay sesiones. Escribe para crear una.",
+    bannerCmdsNew: "Comandos: /login · /new · /level · /help",
+    bannerRecent: "> Sesiones recientes:",
+    bannerResumeHint: "/resume [indice] · /new · /search · /level · /help",
     langUnsupported: "Idioma no compatible ({lang}), usando inglés.",
     langDetected: "Idioma detectado: {lang}",
     langSelectorPrompt: "Elige tu idioma. Escribe un código de: {codes} (vacío para mantener {lang}):",
@@ -119,6 +141,13 @@ export const MESSAGES: Record<string, Messages> = {
     optionSecurityDeny: "No",
   },
   pt: {
+    bannerOffline: "> Sem ligação — modelos locais ativos",
+    bannerAwaiting: "> A aguardar ligação... (usa /login para ligar)",
+    bannerReady: "> Pronto.",
+    bannerNoSessions: "> Sem sessões. Escreve para criar uma.",
+    bannerCmdsNew: "Comandos: /login · /new · /level · /help",
+    bannerRecent: "> Sessões recentes:",
+    bannerResumeHint: "/resume [índice] · /new · /search · /level · /help",
     langUnsupported: "Idioma não suportado ({lang}), usando inglês.",
     langDetected: "Idioma detectado: {lang}",
     langSelectorPrompt: "Escolha o idioma. Digite um código de: {codes} (vazio para manter {lang}):",
@@ -154,6 +183,13 @@ export const MESSAGES: Record<string, Messages> = {
     optionSecurityDeny: "Não",
   },
   fr: {
+    bannerOffline: "> Hors ligne — modèles locaux actifs",
+    bannerAwaiting: "> En attente de connexion... (utilise /login)",
+    bannerReady: "> Prêt.",
+    bannerNoSessions: "> Aucune session. Écris pour en créer une.",
+    bannerCmdsNew: "Commandes : /login · /new · /level · /help",
+    bannerRecent: "> Sessions récentes :",
+    bannerResumeHint: "/resume [indice] · /new · /search · /level · /help",
     langUnsupported: "Langue non prise en charge ({lang}), bascule en anglais.",
     langDetected: "Langue détectée : {lang}",
     langSelectorPrompt: "Choisissez votre langue. Saisissez un code parmi : {codes} (vide pour conserver {lang}) :",
@@ -189,6 +225,13 @@ export const MESSAGES: Record<string, Messages> = {
     optionSecurityDeny: "Non",
   },
   de: {
+    bannerOffline: "> Offline — lokale Modelle aktiv",
+    bannerAwaiting: "> Warte auf Verbindung... (/login zum Verbinden)",
+    bannerReady: "> Bereit.",
+    bannerNoSessions: "> Noch keine Sitzungen. Tippen zum Erstellen.",
+    bannerCmdsNew: "Befehle: /login · /new · /level · /help",
+    bannerRecent: "> Letzte Sitzungen:",
+    bannerResumeHint: "/resume [Index] · /new · /search · /level · /help",
     langUnsupported: "Sprache nicht unterstützt ({lang}), Wechsel auf Englisch.",
     langDetected: "Erkannte Sprache: {lang}",
     langSelectorPrompt: "Sprache wählen. Geben Sie einen Code ein aus: {codes} (leer = {lang} beibehalten):",
@@ -224,6 +267,13 @@ export const MESSAGES: Record<string, Messages> = {
     optionSecurityDeny: "Nein",
   },
   it: {
+    bannerOffline: "> Offline — modelli locali attivi",
+    bannerAwaiting: "> In attesa di connessione... (usa /login)",
+    bannerReady: "> Pronto.",
+    bannerNoSessions: "> Nessuna sessione. Scrivi per crearne una.",
+    bannerCmdsNew: "Comandi: /login · /new · /level · /help",
+    bannerRecent: "> Sessioni recenti:",
+    bannerResumeHint: "/resume [indice] · /new · /search · /level · /help",
     langUnsupported: "Lingua non supportata ({lang}), si torna all'inglese.",
     langDetected: "Lingua rilevata: {lang}",
     langSelectorPrompt: "Scegli la lingua. Inserisci un codice tra: {codes} (vuoto per mantenere {lang}):",
@@ -291,6 +341,13 @@ export const MESSAGES: Record<string, Messages> = {
     optionSecurityDeny: "Нет",
   },
   ar: {
+    bannerOffline: "> دون اتصال — النماذج المحلية نشطة",
+    bannerAwaiting: "> بانتظار الاتصال... (استخدم /login)",
+    bannerReady: "> جاهز.",
+    bannerNoSessions: "> لا جلسات بعد. اكتب لإنشاء واحدة.",
+    bannerCmdsNew: "الأوامر: /login · /new · /level · /help",
+    bannerRecent: "> الجلسات الأخيرة:",
+    bannerResumeHint: "/resume [رقم] · /new · /search · /level · /help",
     langUnsupported: "اللغة غير مدعومة ({lang})، سيتم استخدام الإنجليزية.",
     langDetected: "اللغة المكتشفة: {lang}",
     langSelectorPrompt: "اختر لغتك. أدخل رمزًا من: {codes} (اتركه فارغًا للإبقاء على {lang}):",

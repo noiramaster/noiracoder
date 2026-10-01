@@ -1,6 +1,6 @@
 {
   "name": "noiracoder-linux-x64",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "NoiraCoder thin screen binary (Linux x64).",
   "license": "MIT",
   "os": ["linux"],

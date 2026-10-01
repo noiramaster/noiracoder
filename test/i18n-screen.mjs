@@ -91,6 +91,13 @@ const KEYS = Object.keys(T.en);
     // connect_all_n: "({n})" simbólico, sin palabras en ningún idioma
     "es:connect_all_n", "pt:connect_all_n", "fr:connect_all_n",
     "de:connect_all_n", "it:connect_all_n", "ar:connect_all_n",
+    // Símbolos sin palabras (igual en los 7, sin traducción posible)
+    "es:tool_start", "pt:tool_start", "fr:tool_start",
+    "de:tool_start", "it:tool_start", "ar:tool_start",
+    "es:tool_end", "pt:tool_end", "fr:tool_end",
+    "de:tool_end", "it:tool_end", "ar:tool_end",
+    // Cognado real es/pt (misma palabra en ambos idiomas)
+    "pt:model_switched",
   ]);
   let bad = 0;
   for (const l of LANGS) {
@@ -171,9 +178,11 @@ const GO_ALLOW = new Set([
   // Env/rutas/prefs (config, no UI)
   "NOIRARC_HOME", "NOIRA_PORT", "NOIRA_TOKEN", ".noirarc", "prefs.json", "language",
   // Marca/puntuación/teclas/comandos (M1.3: no se traducen)
-  "NOIRACODER", "NOIRACODER: ", "> ", "  ", " · ", "—", "\n", "", " ",
+  "NOIRACODER", "NOIRACODER: ", "> ", "  ", " · ", "…", "\n", "", " ",
   "{", "}", "y", "Y", "s", "S", "n", "N", "enter", "esc",
   "/", "/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/quit",
+  // B1/B2: nombres de comandos y marcas de checklist (M1.3, no se traducen)
+  "  /cmd ", "x ", "[x]", "[ ]",
   // Diagnóstico de arranque por stderr (lo ve el wrapper, nunca la pantalla)
   "[noira-thin] faltan NOIRA_PORT/NOIRA_TOKEN en el entorno (los pone el wrapper).",
   "[noira-thin] motor no disponible:", "[noira-thin] sin catálogo de pantalla:",
@@ -282,7 +291,11 @@ const RATCHET = {
   // traducidas en el CORE7 (la rotación fr→pl se reparó en dictionary.ts).
   const FALLBACK_OK = new Set(["freeWarning", "errorExternal",
     "optionsTitle", "optionsRecommended", "optionsHint",
-    "optionSecurityConfirm", "optionSecurityOnce", "optionSecurityAlways", "optionSecurityDeny"]);
+    "optionSecurityConfirm", "optionSecurityOnce", "optionSecurityAlways", "optionSecurityDeny",
+    // Banner Ink (ronda FFF#40): T() cae a EN fuera del CORE7, igual que
+    // freeWarning/errorExternal desde M1.10.
+    "bannerOffline", "bannerAwaiting", "bannerReady", "bannerNoSessions",
+    "bannerCmdsNew", "bannerRecent", "bannerResumeHint"]);
   // "No" es cognado válido en es/it (como confirmNo); el resto, técnico.
   const SAME_OK = new Set(["routerLevelPrefix", "es:confirmNo", "it:confirmNo", "es:optionSecurityDeny", "it:optionSecurityDeny"]);
   const en = flat(MESSAGES.en);

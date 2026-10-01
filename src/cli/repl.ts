@@ -52,29 +52,29 @@ interface Ctx {
 
 const LEVELS: Level[] = ["low", "medium", "high", "max", "offline"];
 
-function printBanner(log: Logger, version: string, cwd: string, key: string | null, online: boolean): void {
+function printBanner(log: Logger, version: string, cwd: string, key: string | null, online: boolean, lang: string): void {
   log.raw("");
   log.raw(`${color.gold("> NOIRA")} ${color.dim("v" + version)}`);
   log.raw(color.dim(`> ${cwd}`));
   if (!online) {
-    log.raw(color.yellow("> Offline") + color.dim(" · Modelos locales activos"));
+    log.raw(color.yellow(T("bannerOffline", lang)));
   } else if (!key) {
-    log.raw(color.yellow("> Awaiting connection...") + color.dim(" (usa /login para conectar)"));
+    log.raw(color.yellow(T("bannerAwaiting", lang)));
   } else {
-    log.raw(color.dim("> Ready."));
+    log.raw(color.dim(T("bannerReady", lang)));
   }
   log.raw("");
 }
 
-function printSessionPanel(log: Logger, sessions: SessionMeta[]): void {
+function printSessionPanel(log: Logger, sessions: SessionMeta[], lang: string): void {
   if (sessions.length === 0) {
-    log.raw(color.dim("> No sessions yet. Start typing to create one."));
+    log.raw(color.dim(T("bannerNoSessions", lang)));
     log.raw("");
-    log.raw(color.dim("  Comandos: /login · /new · /level · /help"));
+    log.raw(color.dim("  " + T("bannerCmdsNew", lang)));
     log.raw("");
     return;
   }
-  log.raw(color.dim("> Recent sessions:"));
+  log.raw(color.dim(T("bannerRecent", lang)));
   sessions.slice(0, 5).forEach((s, i) => {
     const emoji = getSessionEmoji(s.title ?? "");
     const date = formatDate(s.updatedAt);
@@ -82,7 +82,7 @@ function printSessionPanel(log: Logger, sessions: SessionMeta[]): void {
     log.raw(color.dim(`  ${color.yellow(`[${i}]`)} ${emoji} ${color.yellow(title)} ${color.dim(date)}`));
   });
   log.raw("");
-  log.raw(color.dim("  /resume [indice] · /new · /search · /level · /help"));
+  log.raw(color.dim("  " + T("bannerResumeHint", lang)));
   log.raw("");
 }
 
@@ -376,7 +376,7 @@ async function handleCommand(ctx: Ctx, line: string): Promise<boolean> {
       break;
     case "/panel": {
       const list = await ctx.store.list();
-      printSessionPanel(ctx.log, list);
+      printSessionPanel(ctx.log, list, ctx.selector.getLanguage());
       break;
     }
     case "/search": {
@@ -578,10 +578,10 @@ export async function runRepl(opts: ReplOptions): Promise<number> {
   // Onboard (detección de claves) ANTES del banner para no mentir el estado.
   await firstRunOnboard(ctx);
 
-  printBanner(log, version, opts.cwd, ctx.key, online);
+  printBanner(log, version, opts.cwd, ctx.key, online, ctx.selector.getLanguage());
 
   const recentSessions = await store.list();
-  printSessionPanel(log, recentSessions);
+  printSessionPanel(log, recentSessions, ctx.selector.getLanguage());
 
   if (opts.initialPrompt) {
     await runTurn(ctx, opts.initialPrompt);
