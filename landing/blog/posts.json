@@ -1,5 +1,25 @@
 [
   {
+    "slug": "offline-sin-modelos",
+    "file": "2026-10-02-offline-sin-modelos.html",
+    "date": "2026-10-02",
+    "category": "noiracoder",
+    "title_es": "NoiraCoder: Programación en Terminal sin Conexión ni Modelos Externos",
+    "title_en": "NoiraCoder: Offline Coding Without External Models",
+    "title_pt": "NoiraCoder: Programação offline sem modelos de IA",
+    "title_fr": "NoiraCoder : coder hors ligne sans modèles",
+    "title_de": "NoiraCoder: Programmieren im Terminal ohne Modelle – komplett offline",
+    "title_it": "NoiraCoder: programmazione offline senza modelli",
+    "title_ar": "NoiraCoder: البرمجة في الطرفية بدون نماذج عبر الإنترنت",
+    "excerpt_es": "NoiraCoder permite generar y depurar código offline sin depender de modelos de IA en la nube.",
+    "excerpt_en": "NoiraCoder lets developers write, test, and debug code in the terminal without any internet‑dependent AI models.",
+    "excerpt_pt": "Descubra como usar NoiraCoder para codificar totalmente offline, sem depender de modelos de IA.",
+    "excerpt_fr": "Découvrez comment NoiraCoder permet de programmer en mode offline sans recourir à des modèles d'IA.",
+    "excerpt_de": "Entdecke, wie NoiraCoder offline arbeitet, ohne auf externe KI‑Modelle angewiesen zu sein.",
+    "excerpt_it": "Scopri come NoiraCoder permette di scrivere e testare codice in terminale senza dipendere da modelli AI.",
+    "excerpt_ar": "NoiraCoder يتيح لك كتابة وتشغيل الشفرات بالكامل دون الحاجة إلى الاتصال بالإنترنت أو نماذج الذكاء الاصطناعي."
+  },
+  {
     "slug": "serve-api-local-editor",
     "file": "2026-10-01-serve-api-local-editor.html",
     "date": "2026-10-01",
