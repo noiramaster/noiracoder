@@ -14,6 +14,18 @@
  *
  * Se lee de DISCO (no de git): un árbol sucio da hash distinto y bloquea
  * (fail-closed). Uso: `node scripts/go-content-hash.mjs` imprime el hash.
+ *
+ * NORMALIZACIÓN EOL (fix 2026-10-03): los bytes \r se eliminan antes de
+ * hashear. Motivo real y verificado: con core.autocrlf=true, git guarda LF
+ * pero checkout escribe CRLF, y `git diff/status` ocultan esa diferencia;
+ * las herramientas de edición escriben LF. Resultado: el árbol del build
+ * tenía finales mixtos (hash único que no coincidía con ningún commit) y
+ * tras el rebase del blog todo pasó a CRLF (otro hash), con CERO cambios
+ * de contenido (157/157 ficheros idénticos normalizados, probado fichero
+ * a fichero). El gate bloqueaba por bytes fantasma. Git ignora EOL en su
+ * modelo de contenido; el hash hace lo mismo. (Un \r dentro de un literal
+ * raw con backticks sí cambiaría el binario, pero git tampoco lo vería:
+ * paridad total con git, ni más ni menos.)
  */
 import { readdirSync, readFileSync, existsSync } from "node:fs";
 import { join, dirname, relative, sep } from "node:path";
@@ -60,6 +72,8 @@ for (const p of files) {
   const rel = relative(root, p).split(sep).join("/");
   h.update(rel, "utf8");
   h.update("\0");
-  h.update(readFileSync(p));
+  // Normalizado EOL: solo contenido, como git (ver cabecera).
+  const raw = readFileSync(p).toString("binary").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  h.update(raw, "binary");
 }
 console.log(h.digest("hex"));
