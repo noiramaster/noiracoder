@@ -293,7 +293,7 @@ func (m *Model) panelEnter() (tea.Model, tea.Cmd) {
 			if nn, _, err := m.client.PatchSession(items[m.panel.Idx].ID, name, nil); err != nil {
 				m.addLine(T(m.lang, "err_sessions") + err.Error())
 			} else {
-				m.addLine(F(m.lang, "model_set", map[string]string{"model": nn}))
+				m.addLine(F(m.lang, "session_renamed", map[string]string{"name": nn}))
 				if items[m.panel.Idx].ID == m.sessionID {
 					m.sessName = Sanitize(nn)
 					m.setStatus()

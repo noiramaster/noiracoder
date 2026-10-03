@@ -179,7 +179,7 @@ const GO_ALLOW = new Set([
   "NOIRARC_HOME", "NOIRA_PORT", "NOIRA_TOKEN", ".noirarc", "prefs.json", "language",
   // Marca/puntuación/teclas/comandos (M1.3: no se traducen)
   "NOIRACODER", "NOIRACODER: ", "> ", "  ", " · ", "…", "\n", "", " ",
-  "{", "}", "y", "Y", "s", "S", "n", "N", "enter", "esc",
+  "{", "}", "{pct}", "y", "Y", "s", "S", "n", "N", "enter", "esc",
   "/", "/help", "/sessions", "/resume", "/new", "/plan", "/build", "/model", "/quit",
   // B1/B2: nombres de comandos y marcas de checklist (M1.3, no se traducen)
   "  /cmd ", "x ", "[x]", "[ ]",

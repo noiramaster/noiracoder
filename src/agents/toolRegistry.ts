@@ -39,6 +39,40 @@ export interface ToolEvent {
   error?: boolean;
 }
 
+/**
+ * PASO 0: resumen humano para la pantalla (antes iba el JSON crudo de
+ * argumentos: `write {"path":"...","content":"..."}`). Muestra menos, no
+ * más: solo nombre + argumento principal. El JSON completo sigue en logs.
+ */
+export function humanPreview(name: string, argsJson: string): string {
+  let a: Record<string, unknown> = {};
+  try {
+    a = argsJson ? (JSON.parse(argsJson) as Record<string, unknown>) : {};
+  } catch {
+    return (argsJson || "").replace(/\s+/g, " ").slice(0, 120);
+  }
+  const s = (v: unknown): string => (typeof v === "string" ? v : v == null ? "" : String(v));
+  switch (name) {
+    case "write":
+    case "edit":
+    case "read":
+    case "delete_file":
+    case "list":
+      return (s(a.path).slice(0, 200) || s(a.command).slice(0, 200) || name).replace(/\s+/g, " ");
+    case "bash":
+    case "git":
+      return s(a.command || a.args).slice(0, 200).replace(/\s+/g, " ") || name;
+    case "plan":
+      return `${s(a.action)}${s(a.items) ? ": " + s(a.items).slice(0, 160) : ""}`.slice(0, 200);
+    case "undo":
+      return s(a.action).slice(0, 60) || name;
+    case "deploy":
+      return `target=${s(a.target) || "vercel"}`;
+    default:
+      return (argsJson || "{}").replace(/\s+/g, " ").slice(0, 120);
+  }
+}
+
 export function buildToolRegistry(opts: {
   mcp?: McpRegistry;
   stableSystem?: { confirm: (msg: string) => Promise<boolean>; isSensitive: (p: string) => boolean; cwd: string };
@@ -75,7 +109,7 @@ export function buildToolRegistry(opts: {
       } catch {
         return `[error] JSON de argumentos invalido para ${name}: ${argsJson.slice(0, 200)}`;
       }
-      const preview = (argsJson || "{}").replace(/\s+/g, " ").slice(0, 300);
+      const preview = humanPreview(name, argsJson);
       const t0 = Date.now();
       opts.onTool?.({ phase: "start", name, preview });
       const finish = (out: string) => {

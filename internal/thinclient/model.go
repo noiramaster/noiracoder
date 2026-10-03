@@ -90,6 +90,7 @@ type Model struct {
 	showHow     bool          // B1: detalle de /how visible
 	turnStart   time.Time     // B1: inicio del turno (BEL si >120s)
 	ringBell    bool          // B1: campana pendiente al terminar turno largo
+	thinkShown  bool          // PASO 0: hay línea "pensando" que el 1er texto debe reemplazar
 	deployStart time.Time     // F6: inicio del deploy (contador + cancelar)
 	deployOn    bool          // F6: deploy en curso (Ctrl+C cancela, no sale)
 	findPat     string        // B1: filtro activo de /find ("" = sin filtro)
@@ -173,29 +174,43 @@ func (m *Model) Init() tea.Cmd { return textarea.Blink }
 func (m *Model) addLine(s string) {
 	// B1: un mensaje nuevo invalida el filtro de /find (vuelve al completo).
 	m.findPat = ""
-	m.messages = append(m.messages, Sanitize(s))
+	m.pushLine(Sanitize(s))
+}
+
+// pushLine añade una línea YA saneada (el estilo ANSI del llamante se
+// conserva; Sanitize solo toca contenido). Solo baja al fondo si ya
+// estabas abajo (PASO 0: antes cada línea te arrancaba de lo que leías).
+func (m *Model) pushLine(sanitized string) {
+	m.messages = append(m.messages, sanitized)
 	if len(m.messages) > 500 {
 		m.messages = m.messages[len(m.messages)-500:]
 	}
+	atBottom := m.viewport.AtBottom()
 	m.viewport.SetContent(strings.Join(m.messages, "\n"))
-	m.viewport.GotoBottom()
+	if atBottom {
+		m.viewport.GotoBottom()
+	}
 }
 
 // CCC: addBubbleLine añade una línea con indicador de rol (burbuja simple)
 // role: "user" = derecha (▶), "assistant" = izquierda (◀), "system" = centro (•)
-// Usa solo caracteres y color de acento (#FBBF24), nada de fondos SGR
-// que se rompen en ConPTY (quirk documentado).
-func (m *Model) addBubbleLine(role, text string) {
-	var prefix string
+// Solo el CONTENIDO pasa por Sanitize; el prefijo dorado (#FBBF24) se pinta
+// después (PASO 0: Sanitize se comía el ANSI y el dorado nunca llegaba).
+// bubblePrefix devuelve el marcador de rol con estilo (sin sanear: es
+// nuestro, no del modelo). Compartido para que thinking/text usen el mismo.
+func bubblePrefix(role string) string {
 	switch role {
 	case "user":
-		prefix = lipgloss.NewStyle().Foreground(accent).Render("▶ ")
+		return lipgloss.NewStyle().Foreground(accent).Render("▶ ")
 	case "assistant":
-		prefix = lipgloss.NewStyle().Foreground(accent).Render("◀ ")
+		return lipgloss.NewStyle().Foreground(accent).Render("◀ ")
 	default:
-		prefix = lipgloss.NewStyle().Foreground(muted).Render("• ")
+		return lipgloss.NewStyle().Foreground(muted).Render("• ")
 	}
-	m.addLine(prefix + text)
+}
+
+func (m *Model) addBubbleLine(role, text string) {
+	m.pushLine(bubblePrefix(role) + Sanitize(text))
 }
 
 func (m *Model) setStatus() {
@@ -214,12 +229,21 @@ func (m *Model) setStatus() {
 	if m.quotaTotal > 0 {
 		// EEE: solo el número (usado/total combinado); dorado normal,
 		// rojo SOLO en el último 10% restante. Sin alarmas.
+		// PASO 0: si el catálogo servido es viejo ("{pct}"), se sustituye
+		// con el % calculado (cura el cruce motor-viejo/pantalla-nueva).
 		qColor := accent
 		if quotaLow(m.quotaUsed, m.quotaTotal) {
 			qColor = red
 		}
-		parts = append(parts, lipgloss.NewStyle().Foreground(qColor).Render(
-			F(m.lang, "st_quota", map[string]string{"used": fmt.Sprint(m.quotaUsed), "total": fmt.Sprint(m.quotaTotal)})))
+		qtxt := F(m.lang, "st_quota", map[string]string{"used": fmt.Sprint(m.quotaUsed), "total": fmt.Sprint(m.quotaTotal)})
+		if strings.Contains(qtxt, "{pct}") {
+			pct := 0
+			if m.quotaTotal > 0 {
+				pct = m.quotaUsed * 100 / m.quotaTotal
+			}
+			qtxt = strings.ReplaceAll(qtxt, "{pct}", fmt.Sprint(pct))
+		}
+		parts = append(parts, lipgloss.NewStyle().Foreground(qColor).Render(qtxt))
 	}
 	if m.thinking {
 		parts = append(parts, F(m.lang, "st_thinking", map[string]string{"model": shortModel(m.modelName)}))
@@ -412,6 +436,21 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m.doEnter()
 		}
 		// M2.2: foco del panel (teclas, filtro, renombrado).
+		// PASO 1: los diálogos modales (confirmación y opciones) capturan
+		// sus teclas aunque el panel tenga el foco: antes el panel se comía
+		// la "y" y borrar sesión parecía no funcionar (diálogo clavado).
+		if (m.confirm != nil || m.options != nil) && m.panel.Focus {
+			ks := msg.String()
+			isDigit := len(ks) == 1 && ks[0] >= '1' && ks[0] <= '9'
+			switch ks {
+			case "y", "Y", "s", "S", "n", "N", "esc", "enter", "up", "up.Up", "down", "down.Down":
+				m.panel.Focus = false
+			default:
+				if isDigit {
+					m.panel.Focus = false
+				}
+			}
+		}
 		if um, cmd, done := m.handlePanelKey(msg); done {
 			return um, cmd
 		}
@@ -1597,7 +1636,7 @@ func (m *Model) handleCommand(text string) bool {
 		m.viewport.SetContent(F(m.lang, "find_done", map[string]string{
 			"n": fmt.Sprint(len(hits)), "total": fmt.Sprint(len(m.messages))}) +
 			"\n" + strings.Join(hits, "\n"))
-		m.viewport.GotoBottom()
+		m.viewport.GotoTop()
 		return true
 	case "/cmds":
 		// B2: lista comandos personalizados.
@@ -1818,12 +1857,14 @@ func (m *Model) onEvent(ev Event) {
 		m.setStatus()
 	case "turn.echo":
 		// M4.2: eco inmediato del mensaje del usuario (burbuja simple).
+		m.thinkShown = false
 		if msg := str(ev, "message"); msg != "" {
 			m.addBubbleLine("user", msg)
 		}
 	case "turn.thinking":
 		// M4.2: indicador de que el modelo está procesando (burbuja assistant).
 		m.addBubbleLine("assistant", T(m.lang, "turn_thinking"))
+		m.thinkShown = true
 	case "turn.silence":
 		// M4.2: aviso de silencio prolongado.
 		m.addLine(F(m.lang, "turn_silence", map[string]string{
@@ -1831,22 +1872,38 @@ func (m *Model) onEvent(ev Event) {
 		}))
 	case "turn.text":
 		if d, ok := ev.Data["delta"].(string); ok {
-			if len(m.messages) == 0 || !strings.HasPrefix(m.messages[len(m.messages)-1], "◀ ") {
+			// Si la última línea es el "pensando", se REEMPLAZA por la
+			// respuesta (antes quedaba "…pensando…hola" pegado).
+			if m.thinkShown && len(m.messages) > 0 {
+				m.messages[len(m.messages)-1] = bubblePrefix("assistant") + Sanitize(d)
+				m.thinkShown = false
+				atBottom := m.viewport.AtBottom()
+				m.viewport.SetContent(strings.Join(m.messages, "\n"))
+				if atBottom {
+					m.viewport.GotoBottom()
+				}
+			} else if len(m.messages) == 0 || !strings.Contains(m.messages[len(m.messages)-1], "◀ ") {
 				// Primer chunk: crear nueva línea de burbuja assistant
 				m.addBubbleLine("assistant", Sanitize(d))
 			} else {
-				// Chunks siguientes: append a la última burbuja
+				// Chunks siguientes: append a la última burbuja (respeta
+				// scroll: solo baja si ya estabas abajo).
 				last := len(m.messages) - 1
 				m.messages[last] += Sanitize(d)
+				atBottom := m.viewport.AtBottom()
 				m.viewport.SetContent(strings.Join(m.messages, "\n"))
-				m.viewport.GotoBottom()
+				if atBottom {
+					m.viewport.GotoBottom()
+				}
 			}
 		}
 	case "model.switch":
 		m.modelName = Sanitize(or(str(ev, "a"), m.modelName))
-		m.addLine(F(m.lang, "model_switched", map[string]string{
+		// PASO 0: línea tenue (la barra ya muestra el modelo vivo; esto es
+		// solo rastro). Antes iba en blanco y parecía log en bruto.
+		m.addLine(lipgloss.NewStyle().Foreground(muted).Render("  " + F(m.lang, "model_switched", map[string]string{
 			"from": str(ev, "de"), "to": str(ev, "a"), "reason": str(ev, "motivo"),
-		}))
+		})))
 		m.setStatus()
 	case "confirm.request":
 		m.confirm = &confirmState{id: str(ev, "confirmId"), detail: str(ev, "detalle")}
@@ -1911,6 +1968,7 @@ func (m *Model) onEvent(ev Event) {
 	case "turn.end":
 		m.thinking = false
 		m.turnID = ""
+		m.thinkShown = false
 		// B1: campana solo en turnos largos (>120s), sin mensajes.
 		if !m.turnStart.IsZero() && time.Since(m.turnStart) > 120*time.Second {
 			m.ringBell = true
