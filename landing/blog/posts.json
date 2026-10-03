@@ -1,5 +1,25 @@
 [
   {
+    "slug": "planificar-antes-de-codificar",
+    "file": "2026-10-03-planificar-antes-de-codificar.html",
+    "date": "2026-10-03",
+    "category": "noiracoder",
+    "title_es": "Planificar antes de codificar con NoiraCoder: la clave del éxito",
+    "title_en": "Plan Before You Code: Leveraging NoiraCoder for Efficient Development",
+    "title_pt": "Planejar antes de codificar com NoiraCoder",
+    "title_fr": "Planifier avant de coder avec NoiraCoder",
+    "title_de": "Planen, bevor man codiert: Wie NoiraCoder den Entwicklungsprozess optimiert",
+    "title_it": "Pianificare prima di codificare con NoiraCoder",
+    "title_ar": "NoiraCoder: أهمية التخطيط قبل كتابة الشيفرة",
+    "excerpt_es": "Una buena planificación potencia la eficiencia y calidad al usar NoiraCoder en la terminal.",
+    "excerpt_en": "Effective planning with NoiraCoder transforms chaotic scripts into streamlined, maintainable code.",
+    "excerpt_pt": "Um bom planejamento potencializa a eficiência do NoiraCoder e reduz retrabalho.",
+    "excerpt_fr": "Une bonne planification maximise l’efficacité de NoiraCoder et réduit les erreurs de développement.",
+    "excerpt_de": "Ein durchdachter Plan vor dem Schreiben von Code spart Zeit, reduziert Fehler und macht NoiraCoder noch effektiver.",
+    "excerpt_it": "Una buona pianificazione, supportata dall'agente NoiraCoder, riduce gli errori e accelera lo sviluppo.",
+    "excerpt_ar": "التخطيط السليم يضمن كودًا نظيفًا وفعّالًا عند استخدام NoiraCoder."
+  },
+  {
     "slug": "offline-sin-modelos",
     "file": "2026-10-02-offline-sin-modelos.html",
     "date": "2026-10-02",

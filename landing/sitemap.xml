@@ -9,6 +9,7 @@
   <url><loc>https://noiracoder.pages.dev/terminos.html</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://noiracoder.pages.dev/privacidad.html</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://noiracoder.pages.dev/blog/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://noiracoder.pages.dev/blog/2026-10-03-planificar-antes-de-codificar.html</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
   <url><loc>https://noiracoder.pages.dev/blog/2026-10-02-offline-sin-modelos.html</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
   <url><loc>https://noiracoder.pages.dev/blog/2026-10-01-serve-api-local-editor.html</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
   <url><loc>https://noiracoder.pages.dev/blog/2026-09-30-login-logout-higiene-de-claves.html</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
