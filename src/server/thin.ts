@@ -728,7 +728,7 @@ export async function startThinServer(opts: ThinServerOptions): Promise<{ close:
           { id: "groq", name: "Groq", note: "~1000 req/día por modelo", category: "model" as const, keyUrl: "https://console.groq.com/keys" },
           { id: "zen", name: "Zen", note: "Modelos free rotativos", category: "model" as const, keyUrl: "https://opencode.ai/zen" },
           { id: "nvidia", name: "NVIDIA NIM", note: "Gratis para prototipar, 40 req/min, sin tarjeta", category: "model" as const, keyUrl: "https://build.nvidia.com/" },
-          { id: "iflow", name: "iFlow", note: "Gratis. OJO: la clave caduca a los 7 días", category: "model" as const, keyUrl: "https://platform.iflow.cn/" },
+          { id: "iflow", name: "iFlow", note: "Gratis. OJO: la clave caduca a los 7 días", category: "model" as const, keyUrl: "https://iflow.cn/" },
           { id: "zai", name: "Z.AI", note: "Modelos GLM con clave de z.ai", category: "model" as const, keyUrl: "https://z.ai/manage-apikey/apikey-list" },
         ];
 

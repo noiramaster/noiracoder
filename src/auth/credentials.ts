@@ -206,10 +206,50 @@ export async function validateCredential(serviceId: string, value: string): Prom
         const base = (keys.zenBaseUrl || "https://api.zen.ai/v1").replace(/\/+$/, "");
         return validateModelList(`${base}/models`);
       }
-      case "nvidia":
-        return validateModelList("https://integrate.api.nvidia.com/v1/models");
-      case "iflow":
-        return validateModelList("https://apis.iflow.cn/v1/models");
+      case "nvidia": {
+        // /v1/models es PÚBLICO (200 sin clave): no valida nada. Se usa un
+        // chat mínimo (max_tokens:1) contra un modelo vivo de la lista
+        // pública — 401/403 = clave mala; 429 = clave OK pero con límite.
+        try {
+          const lm = await fetch("https://integrate.api.nvidia.com/v1/models");
+          const lj = await lm.json() as any;
+          const ids = Array.isArray(lj?.data) ? lj.data.map((m: any) => String(m?.id || "")) : [];
+          const model = ids.find((id: string) => id && !/embed|guard|safety|rerank|translate|code\b/i.test(id)) || ids[0];
+          if (!model) return { ok: false, error: "Sin modelos" };
+          const r = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${value}` },
+            body: JSON.stringify({ model, messages: [{ role: "user", content: "hi" }], max_tokens: 1 }),
+          });
+          if (r.status === 401 || r.status === 403) return { ok: false, error: "Clave inválida (HTTP " + r.status + ")" };
+          if (r.status === 429) return { ok: true };
+          if (r.ok) return { ok: true };
+          return { ok: false, error: `Error HTTP ${r.status}` };
+        } catch {
+          return { ok: false, error: "Sin respuesta de NVIDIA" };
+        }
+      }
+      case "iflow": {
+        // iFlow NO tiene /v1/models (404 siempre): se valida con un chat
+        // mínimo. OJO: iFlow responde 200 con {"status":"434"} ante clave
+        // mala, así que hay que mirar el cuerpo, no solo el HTTP.
+        try {
+          const r = await fetch("https://apis.iflow.cn/v1/chat/completions", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${value}` },
+            body: JSON.stringify({ model: "Qwen3-Coder", messages: [{ role: "user", content: "hi" }], max_tokens: 1 }),
+          });
+          const text = await r.text();
+          if (r.status === 401 || r.status === 403 || /"status"\s*:\s*"?434"?|invalid\s*apikey|incorrect|expired/i.test(text)) {
+            return { ok: false, error: "Clave inválida (revísala en https://iflow.cn/)" };
+          }
+          if (r.status === 429) return { ok: true };
+          if (r.ok) return { ok: true };
+          return { ok: false, error: `Error HTTP ${r.status}` };
+        } catch {
+          return { ok: false, error: "Sin respuesta de iFlow" };
+        }
+      }
       case "zai":
         return validateModelList("https://api.z.ai/api/paas/v4/models");
       case "github_token": {
