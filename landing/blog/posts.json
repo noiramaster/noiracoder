@@ -1,5 +1,25 @@
 [
   {
+    "slug": "code-review-automatico",
+    "file": "2026-10-04-code-review-automatico.html",
+    "date": "2026-10-04",
+    "category": "noiracoder",
+    "title_es": "NoiraCoder: revisión de código automática desde la terminal",
+    "title_en": "Automatic Code Review with NoiraCoder",
+    "title_pt": "NoiraCoder: Revisão de Código Automática no Terminal",
+    "title_fr": "NoiraCoder : automatiser la revue de code en terminal",
+    "title_de": "Automatisierte Code‑Reviews mit NoiraCoder – Der Terminal‑Agent für sauberen Code",
+    "title_it": "NoiraCoder: Revisione del Codice Automatica direttamente dal Terminale",
+    "title_ar": "NoiraCoder: مراجعة الكود الآلية في سطر الأوامر",
+    "excerpt_es": "Descubre cómo NoiraCoder automatiza la revisión de código directamente en tu terminal.",
+    "excerpt_en": "Discover how NoiraCoder brings AI‑powered, instant code reviews straight to your terminal.",
+    "excerpt_pt": "Descubra como o NoiraCoder transforma a revisão de código em um processo rápido e automatizado direto do seu terminal.",
+    "excerpt_fr": "NoiraCoder transforme la revue de code en une tâche rapide et fiable directement depuis votre console.",
+    "excerpt_de": "NoiraCoder ermöglicht in wenigen Sekunden automatische, präzise Code‑Reviews direkt im Terminal.",
+    "excerpt_it": "Scopri come NoiraCoder trasforma la revisione del codice in un processo rapido e completamente automatizzato.",
+    "excerpt_ar": "NoiraCoder يتيح مراجعة الكود تلقائيًا مباشرةً من الطرفية."
+  },
+  {
     "slug": "planificar-antes-de-codificar",
     "file": "2026-10-03-planificar-antes-de-codificar.html",
     "date": "2026-10-03",

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NoiraCoder: revisión de código automática desde la terminal | NOIRACODER</title>
+<meta name="description" content="Descubre cómo NoiraCoder automatiza la revisión de código directamente en tu terminal.">
+<link rel="canonical" href="https://noiracoder.pages.dev/blog/2026-10-04-code-review-automatico.html">
+<meta property="og:title" content="NoiraCoder: revisión de código automática desde la terminal — NOIRACODER">
+<meta property="og:description" content="Descubre cómo NoiraCoder automatiza la revisión de código directamente en tu terminal.">
+<meta property="og:site_name" content="NOIRACODER">
+<meta property="og:url" content="https://noiracoder.pages.dev/blog/2026-10-04-code-review-automatico.html">
+<meta property="og:type" content="article">
+<meta name="robots" content="index, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<script src="/i18n.js" defer></script>
+<script src="/copy.js" defer></script>
+<script>var NOIRA_POST = {"date":"2026-10-04","title_es":"NoiraCoder: revisión de código automática desde la terminal","excerpt_es":"Descubre cómo NoiraCoder automatiza la revisión de código directamente en tu terminal.","body_es":"<p>NoiraCoder es un agente de código que se ejecuta directamente en la terminal, ofreciendo herramientas de desarrollo avanzadas sin necesidad de abrir un IDE.</p><h2>¿Qué es NoiraCoder?</h2><p>Este agente está diseñado para integrar análisis estático, pruebas unitarias y revisiones de estilo en un solo flujo de trabajo, permitiendo a los desarrolladores obtener feedback inmediato mientras codifican.</p><h2>Revisión automática de código</h2><p>Con el comando <code>noiracoder review</code>, NoiraCoder escanea el repositorio, detecta vulnerabilidades, errores de estilo y posibles bugs, y genera un informe detallado listo para ser integrado en pull requests.</p><pre><code># Ejemplo de uso\nnoiracoder review --path src/ --output report.json\n</code></pre><p>Al automatizar esta fase, se reducen los tiempos de revisión manual y se mejora la calidad del código entregado, facilitando la colaboración entre equipos distribuidos.</p>","title_en":"Automatic Code Review with NoiraCoder","excerpt_en":"Discover how NoiraCoder brings AI‑powered, instant code reviews straight to your terminal.","body_en":"<p>NoiraCoder is a terminal‑based coding assistant that leverages large language models to perform real‑time, automated code reviews. By integrating directly into your development workflow, it eliminates the need to switch contexts or wait for a human reviewer.</p><h2>How NoiraCoder Works</h2><p>When you invoke the <code>noiracoder review</code> command, the tool sends the selected files to a hosted LLM endpoint, which returns a structured analysis. The response includes style suggestions, potential bugs, and compliance checks with your project's linting rules. The entire process completes in seconds, giving you immediate feedback.</p><pre><code># Example usage\nnoiracoder review src/**/*.py --config .noiracoder.yml\n</code></pre><h2>Benefits of Automated Reviews</h2><p>Automated reviews with NoiraCoder reduce the review turnaround time, catch common pitfalls before they reach CI, and enforce consistent coding standards across teams. Because the agent runs locally in the terminal, it respects your security policies while still providing the power of cloud‑based AI.</p>","title_pt":"NoiraCoder: Revisão de Código Automática no Terminal","excerpt_pt":"Descubra como o NoiraCoder transforma a revisão de código em um processo rápido e automatizado direto do seu terminal.","body_pt":"<p>NoiraCoder chegou para simplificar a vida dos desenvolvedores que passam horas revisando pull‑requests manualmente. Como um agente de código que roda inteiramente no terminal, ele analisa, comenta e sugere melhorias de forma instantânea, permitindo que a equipe mantenha a qualidade sem interromper o fluxo de trabalho.</p><h2>Como funciona a revisão automática</h2><p>Ao executar <code>noiracoder review caminho/do/arquivo</code>, o agente carrega um conjunto de regras configuráveis – desde padrões de estilo até verificações de segurança. Ele utiliza inteligência estática e, opcionalmente, integra modelos de IA para detectar padrões complexos. O resultado é apresentado em um formato legível, pronto para ser copiado ao comentário do pull‑request.</p><pre><code># Exemplo de uso no terminal\n$ noiracoder review src/main.py\n--- Revisão automática ---\n1:5  WARN  Linhas muito longas (> 120 caracteres)\n3:1  ERROR Falta de docstring na função 'process_data'\n7:12 INFO  Uso recomendado de f‑strings\n--- Fim da revisão ---</code></pre><h2>Benefícios para a equipe</h2><p>Com o NoiraCoder, a consistência de código aumenta, pois as mesmas regras são aplicadas a todos os commits. O tempo gasto em revisões manuais pode ser reduzido em até 70%, liberando os revisores para focar em decisões de arquitetura e lógica de negócio. Além disso, a integração com CI/CD permite que a revisão automática seja um passo obrigatório antes da mesclagem.</p><p>Em resumo, o NoiraCoder traz a revisão de código para dentro do terminal, combinando rapidez, precisão e flexibilidade. Experimente hoje mesmo e veja sua produtividade subir enquanto a qualidade do código se mantém alta.</p>","title_fr":"NoiraCoder : automatiser la revue de code en terminal","excerpt_fr":"NoiraCoder transforme la revue de code en une tâche rapide et fiable directement depuis votre console.","body_fr":"<p>NoiraCoder est un agent de code qui s'intègre parfaitement à votre terminal, offrant des capacités d'analyse statique et de revue de code automatisée. Grâce à son moteur d'IA, il détecte les problèmes de style, les bugs potentiels et les violations des meilleures pratiques sans quitter votre environnement de développement.</p><h2>Pourquoi automatiser la revue de code ?</h2><p>La revue manuelle est souvent chronophage et sujette à l'oubli de détails. En automatisant ce processus, les équipes gagnent en cohérence, en rapidité et en qualité du code livré. De plus, les revues automatisées permettent d'identifier des patterns récurrents que les humains peuvent négliger.</p><h2>Comment NoiraCoder simplifie le processus</h2><p>Il suffit d'exécuter une simple commande dans le terminal : <pre><code>noiracoder review src/</code></pre> NoiraCoder parcourt les fichiers, génère un rapport détaillé et propose des suggestions de correction. Le rapport inclut des liens vers la documentation pertinente et des exemples de code corrigé.</p><p>En intégrant NoiraCoder à votre CI/CD, chaque push déclenche automatiquement une revue, garantissant que le code qui passe en production a déjà été validé par l'IA. Cette approche réduit les retours en arrière et améliore la productivité globale des développeurs.</p>","title_de":"Automatisierte Code‑Reviews mit NoiraCoder – Der Terminal‑Agent für sauberen Code","excerpt_de":"NoiraCoder ermöglicht in wenigen Sekunden automatische, präzise Code‑Reviews direkt im Terminal.","body_de":"<p>NoiraCoder ist ein innovativer Agent, der sich nahtlos in jede Kommandozeile einfügt und den Quellcode auf Stil, Sicherheit und Performance analysiert – ohne dass ein separates Tool gestartet werden muss.</p><h2>Wie NoiraCoder funktioniert</h2><p>Durch einen simplen Befehl <code>noiracoder review ./src</code> wird der gesamte Projektordner gescannt, relevante Linter und statische Analyse‑Engines werden automatisch ausgewählt und das Ergebnis in einer strukturierten Übersicht zurückgegeben.</p><pre><code># Beispielaufruf im Terminal\nnoiracoder review ./my-project --format json\n</code></pre><h2>Vorteile für Entwicklerteams</h2><p>Die automatisierten Reviews reduzieren manuellen Aufwand, verhindern Regressionen und fördern konsistente Code‑Qualität. Durch die Integration in CI‑Pipelines erhalten Teams sofortiges Feedback, sodass Fehler bereits vor dem Merge entdeckt werden.</p>","title_it":"NoiraCoder: Revisione del Codice Automatica direttamente dal Terminale","excerpt_it":"Scopri come NoiraCoder trasforma la revisione del codice in un processo rapido e completamente automatizzato.","body_it":"<p>NoiraCoder è un agente di codice operante direttamente nel terminale, progettato per semplificare e velocizzare le attività di revisione del codice. Grazie al suo motore di analisi statico e a una serie di regole configurabili, è in grado di eseguire una code‑review automatica senza richiedere interventi manuali.</p><h2>Come funziona la revisione automatica</h2><p>Il comando <code>noiracoder review</code> analizza l’intero albero di sorgenti, confrontando ogni file con le regole di stile, sicurezza e best practice definite dall’utente o dai preset più diffusi. Il risultato è un report dettagliato, evidenziando errori, vulnerabilità e suggerimenti di refactoring.</p><pre><code>noiracoder review --path src/ --rules standard</code></pre><h2>Vantaggi per il team di sviluppo</h2><p>Automatizzando la code‑review, NoiraCoder riduce i tempi di integrazione, elimina bias umani e garantisce una qualità costante del codice. I team possono concentrarsi su aspetti più creativi, mentre lo strumento si occupa di controlli ripetitivi e di conformità.</p><p>In conclusione, integrare NoiraCoder nel flusso CI/CD significa avere una revisione continua, affidabile e sempre disponibile, direttamente dal terminale.</p>","title_ar":"NoiraCoder: مراجعة الكود الآلية في سطر الأوامر","excerpt_ar":"NoiraCoder يتيح مراجعة الكود تلقائيًا مباشرةً من الطرفية.","body_ar":"<p>في عالم التطوير السريع، يصبح ضمان جودة الكود أمرًا حيويًا. يأتي NoiraCoder كوكيل برمجي يعمل في الطرفية لتوفير مراجعة كود آلية تساعد الفرق على اكتشاف الأخطاء وتحسين الأسلوب البرمجي دون الحاجة إلى أدوات معقدة.</p><h2>كيف يعمل المراجعة الآلية؟</h2><p>يعتمد NoiraCoder على محركات تحليل ثابتة وقواعد قابلة للتخصيص. عند تشغيل الأمر <code>noiracoder review ملف.py</code>، يقوم البرنامج بقراءة الشيفرة، وتطبيق القواعد المحددة، ثم يعرض تقريرًا مفصلًا يوضح التحذيرات، الأخطاء، واقتراحات التحسين.</p><h2>فوائد NoiraCoder للمطورين</h2><p>1. توفير الوقت: يتم تنفيذ المراجعة في ثوانٍ.<br>2. التكامل السلس مع CI/CD: يمكن دمجه في خطوط الأنابيب لتطبيق مراجعات مستمرة.<br>3. دعم لغات متعددة: يدعم بايثون، جافا سكريبت، وجافا مع إمكانية إضافة لغات أخرى.</p><pre><code># مثال على تشغيل المراجعة الآلية\nnoiracoder review src/main.py --config .noiracoder.yml</code></pre>"};</script>
+</head>
+<body>
+<header class="site-header"><div class="wrap-head">
+  <a href="/" class="logo">&gt; NOIRACODER</a>
+  <nav class="main-nav">
+    <a class="navlink" href="/docs/skills.html" data-i18n="nav.skills">Skills</a>
+    <a class="navlink" href="/docs/tutoriales.html" data-i18n="nav.tutorials">Tutoriales</a>
+    <a class="navlink" href="/blog/" data-i18n="nav.blog">Blog</a>
+    <a class="navlink" href="/contacto.html" data-i18n="nav.contact">Contacto</a>
+    <a class="navlink" href="/docs/tutoriales.html#instalar" data-i18n="nav.login">Instalar</a>
+    <a class="btn-signup" href="/#instalar" data-i18n="nav.signup">Empezar</a>
+    <div class="langswitch"><button aria-label="language">[<span class="cur">EN</span> ▾]</button><div class="menu">
+      <button data-lang="en">EN</button><button data-lang="es">ES</button><button data-lang="pt">PT</button><button data-lang="fr">FR</button><button data-lang="de">DE</button><button data-lang="it">IT</button><button data-lang="ar">AR</button>
+    </div></div>
+  </nav>
+  <div class="mobile-only">
+    <div class="langswitch"><button aria-label="language">[<span class="cur">EN</span> ▾]</button><div class="menu">
+      <button data-lang="en">EN</button><button data-lang="es">ES</button><button data-lang="pt">PT</button><button data-lang="fr">FR</button><button data-lang="de">DE</button><button data-lang="it">IT</button><button data-lang="ar">AR</button>
+    </div></div>
+    <button class="menu-btn" data-menu-btn>[=]</button>
+  </div>
+</div>
+<div class="mobile-menu" data-mobile-menu>
+  <a href="/docs/skills.html" data-i18n="nav.skills">Skills</a>
+  <a href="/docs/tutoriales.html" data-i18n="nav.tutorials">Tutoriales</a>
+  <a href="/blog/" data-i18n="nav.blog">Blog</a>
+  <a href="/contacto.html" data-i18n="nav.contact">Contacto</a>
+  <a href="/docs/tutoriales.html#instalar" data-i18n="nav.login">Instalar</a>
+  <a href="/#instalar" data-i18n="nav.signup">Empezar</a>
+</div></header>
+<main class="wrap-page">
+  <div class="mono" style="font-size:.75rem;color:var(--muted)">Blog · 2026-10-04 · 4 min</div>
+  <h1 class="mono" style="font-size:1.875rem;font-weight:700;margin:.75rem 0 1rem" id="post-title"></h1>
+  <article class="post-body" id="post-body"></article>
+  <p style="margin-top:2rem"><a class="link-accent" href="/">← Volver</a> · <a class="link-accent" href="/blog/">Todos</a></p>
+</main>
+<footer class="site-footer">
+  <div class="cols">
+    <div><h4 class="brand">&gt; NOIRACODER</h4><p class="brandp" data-i18n="footer.brand">…</p></div>
+    <div><h4 data-i18n="footer.products">Ecosistema</h4><ul>
+      <li><a href="https://noiramaster.pages.dev/" target="_blank" rel="noopener">Noiramaster</a></li>
+    </ul></div>
+    <div><h4 data-i18n="footer.resources">Recursos</h4><ul>
+      <li><a href="/blog/" data-i18n="nav.blog">Blog</a></li>
+      <li><a href="/sobre.html" data-i18n="nav.about">Sobre NoiraCoder</a></li>
+      <li><a href="/legal.html" data-i18n="nav.legal">Legal</a></li>
+      <li><a href="/terminos.html" data-i18n="nav.terms">Términos</a></li>
+      <li><a href="/privacidad.html" data-i18n="nav.privacy">Privacidad</a></li>
+    </ul></div>
+    <div><h4 data-i18n="footer.community">Comunidad</h4><div class="social">
+      <a href="https://x.com/noiramaster" target="_blank" rel="noopener" aria-label="X"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+      <a href="https://www.instagram.com/noiramaster/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0z"/></svg></a>
+      <a href="https://www.reddit.com/user/AddendumIll3987/" target="_blank" rel="noopener" aria-label="Reddit"><svg viewBox="0 0 24 24"><path d="M12 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 01-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 01.042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 014.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 01.14-.197.35.35 0 01.238-.042l2.906.617a1.214 1.214 0 011.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249z"/></svg></a>
+    </div></div>
+    <div><h4 data-i18n="footer.languages">Idiomas</h4><div class="langrow">
+      <button data-lang="es">ES</button><button data-lang="en">EN</button><button data-lang="pt">PT</button><button data-lang="fr">FR</button><button data-lang="de">DE</button><button data-lang="it">IT</button><button data-lang="ar">AR</button>
+    </div></div>
+  </div>
+  <div class="bottombar"><p>&gt; Noira © <span class="year">2026</span> · <span data-i18n="footer.copyright">Todos los derechos reservados.</span></p></div>
+</footer>
+<script>
+document.querySelectorAll('.year').forEach(function (e) { e.textContent = new Date().getFullYear(); });
+document.addEventListener('DOMContentLoaded', function () {
+  renderPost();
+});
+document.addEventListener('noira-lang', function () {
+  renderPost();
+});
+function renderPost() {
+  var lang = (typeof noiraGetLang === 'function') ? noiraGetLang() : 'en';
+  var title = NOIRA_POST['title_' + lang] || NOIRA_POST.title_en || NOIRA_POST.title_es;
+  var body = NOIRA_POST['body_' + lang] || NOIRA_POST.body_en || NOIRA_POST.body_es;
+  document.getElementById('post-title').textContent = title;
+  document.getElementById('post-body').innerHTML = body;
+  document.title = (title + ' | NOIRACODER');
+}
+</script>
+</body>
+</html>
