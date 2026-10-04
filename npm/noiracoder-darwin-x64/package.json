@@ -1,6 +1,6 @@
 {
   "name": "noiracoder-darwin-x64",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "NoiraCoder thin screen binary (macOS Intel).",
   "license": "MIT",
   "os": ["darwin"],

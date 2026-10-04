@@ -1,2 +1,2 @@
-export const version = "0.2.7";
+export const version = "0.2.8";
 export default { version };
