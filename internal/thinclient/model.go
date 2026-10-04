@@ -142,6 +142,12 @@ func New(c *Client) *Model {
 	ta.Focus()
 	ta.SetHeight(3)
 	vp := viewport.New(80, 20)
+	// SCROLL-PTY: el viewport trae atajos de pager por defecto (espacio =
+	// PageDown, d = media página abajo, j/k = línea...). Como cada tecla
+	// pasa por viewport.Update, ESCRIBIR movía la vista (el "yank" que se
+	// veía al leer arriba: no era el streaming, era el propio teclado).
+	// El scroll es solo con rueda (handleMouse); se anulan las teclas.
+	vp.KeyMap = viewport.KeyMap{}
 	m := &Model{
 		client:    c,
 		lang:      lang,
@@ -226,6 +232,12 @@ func (m *Model) setStatus() {
 		lipgloss.NewStyle().Foreground(muted).Render(T(m.lang, "st_mode")) + ": " + m.mode,
 		lipgloss.NewStyle().Foreground(muted).Render(T(m.lang, "st_session")) + ": " + or(m.sessName, "—"),
 	}
+	// 5.2: el nivel (/level) se ve en la barra (tras sesión, antes de
+	// cuota; fitStatus recorta modelo y sesión, nunca este segmento).
+	// Vacío hasta el hello: no se inventa.
+	if m.level != "" {
+		parts = append(parts, lipgloss.NewStyle().Foreground(muted).Render(T(m.lang, "st_level"))+": "+m.level)
+	}
 	if m.quotaTotal > 0 {
 		// EEE: solo el número (usado/total combinado); dorado normal,
 		// rojo SOLO en el último 10% restante. Sin alarmas.
@@ -296,7 +308,7 @@ func fitStatus(parts []string, width int, m *Model) string {
 		return joined
 	}
 	// M1.8: ventana estrecha (<60): la barra pasa a DOS líneas para no
-	// perder información (modelo·modo / sesión·cuota·avisos).
+	// perder información (modelo·modo / sesión·nivel·cuota·avisos).
 	line1 := parts[0] + " · " + parts[1]
 	rest2 := []string{parts[2]}
 	if len(parts) > 3 {
@@ -567,6 +579,20 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		// H10: opciones seleccionables — teclado
 		if m.options != nil {
+			dismissed := false
+			// F2: en sugerencias followup, escribir texto normal DESCARTA el
+			// diálogo y la tecla llega al input (antes se tragaba en silencio
+			// y el teclado parecía muerto). Solo followup: el resto de
+			// diálogos (welcome, connect, level) siguen siendo modales.
+			// Los dígitos 1-9 siguen eligiendo opción (no se descartan).
+			if strings.HasPrefix(m.options.id, "followup") && msg.Type == tea.KeyRunes {
+				if rs := msg.Runes; len(rs) > 0 && rs[0] != '\r' && rs[0] != '\n' &&
+					!(len(rs) == 1 && rs[0] >= '1' && rs[0] <= '9') {
+					m.options = nil
+					dismissed = true
+				}
+			}
+			if !dismissed {
 			s := msg.String()
 			switch {
 			case s == "up", s == "up.Up":
@@ -606,6 +632,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					}
 				}
 				return m, nil
+			}
 			}
 		}
 		switch msg.Type {
@@ -708,7 +735,13 @@ func (m *Model) doEnter() (tea.Model, tea.Cmd) {
 		return m.panelEnter()
 	}
 	text := strings.TrimSpace(m.input.Value())
-	if text == "" || m.turnID != "" {
+	if text == "" {
+		return m, nil
+	}
+	// PASO 1: en turno activo los comandos se tragaban en silencio (el
+	// usuario escribía /how, /undo… y no pasaba nada). Ahora se avisa.
+	if m.turnID != "" {
+		m.addLine(lipgloss.NewStyle().Foreground(muted).Render("  " + T(m.lang, "turn_busy")))
 		return m, nil
 	}
 	m.input.Reset()
@@ -1080,6 +1113,12 @@ func (m *Model) syncSlash() {
 func (m *Model) slashKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	items := m.slashItems()
 	if len(items) == 0 {
+		// F1b: sin coincidencias el Enter ya no muere en silencio: se dice
+		// qué pasó y se deja el texto para corregirlo (el menú se cierra).
+		if msg.String() == "enter" {
+			q := strings.TrimSpace(m.input.Value())
+			m.addLine(lipgloss.NewStyle().Foreground(muted).Render("  " + F(m.lang, "slash_no_match", map[string]string{"q": q})))
+		}
 		m.slashOpen = false
 		return m, nil
 	}

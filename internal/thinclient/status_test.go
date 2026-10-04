@@ -5,10 +5,30 @@ import (
 	"testing"
 )
 
-// A2/M1.1: la barra de estado muestra modelo/modo/sesión siempre y el segmento
-// de cuota solo cuando hay dato (quotaTotal > 0). Sin dato no se inventa.
-// EEE: el segmento es el número usado/total combinado, sin alarmas.
-// El catálogo lo pone el test (en producción viene de /v1/i18n).
+// 5.2: /level se nota en la barra de estado. Sin nivel (pre-hello) no se
+// inventa ningún segmento.
+func TestLevelInStatus(t *testing.T) {
+	SetCatalog(map[string]string{
+		"st_model": "modelo", "st_mode": "modo", "st_session": "sesión",
+		"st_level": "nivel",
+		"st_quota": "cuota {used}/{total}",
+	})
+	m := &Model{lang: "es", modelName: "(router)", mode: "build", level: "mid", chatW: 120}
+	m.setStatus()
+	if !strings.Contains(m.status, "nivel: mid") {
+		t.Errorf("falta el nivel en la barra: %q", m.status)
+	}
+	m.level = "max"
+	m.setStatus()
+	if !strings.Contains(m.status, "nivel: max") {
+		t.Errorf("el cambio de nivel no se refleja: %q", m.status)
+	}
+	m.level = ""
+	m.setStatus()
+	if strings.Contains(m.status, "nivel:") || strings.Contains(m.status, "st_level") {
+		t.Errorf("sin nivel no debe haber segmento: %q", m.status)
+	}
+}
 func TestSetStatusQuota(t *testing.T) {
 	SetCatalog(map[string]string{
 		"st_model": "model", "st_mode": "mode", "st_session": "session",
