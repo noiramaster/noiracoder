@@ -1,5 +1,25 @@
 [
   {
+    "slug": "testing-que-falla-sin-fix",
+    "file": "2026-10-05-testing-que-falla-sin-fix.html",
+    "date": "2026-10-05",
+    "category": "noiracoder",
+    "title_es": "NoiraCoder y el dilema del testing que falla sin fix",
+    "title_en": "Testing That Fails Without a Fix: Lessons from NoiraCoder",
+    "title_pt": "Testing que Falha sem Fix: Como o NoiraCoder Lida com Testes Instáveis",
+    "title_fr": "NoiraCoder : quand les tests échouent sans solution immédiate",
+    "title_de": "Testing, das fehlschlägt – NoiraCoder ohne Fix",
+    "title_it": "Testing che fallisce senza fix: come NoiraCoder salva il tuo terminale",
+    "title_ar": "NoiraCoder واختبار الفشل بدون إصلاح",
+    "excerpt_es": "Descubre por qué los tests pueden romperse en NoiraCoder y cómo abordar el problema sin aplicar un fix inmediato.",
+    "excerpt_en": "NoiraCoder turns failing tests into guided fix sessions, keeping your CI pipeline green.",
+    "excerpt_pt": "Descubra como o NoiraCoder transforma falhas de teste inesperadas em oportunidades de melhoria contínua.",
+    "excerpt_fr": "Découvrez comment NoiraCoder gère les tests qui échouent sans correctif immédiat.",
+    "excerpt_de": "Ein Blick darauf, warum Tests in NoiraCoder häufig scheitern und wie man das Problem erkennt.",
+    "excerpt_it": "Scopri come NoiraCoder automatizza il debugging dei test che falliscono senza una soluzione immediata.",
+    "excerpt_ar": "اختبار الأخطاء في NoiraCoder يوضح أهمية التعامل السريع مع الفشل."
+  },
+  {
     "slug": "code-review-automatico",
     "file": "2026-10-04-code-review-automatico.html",
     "date": "2026-10-04",
