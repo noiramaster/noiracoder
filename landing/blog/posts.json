@@ -1,5 +1,25 @@
 [
   {
+    "slug": "refactor-sin-miedo",
+    "file": "2026-10-06-refactor-sin-miedo.html",
+    "date": "2026-10-06",
+    "category": "noiracoder",
+    "title_es": "Refactor sin miedo con NoiraCoder: tu agente de código en la terminal",
+    "title_en": "Fearless Refactoring with NoiraCoder: A Terminal Code Agent",
+    "title_pt": "NoiraCoder: Refatoração sem medo no terminal",
+    "title_fr": "Refactor sans peur avec NoiraCoder",
+    "title_de": "Refactor ohne Angst mit NoiraCoder – Dein Terminal‑Code‑Agent",
+    "title_it": "Refactor senza paura con NoiraCoder: il tuo agente di codice in terminale",
+    "title_ar": "NoiraCoder: إعادة هيكلة بلا خوف",
+    "excerpt_es": "Con NoiraCoder, refactorizar código desde la terminal se vuelve seguro y rápido.",
+    "excerpt_en": "Embrace fearless refactoring using NoiraCoder, the terminal‑based code assistant that guides you safely through every change.",
+    "excerpt_pt": "Descubra como usar o NoiraCoder para refatorar seu código com confiança e segurança.",
+    "excerpt_fr": "Découvrez comment NoiraCoder vous permet d'aborder le refactoring en toute confiance, même depuis le terminal.",
+    "excerpt_de": "Mit NoiraCoder wird Refactoring im Terminal zu einem sicheren und schnellen Prozess, der Entwickler ermutigt, Code ohne Scheu zu verbessern.",
+    "excerpt_it": "Scopri come NoiraCoder ti aiuta a refactoring sicuro e veloce direttamente dal terminale.",
+    "excerpt_ar": "اكتشف كيف يساعدك NoiraCoder على إجراء عمليات إعادة هيكلة للكود بثقة تامة."
+  },
+  {
     "slug": "testing-que-falla-sin-fix",
     "file": "2026-10-05-testing-que-falla-sin-fix.html",
     "date": "2026-10-05",
