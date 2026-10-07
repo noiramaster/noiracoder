@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cómo medir el rendimiento antes y después con NoiraCoder | NOIRACODER</title>
+<meta name="description" content="Descubre cómo NoiraCoder te ayuda a comparar métricas de rendimiento en tu código de forma sencilla.">
+<link rel="canonical" href="https://noiracoder.pages.dev/blog/2026-10-07-perf-medir-antes-despues.html">
+<meta property="og:title" content="Cómo medir el rendimiento antes y después con NoiraCoder — NOIRACODER">
+<meta property="og:description" content="Descubre cómo NoiraCoder te ayuda a comparar métricas de rendimiento en tu código de forma sencilla.">
+<meta property="og:site_name" content="NOIRACODER">
+<meta property="og:url" content="https://noiracoder.pages.dev/blog/2026-10-07-perf-medir-antes-despues.html">
+<meta property="og:type" content="article">
+<meta name="robots" content="index, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<script src="/i18n.js" defer></script>
+<script src="/copy.js" defer></script>
+<script>var NOIRA_POST = {"date":"2026-10-07","title_es":"Cómo medir el rendimiento antes y después con NoiraCoder","excerpt_es":"Descubre cómo NoiraCoder te ayuda a comparar métricas de rendimiento en tu código de forma sencilla.","body_es":"<p>NoiraCoder es un agente de código que se ejecuta directamente en la terminal, facilitando la automatización de pruebas y mediciones de rendimiento sin salir del entorno de desarrollo. En este artículo veremos paso a paso cómo usarlo para capturar métricas antes y después de aplicar una optimización.</p><h2>Medir antes de los cambios</h2><p>Primero, ejecuta tu script o función con la herramienta <code>perf</code> integrada en NoiraCoder para obtener una línea base. El comando típico es:</p><pre><code>noiracoder perf run ./mi_programa --args</code></pre><p>Este comando genera un informe detallado que incluye tiempo de CPU, número de llamadas y uso de memoria. Guarda la salida en un archivo para compararla después.</p><h2>Comparar después de la optimización</h2><p>Una vez que hayas aplicado la mejora (por ejemplo, refactorizando un bucle crítico), vuelve a ejecutar el mismo comando:</p><pre><code>noiracoder perf run ./mi_programa --args > reporte_opt.txt</code></pre><p>Ahora puedes usar la función de diff de NoiraCoder para visualizar las diferencias entre la versión original y la optimizada:</p><pre><code>noiracoder diff reporte_original.txt reporte_opt.txt</code></pre><p>El diff resaltará los cambios en tiempo de ejecución y consumo de recursos, permitiéndote validar si la optimización realmente aporta beneficios.</p>","title_en":"Measuring Performance Before and After with NoiraCoder","excerpt_en":"A quick guide to benchmarking your terminal scripts using NoiraCoder’s perf command.","body_en":"<p>NoiraCoder is a powerful terminal‑based code assistant that not only writes and refactors code but also helps you keep an eye on its performance. By measuring execution time and resource usage before and after changes, you can make data‑driven decisions and avoid regressions.</p><h2>Why Measure Performance?</h2><p>Even small tweaks—like switching a loop construct or adding a cache—can have a noticeable impact on latency and memory consumption. Without concrete numbers, you might assume an improvement that is actually a slowdown, or miss an optimization opportunity.</p><h2>Using NoiraCoder’s perf Command</h2><p>NoiraCoder ships with a built‑in <code>perf</code> subcommand that captures timing, CPU, and memory metrics in a JSON report. Run it before your changes to create a baseline, then run it again after the modifications.</p><pre><code>noiracoder perf run myscript.py > before.json\n# make code changes\nnoiracoder perf run myscript.py > after.json\nnoiracoder perf compare before.json after.json</code></pre><p>The <code>compare</code> subcommand prints a concise diff, highlighting percentages of improvement or regression for each metric. Use this feedback loop to iterate quickly and ensure every commit brings genuine performance gains.</p>","title_pt":"NoiraCoder: Medindo Performance Antes e Depois","excerpt_pt":"Descubra como o NoiraCoder pode comparar o tempo de execução de scripts antes e depois de otimizações.","body_pt":"<p>O NoiraCoder é um agente de código que opera diretamente no terminal, facilitando a criação, teste e otimização de scripts. Uma das funcionalidades mais poderosas é a capacidade de medir o desempenho de um programa antes e depois de alterações, permitindo validar ganhos de eficiência de forma simples e automatizada.</p><h2>Por que medir a performance?</h2><p>Sem métricas concretas, é impossível saber se uma refatoração realmente trouxe benefícios. Medir o tempo de execução, uso de memória ou chamadas ao sistema ajuda a identificar gargalos, justificar investimentos em otimização e garantir que o código continue escalável à medida que cresce.</p><h2>Como usar o NoiraCoder para comparar resultados</h2><p>O NoiraCoder oferece o comando <code>perf-medir-antes-despues</code>, que executa o script duas vezes – antes e depois das modificações – e gera um relatório comparativo. Veja um exemplo:</p><pre><code>noiracoder perf-medir-antes-despues \\\n    --script original.py \\\n    --script-modificado otimizado.py \\\n    --output relatorio.txt</code></pre><p>O comando acima cria <code>relatorio.txt</code> contendo tempos médios, desvios padrão e percentuais de melhoria, facilitando a tomada de decisão baseada em dados reais.</p><p>Ao integrar essa prática ao fluxo de desenvolvimento, equipes podem iterar rapidamente, validar hipóteses de otimização e manter a qualidade do código sob controle, tudo sem sair do terminal.</p>","title_fr":"Mesurer les performances avec NoiraCoder : avant et après","excerpt_fr":"Découvrez comment NoiraCoder vous aide à comparer facilement les temps d'exécution d'un script avant et après optimisation.","body_fr":"<p>NoiraCoder, l'agent de code en terminal, simplifie le suivi des performances en vous permettant d'exécuter, de mesurer et de comparer les temps d'exécution d'une même tâche en quelques lignes de commande.</p><h2>Avant l'optimisation</h2><p>Commencez par mesurer le temps d'exécution de votre script tel quel. NoiraCoder fournit la fonction <code>perf</code> qui encapsule <code>time</code> et renvoie un résultat lisible.</p><pre><code>noiracoder perf ./script.py\n# Résultat : 12.34 s</code></pre><h2>Après l'optimisation</h2><p>Après avoir appliqué les améliorations (algorithmes plus efficaces, réduction des I/O, etc.), il suffit de relancer la même commande. La comparaison directe montre immédiatement le gain.</p><pre><code>noiracoder perf ./script_optimise.py\n# Résultat : 7.89 s</code></pre><p>En visualisant les deux valeurs, vous pouvez quantifier le pourcentage d'amélioration (environ 36 % dans cet exemple) et justifier les changements auprès de votre équipe ou de vos clients.</p>","title_de":"Leistungsanalyse mit NoiraCoder: Vorher‑Nachher Messungen","excerpt_de":"Erfahren Sie, wie NoiraCoder präzise Performance‑Messungen vor und nach Code‑Optimierungen ermöglicht.","body_de":"<p>NoiraCoder ist ein leistungsstarker Agent, der direkt im Terminal arbeitet und Entwicklern hilft, Code effizient zu testen und zu optimieren. Ein zentraler Anwendungsfall ist das genaue Messen der Laufzeit, bevor und nachdem Änderungen am Code vorgenommen wurden.</p><h2>Messung vor der Optimierung</h2><p>Bevor Sie Optimierungen durchführen, sollten Sie eine Basislinie erstellen, um die aktuelle Performance zu kennen. Mit dem Befehl <code>noiracoder perf run</code> können Sie das Skript mehrmals ausführen und statistische Daten sammeln.</p><pre><code>noiracoder perf run myscript.py --repeat 5</code></pre><h2>Messung nach der Optimierung</h2><p>Nachdem Sie den Code angepasst haben, führen Sie dieselbe Messung erneut durch. Der Vergleich der beiden Ergebnissets zeigt sofort, ob die Änderungen die gewünschte Wirkung hatten.</p><pre><code>noiracoder perf run myscript_optimized.py --repeat 5</code></pre><p>Durch die konsistente Nutzung von NoiraCoder für Vorher‑Nachher‑Messungen erhalten Sie verlässliche Daten, die fundierte Entscheidungen über weitere Optimierungen ermöglichen.</p>","title_it":"Misurare le performance con NoiraCoder: prima e dopo","excerpt_it":"Scopri come NoiraCoder ti permette di confrontare i tempi di esecuzione del tuo codice prima e dopo le ottimizzazioni direttamente dal terminale.","body_it":"<p>NoiraCoder è un agente di codice che opera direttamente nella tua shell, fornendo strumenti di profilazione leggeri ma potenti. Grazie alla sua integrazione con i comandi di misurazione delle performance, puoi valutare rapidamente l'impatto delle ottimizzazioni senza lasciare il terminale.</p><h2>Prima: misurare lo stato attuale</h2><p>Per ottenere una baseline, esegui il comando <code>noc perf start</code> prima di lanciare lo script. NoiraCoder registra il tempo di avvio, l'utilizzo della CPU e la memoria consumata, restituendo un report sintetico.</p><pre><code>noc perf start my_script.py\n# Output esempio\nTempo totale: 12.34s\nCPU medio: 45%\nMemoria max: 128MB</code></pre><h2>Dopo: confrontare le ottimizzazioni</h2><p>Dopo aver applicato le modifiche al codice, avvia nuovamente la misurazione con <code>noc perf compare</code>. L'agente confronta i nuovi dati con quelli precedenti, evidenziando miglioramenti o regressioni.</p><pre><code>noc perf compare my_script.py\n# Differenza rilevata\nTempo totale: -3.21s (26% più veloce)\nCPU medio: -10% (35% di utilizzo)\nMemoria max: -32MB (25% di risparmio)</code></pre><p>Questo approccio ti permette di iterare rapidamente, verificando in tempo reale l'efficacia delle tue ottimizzazioni e mantenendo il controllo sulla qualità delle performance del tuo software.</p>","title_ar":"NoiraCoder: قياس الأداء قبل وبعد التعديل","excerpt_ar":"تعرف على كيفية استخدام NoiraCoder لقياس أداء الكود قبل وبعد التحسينات.","body_ar":"<p>في عالم التطوير السريع، يصبح قياس الأداء خطوة أساسية لضمان أن التحسينات التي نجريها فعلاً تُحسّن زمن التنفيذ واستهلاك الموارد. يقدم NoiraCoder، الوكيل الذكي في الطرفية، أدوات بسيطة وفعّالة لتسجيل هذه القياسات ومقارنتها بسهولة.</p><h2>الخطوة الأولى: قياس الأداء الحالي</h2><p>ابدأ بتشغيل البرنامج باستخدام أمر <code>noiracoder perf run</code> لتسجيل زمن التنفيذ والذاكرة المستعملة. يُظهر المثال التالي كيف يمكن حفظ النتائج في ملف JSON للمراجعة اللاحقة:</p><pre><code>noiracoder perf run my_script.py --output before.json</code></pre><h2>الخطوة الثانية: تطبيق التحسينات وإعادة القياس</h2><p>بعد تعديل الكود لتحسين الخوارزمية أو تقليل الاستدعاءات غير الضرورية، كرر العملية نفسها واحفظ النتائج في ملف آخر. المقارنة بين <code>before.json</code> و <code>after.json</code> تُظهر الفروقات بدقة.</p><p>باستخدام الأمر <code>noiracoder perf compare before.json after.json</code> ستحصل على تقرير مبسط يوضح التحسين في الوقت المستغرق واستهلاك الذاكرة، مما يساعدك على اتخاذ قرارات مستنيرة حول ما إذا كانت التغييرات تستحق الاعتماد.</p>"};</script>
+</head>
+<body>
+<header class="site-header"><div class="wrap-head">
+  <a href="/" class="logo">&gt; NOIRACODER</a>
+  <nav class="main-nav">
+    <a class="navlink" href="/docs/skills.html" data-i18n="nav.skills">Skills</a>
+    <a class="navlink" href="/docs/tutoriales.html" data-i18n="nav.tutorials">Tutoriales</a>
+    <a class="navlink" href="/blog/" data-i18n="nav.blog">Blog</a>
+    <a class="navlink" href="/contacto.html" data-i18n="nav.contact">Contacto</a>
+    <a class="navlink" href="/docs/tutoriales.html#instalar" data-i18n="nav.login">Instalar</a>
+    <a class="btn-signup" href="/#instalar" data-i18n="nav.signup">Empezar</a>
+    <div class="langswitch"><button aria-label="language">[<span class="cur">EN</span> ▾]</button><div class="menu">
+      <button data-lang="en">EN</button><button data-lang="es">ES</button><button data-lang="pt">PT</button><button data-lang="fr">FR</button><button data-lang="de">DE</button><button data-lang="it">IT</button><button data-lang="ar">AR</button>
+    </div></div>
+  </nav>
+  <div class="mobile-only">
+    <div class="langswitch"><button aria-label="language">[<span class="cur">EN</span> ▾]</button><div class="menu">
+      <button data-lang="en">EN</button><button data-lang="es">ES</button><button data-lang="pt">PT</button><button data-lang="fr">FR</button><button data-lang="de">DE</button><button data-lang="it">IT</button><button data-lang="ar">AR</button>
+    </div></div>
+    <button class="menu-btn" data-menu-btn>[=]</button>
+  </div>
+</div>
+<div class="mobile-menu" data-mobile-menu>
+  <a href="/docs/skills.html" data-i18n="nav.skills">Skills</a>
+  <a href="/docs/tutoriales.html" data-i18n="nav.tutorials">Tutoriales</a>
+  <a href="/blog/" data-i18n="nav.blog">Blog</a>
+  <a href="/contacto.html" data-i18n="nav.contact">Contacto</a>
+  <a href="/docs/tutoriales.html#instalar" data-i18n="nav.login">Instalar</a>
+  <a href="/#instalar" data-i18n="nav.signup">Empezar</a>
+</div></header>
+<main class="wrap-page">
+  <div class="mono" style="font-size:.75rem;color:var(--muted)">Blog · 2026-10-07 · 4 min</div>
+  <h1 class="mono" style="font-size:1.875rem;font-weight:700;margin:.75rem 0 1rem" id="post-title"></h1>
+  <article class="post-body" id="post-body"></article>
+  <p style="margin-top:2rem"><a class="link-accent" href="/">← Volver</a> · <a class="link-accent" href="/blog/">Todos</a></p>
+</main>
+<footer class="site-footer">
+  <div class="cols">
+    <div><h4 class="brand">&gt; NOIRACODER</h4><p class="brandp" data-i18n="footer.brand">…</p></div>
+    <div><h4 data-i18n="footer.products">Ecosistema</h4><ul>
+      <li><a href="https://noiramaster.pages.dev/" target="_blank" rel="noopener">Noiramaster</a></li>
+    </ul></div>
+    <div><h4 data-i18n="footer.resources">Recursos</h4><ul>
+      <li><a href="/blog/" data-i18n="nav.blog">Blog</a></li>
+      <li><a href="/sobre.html" data-i18n="nav.about">Sobre NoiraCoder</a></li>
+      <li><a href="/legal.html" data-i18n="nav.legal">Legal</a></li>
+      <li><a href="/terminos.html" data-i18n="nav.terms">Términos</a></li>
+      <li><a href="/privacidad.html" data-i18n="nav.privacy">Privacidad</a></li>
+    </ul></div>
+    <div><h4 data-i18n="footer.community">Comunidad</h4><div class="social">
+      <a href="https://x.com/noiramaster" target="_blank" rel="noopener" aria-label="X"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+      <a href="https://www.instagram.com/noiramaster/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0z"/></svg></a>
+      <a href="https://www.reddit.com/user/AddendumIll3987/" target="_blank" rel="noopener" aria-label="Reddit"><svg viewBox="0 0 24 24"><path d="M12 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 01-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 01.042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 014.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 01.14-.197.35.35 0 01.238-.042l2.906.617a1.214 1.214 0 011.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249z"/></svg></a>
+    </div></div>
+    <div><h4 data-i18n="footer.languages">Idiomas</h4><div class="langrow">
+      <button data-lang="es">ES</button><button data-lang="en">EN</button><button data-lang="pt">PT</button><button data-lang="fr">FR</button><button data-lang="de">DE</button><button data-lang="it">IT</button><button data-lang="ar">AR</button>
+    </div></div>
+  </div>
+  <div class="bottombar"><p>&gt; Noira © <span class="year">2026</span> · <span data-i18n="footer.copyright">Todos los derechos reservados.</span></p></div>
+</footer>
+<script>
+document.querySelectorAll('.year').forEach(function (e) { e.textContent = new Date().getFullYear(); });
+document.addEventListener('DOMContentLoaded', function () {
+  renderPost();
+});
+document.addEventListener('noira-lang', function () {
+  renderPost();
+});
+function renderPost() {
+  var lang = (typeof noiraGetLang === 'function') ? noiraGetLang() : 'en';
+  var title = NOIRA_POST['title_' + lang] || NOIRA_POST.title_en || NOIRA_POST.title_es;
+  var body = NOIRA_POST['body_' + lang] || NOIRA_POST.body_en || NOIRA_POST.body_es;
+  document.getElementById('post-title').textContent = title;
+  document.getElementById('post-body').innerHTML = body;
+  document.title = (title + ' | NOIRACODER');
+}
+</script>
+</body>
+</html>

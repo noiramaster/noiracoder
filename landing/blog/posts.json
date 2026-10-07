@@ -1,5 +1,25 @@
 [
   {
+    "slug": "perf-medir-antes-despues",
+    "file": "2026-10-07-perf-medir-antes-despues.html",
+    "date": "2026-10-07",
+    "category": "noiracoder",
+    "title_es": "Cómo medir el rendimiento antes y después con NoiraCoder",
+    "title_en": "Measuring Performance Before and After with NoiraCoder",
+    "title_pt": "NoiraCoder: Medindo Performance Antes e Depois",
+    "title_fr": "Mesurer les performances avec NoiraCoder : avant et après",
+    "title_de": "Leistungsanalyse mit NoiraCoder: Vorher‑Nachher Messungen",
+    "title_it": "Misurare le performance con NoiraCoder: prima e dopo",
+    "title_ar": "NoiraCoder: قياس الأداء قبل وبعد التعديل",
+    "excerpt_es": "Descubre cómo NoiraCoder te ayuda a comparar métricas de rendimiento en tu código de forma sencilla.",
+    "excerpt_en": "A quick guide to benchmarking your terminal scripts using NoiraCoder’s perf command.",
+    "excerpt_pt": "Descubra como o NoiraCoder pode comparar o tempo de execução de scripts antes e depois de otimizações.",
+    "excerpt_fr": "Découvrez comment NoiraCoder vous aide à comparer facilement les temps d'exécution d'un script avant et après optimisation.",
+    "excerpt_de": "Erfahren Sie, wie NoiraCoder präzise Performance‑Messungen vor und nach Code‑Optimierungen ermöglicht.",
+    "excerpt_it": "Scopri come NoiraCoder ti permette di confrontare i tempi di esecuzione del tuo codice prima e dopo le ottimizzazioni direttamente dal terminale.",
+    "excerpt_ar": "تعرف على كيفية استخدام NoiraCoder لقياس أداء الكود قبل وبعد التحسينات."
+  },
+  {
     "slug": "refactor-sin-miedo",
     "file": "2026-10-06-refactor-sin-miedo.html",
     "date": "2026-10-06",
