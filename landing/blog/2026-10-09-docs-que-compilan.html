@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NoiraCoder y los docs que compilan: cómo generar documentación ejecutable desde la terminal | NOIRACODER</title>
+<meta name="description" content="Descubre cómo NoiraCoder transforma tus documentos en código listo para compilar.">
+<link rel="canonical" href="https://noiracoder.pages.dev/blog/2026-10-09-docs-que-compilan.html">
+<meta property="og:title" content="NoiraCoder y los docs que compilan: cómo generar documentación ejecutable desde la terminal — NOIRACODER">
+<meta property="og:description" content="Descubre cómo NoiraCoder transforma tus documentos en código listo para compilar.">
+<meta property="og:site_name" content="NOIRACODER">
+<meta property="og:url" content="https://noiracoder.pages.dev/blog/2026-10-09-docs-que-compilan.html">
+<meta property="og:type" content="article">
+<meta name="robots" content="index, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<script src="/i18n.js" defer></script>
+<script src="/copy.js" defer></script>
+<script>var NOIRA_POST = {"date":"2026-10-09","title_es":"NoiraCoder y los docs que compilan: cómo generar documentación ejecutable desde la terminal","excerpt_es":"Descubre cómo NoiraCoder transforma tus documentos en código listo para compilar.","body_es":"<p>NoiraCoder es un agente de código que opera directamente en la terminal, permitiendo que los desarrolladores conviertan sus notas, especificaciones y guías en fragmentos de código que pueden ser compilados al instante.</p><h2>Generando docs que compilan</h2><p>Con la convención <code>#compile</code> en tus archivos markdown, NoiraCoder detecta bloques de código marcados y los envuelve en scripts de compilación automáticos. Así, cada vez que actualizas la documentación, obtienes un binario funcional sin salir de tu editor.</p><pre><code>#compile\n```c\n#include &lt;stdio.h&gt;\nint main() { printf(\"Hola, NoiraCoder!\\n\"); return 0; }\n```\n</code></pre><p>Al ejecutar <code>noiracoder run documento.md</code>, el agente extrae el bloque C, genera un archivo temporal <code>temp.c</code>, lo compila con <code>gcc</code> y muestra el resultado directamente en la consola.</p><h2>Ventajas y buenas prácticas</h2><p>Este flujo reduce la brecha entre la teoría y la práctica, evita errores de copia‑pega y mantiene la documentación siempre sincronizada con el código real. Se recomienda mantener los bloques de compilación cortos, usar comentarios claros y versionar los archivos markdown junto al código fuente para garantizar reproducibilidad.</p>","title_en":"NoiraCoder: Generating Documentation that Compiles","excerpt_en":"Discover how NoiraCoder transforms documentation into compilable code snippets directly from the terminal.","body_en":"<p>NoiraCoder is a terminal‑based coding assistant that not only writes code but also generates documentation that can be compiled straight away, bridging the gap between explanation and execution.</p><h2>Why Compile‑Ready Docs Matter</h2><p>Traditional documentation often contains snippets that need manual tweaking before they work, leading to wasted time and friction for developers. With NoiraCoder’s \"docs‑que‑compilan\" approach, every code block is syntactically correct, includes necessary imports, and passes a quick compilation check before it’s presented to the user.</p><h2>Getting Started with NoiraCoder</h2><p>After installing NoiraCoder via <code>npm install -g noiracoder</code>, you can invoke the documentation mode with the <code>--doc-compile</code> flag. The agent then analyzes your request and returns a markdown‑styled document where each <code>```</code> block is ready to compile.</p><pre><code># Example: Generating a Python function with docs-que-compilan\nnoiracoder generate --lang python --doc-compile \"Create a function that returns the factorial of a number\"\n\n# Output:\ndef factorial(n: int) -> int:\n    \"\"\"Return the factorial of n.\"\"\"\n    if n < 0:\n        raise ValueError(\"Negative input not allowed\")\n    result = 1\n    for i in range(2, n + 1):\n        result *= i\n    return result\n</code></pre><p>Copy the snippet into a <code>.py</code> file and run <code>python filename.py</code>—it works out of the box. This seamless workflow reduces context switches and keeps the focus on problem solving rather than debugging documentation errors.</p>","title_pt":"NoiraCoder: Docs-que-compilan – Simplificando a geração automática de documentação","excerpt_pt":"Descubra como o NoiraCoder transforma comentários de código em documentação pronta para uso.","body_pt":"<p>NoiraCoder é um agente de código que roda diretamente no terminal, permitindo que desenvolvedores criem, testem e documentem seu código sem sair do ambiente de linha de comando.</p><h2>O que são docs-que-compilan?</h2><p>Docs-que-compilan são documentos gerados automaticamente a partir dos próprios arquivos de código, usando anotações e comentários estruturados. O NoiraCoder lê esses trechos e produz manuais, READMEs ou guias de API prontos para publicação.</p><h2>Como usar no terminal</h2><p>Para gerar a documentação, basta invocar o comando <code>noiracoder --doc</code> no diretório do projeto. O agente analisa os arquivos *.py, *.js ou *.go e cria um arquivo <code>DOCS.md</code> com o conteúdo formatado.</p><pre><code># Exemplo de uso\nnoiracoder --doc --output docs/PROJECT_DOCS.md\n</code></pre><p>Com apenas um comando, você tem documentação atualizada que reflete exatamente o estado atual do código, economizando tempo e reduzindo erros de sincronização.</p>","title_fr":"NoiraCoder : générer de la documentation qui compile automatiquement","excerpt_fr":"Découvrez comment NoiraCoder transforme vos commentaires en docs prêts à être compilés.","body_fr":"<p>NoiraCoder est un agent de code fonctionnant directement dans le terminal, conçu pour aider les développeurs à automatiser la génération de documentation fiable.</p><h2>Documentation qui compile</h2><p>Grâce à la fonctionnalité \"docs-que-compilan\", NoiraCoder analyse le code source et produit des fichiers Markdown ou reStructuredText qui passent les tests de compilation sans erreur.</p><pre><code># Exemple de commentaire spécial\ndef ma_fonction(param):\n    \"\"\"\n    @doc: compile\n    Cette fonction fait quelque chose d'important.\n    \"\"\"\n    pass\n</code></pre><p>En exécutant <code>noiracoder --doc-compile src/</code>, l'outil crée un répertoire <code>docs/</code> contenant la documentation prête à être intégrée à votre pipeline CI/CD.</p>","title_de":"NoiraCoder: Dokumente, die kompiliert werden – Automatisierung im Terminal","excerpt_de":"Entdecke, wie NoiraCoder Terminal‑Dokumente automatisch in Code umwandelt und kompiliert.","body_de":"<p>NoiraCoder ist ein intelligenter Agent, der direkt im Terminal arbeitet und Entwickler:innen dabei unterstützt, Code schneller zu schreiben.</p><h2>Wie funktioniert das Feature \\\"docs-que-compilan\\\"</h2><p>Das Modul erkennt Dokumente, die in natürlicher Sprache beschreiben, welche Programme kompiliert werden sollen, und generiert automatisch die passenden Build‑Befehle.</p><h2>Praxisbeispiel</h2><p>Angenommen, du hast eine README mit der Anweisung, ein C‑Projekt zu bauen. Mit dem Befehl <code>noiracoder compile docs</code> analysiert NoiraCoder das Dokument und führt den korrekten <code>gcc</code>-Aufruf aus.</p><pre><code># README.md\n# Build-Anleitung\nKompiliere das Projekt mit gcc -o app src/*.c\n\n# Terminal\n$ noiracoder compile docs\ngcc -o app src/*.c\n</code></pre><p>Damit sparst du Zeit, vermeidest Tippfehler und hältst deine Build‑Prozesse konsistent.</p>","title_it":"NoiraCoder: il nuovo agente di codice in terminale per documenti che compilano","excerpt_it":"Scopri come NoiraCoder trasforma i documenti in codice eseguibile direttamente dal terminale.","body_it":"<p>NoiraCoder è un agente di codice progettato per operare direttamente nella tua console, facilitando la creazione e la compilazione di documenti tecnici senza dover uscire dall'ambiente terminale.</p><h2>Documenti che diventano codice</h2><p>Grazie a una sintassi intuitiva, NoiraCoder permette di scrivere documenti markdown o reStructuredText che includono blocchi di codice eseguibili. Basta aggiungere un tag speciale <code>@@compile@@</code> e il tool si occupa di estrarre, compilare e restituire il risultato.</p><h2>Integrazione fluida con il workflow</h2><p>Integrarsi con i sistemi di build esistenti è semplice: NoiraCoder supporta Makefile, CMake e persino pipeline CI/CD, consentendo di automatizzare la generazione di artefatti direttamente da documenti di progetto.</p><p>Con il suo supporto per più linguaggi (C, C++, Python, Rust) e la possibilità di personalizzare i comandi di compilazione, NoiraCoder si adatta a qualsiasi team di sviluppo, riducendo il tempo speso a gestire file separati per codice e documentazione.</p>","title_ar":"NoiraCoder: وثائق تُجمع وتُترجم في الطرفية","excerpt_ar":"NoiraCoder يُسهل إنشاء وثائق قابلة للتجميع مباشرة من سطر الأوامر.","body_ar":"<p>NoiraCoder هو وكيل برمجي يعمل داخل الطرفية، يهدف إلى تسريع عملية كتابة واختبار الشفرات مع توفير أدوات مساعدة للمطورين.</p><h2>ما هو docs-que-compilan؟</h2><p>خاصية <code>docs-que-compilan</code> تسمح بإنشاء وثائق تقنية تُترجم إلى ملفات تنفيذية أو مكتبات مباشرة، مما يدمج عملية التوثيق مع عملية التجميع.</p><h2>كيفية الاستخدام</h2><p>يمكن تشغيل الخاصية بأمر بسيط في الطرفية:</p><pre><code>noiracoder --docs-que-compilan src/ myproject.doc</code></pre><p>بعد تنفيذ الأمر، ينتج ملف وثيقة يحتوي على شيفرة جاهزة للتجميع، ويمكن دمجه في أنظمة البناء الآلية.</p><p>هذه الميزة توفر وقتًا كبيرًا على الفرق التقنية، حيث تُقلل الحاجة إلى كتابة وثائق منفصلة ثم تحويلها يدوياً إلى شيفرة.</p>"};</script>
+</head>
+<body>
+<header class="site-header"><div class="wrap-head">
+  <a href="/" class="logo">&gt; NOIRACODER</a>
+  <nav class="main-nav">
+    <a class="navlink" href="/docs/skills.html" data-i18n="nav.skills">Skills</a>
+    <a class="navlink" href="/docs/tutoriales.html" data-i18n="nav.tutorials">Tutoriales</a>
+    <a class="navlink" href="/blog/" data-i18n="nav.blog">Blog</a>
+    <a class="navlink" href="/contacto.html" data-i18n="nav.contact">Contacto</a>
+    <a class="navlink" href="/docs/tutoriales.html#instalar" data-i18n="nav.login">Instalar</a>
+    <a class="btn-signup" href="/#instalar" data-i18n="nav.signup">Empezar</a>
+    <div class="langswitch"><button aria-label="language">[<span class="cur">EN</span> ▾]</button><div class="menu">
+      <button data-lang="en">EN</button><button data-lang="es">ES</button><button data-lang="pt">PT</button><button data-lang="fr">FR</button><button data-lang="de">DE</button><button data-lang="it">IT</button><button data-lang="ar">AR</button>
+    </div></div>
+  </nav>
+  <div class="mobile-only">
+    <div class="langswitch"><button aria-label="language">[<span class="cur">EN</span> ▾]</button><div class="menu">
+      <button data-lang="en">EN</button><button data-lang="es">ES</button><button data-lang="pt">PT</button><button data-lang="fr">FR</button><button data-lang="de">DE</button><button data-lang="it">IT</button><button data-lang="ar">AR</button>
+    </div></div>
+    <button class="menu-btn" data-menu-btn>[=]</button>
+  </div>
+</div>
+<div class="mobile-menu" data-mobile-menu>
+  <a href="/docs/skills.html" data-i18n="nav.skills">Skills</a>
+  <a href="/docs/tutoriales.html" data-i18n="nav.tutorials">Tutoriales</a>
+  <a href="/blog/" data-i18n="nav.blog">Blog</a>
+  <a href="/contacto.html" data-i18n="nav.contact">Contacto</a>
+  <a href="/docs/tutoriales.html#instalar" data-i18n="nav.login">Instalar</a>
+  <a href="/#instalar" data-i18n="nav.signup">Empezar</a>
+</div></header>
+<main class="wrap-page">
+  <div class="mono" style="font-size:.75rem;color:var(--muted)">Blog · 2026-10-09 · 4 min</div>
+  <h1 class="mono" style="font-size:1.875rem;font-weight:700;margin:.75rem 0 1rem" id="post-title"></h1>
+  <article class="post-body" id="post-body"></article>
+  <p style="margin-top:2rem"><a class="link-accent" href="/">← Volver</a> · <a class="link-accent" href="/blog/">Todos</a></p>
+</main>
+<footer class="site-footer">
+  <div class="cols">
+    <div><h4 class="brand">&gt; NOIRACODER</h4><p class="brandp" data-i18n="footer.brand">…</p></div>
+    <div><h4 data-i18n="footer.products">Ecosistema</h4><ul>
+      <li><a href="https://noiramaster.pages.dev/" target="_blank" rel="noopener">Noiramaster</a></li>
+    </ul></div>
+    <div><h4 data-i18n="footer.resources">Recursos</h4><ul>
+      <li><a href="/blog/" data-i18n="nav.blog">Blog</a></li>
+      <li><a href="/sobre.html" data-i18n="nav.about">Sobre NoiraCoder</a></li>
+      <li><a href="/legal.html" data-i18n="nav.legal">Legal</a></li>
+      <li><a href="/terminos.html" data-i18n="nav.terms">Términos</a></li>
+      <li><a href="/privacidad.html" data-i18n="nav.privacy">Privacidad</a></li>
+    </ul></div>
+    <div><h4 data-i18n="footer.community">Comunidad</h4><div class="social">
+      <a href="https://x.com/noiramaster" target="_blank" rel="noopener" aria-label="X"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+      <a href="https://www.instagram.com/noiramaster/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0z"/></svg></a>
+      <a href="https://www.reddit.com/user/AddendumIll3987/" target="_blank" rel="noopener" aria-label="Reddit"><svg viewBox="0 0 24 24"><path d="M12 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 01-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 01.042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 014.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 01.14-.197.35.35 0 01.238-.042l2.906.617a1.214 1.214 0 011.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249z"/></svg></a>
+    </div></div>
+    <div><h4 data-i18n="footer.languages">Idiomas</h4><div class="langrow">
+      <button data-lang="es">ES</button><button data-lang="en">EN</button><button data-lang="pt">PT</button><button data-lang="fr">FR</button><button data-lang="de">DE</button><button data-lang="it">IT</button><button data-lang="ar">AR</button>
+    </div></div>
+  </div>
+  <div class="bottombar"><p>&gt; Noira © <span class="year">2026</span> · <span data-i18n="footer.copyright">Todos los derechos reservados.</span></p></div>
+</footer>
+<script>
+document.querySelectorAll('.year').forEach(function (e) { e.textContent = new Date().getFullYear(); });
+document.addEventListener('DOMContentLoaded', function () {
+  renderPost();
+});
+document.addEventListener('noira-lang', function () {
+  renderPost();
+});
+function renderPost() {
+  var lang = (typeof noiraGetLang === 'function') ? noiraGetLang() : 'en';
+  var title = NOIRA_POST['title_' + lang] || NOIRA_POST.title_en || NOIRA_POST.title_es;
+  var body = NOIRA_POST['body_' + lang] || NOIRA_POST.body_en || NOIRA_POST.body_es;
+  document.getElementById('post-title').textContent = title;
+  document.getElementById('post-body').innerHTML = body;
+  document.title = (title + ' | NOIRACODER');
+}
+</script>
+</body>
+</html>

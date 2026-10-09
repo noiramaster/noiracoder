@@ -1,5 +1,25 @@
 [
   {
+    "slug": "docs-que-compilan",
+    "file": "2026-10-09-docs-que-compilan.html",
+    "date": "2026-10-09",
+    "category": "noiracoder",
+    "title_es": "NoiraCoder y los docs que compilan: cómo generar documentación ejecutable desde la terminal",
+    "title_en": "NoiraCoder: Generating Documentation that Compiles",
+    "title_pt": "NoiraCoder: Docs-que-compilan – Simplificando a geração automática de documentação",
+    "title_fr": "NoiraCoder : générer de la documentation qui compile automatiquement",
+    "title_de": "NoiraCoder: Dokumente, die kompiliert werden – Automatisierung im Terminal",
+    "title_it": "NoiraCoder: il nuovo agente di codice in terminale per documenti che compilano",
+    "title_ar": "NoiraCoder: وثائق تُجمع وتُترجم في الطرفية",
+    "excerpt_es": "Descubre cómo NoiraCoder transforma tus documentos en código listo para compilar.",
+    "excerpt_en": "Discover how NoiraCoder transforms documentation into compilable code snippets directly from the terminal.",
+    "excerpt_pt": "Descubra como o NoiraCoder transforma comentários de código em documentação pronta para uso.",
+    "excerpt_fr": "Découvrez comment NoiraCoder transforme vos commentaires en docs prêts à être compilés.",
+    "excerpt_de": "Entdecke, wie NoiraCoder Terminal‑Dokumente automatisch in Code umwandelt und kompiliert.",
+    "excerpt_it": "Scopri come NoiraCoder trasforma i documenti in codice eseguibile direttamente dal terminale.",
+    "excerpt_ar": "NoiraCoder يُسهل إنشاء وثائق قابلة للتجميع مباشرة من سطر الأوامر."
+  },
+  {
     "slug": "perf-medir-antes-despues",
     "file": "2026-10-07-perf-medir-antes-despues.html",
     "date": "2026-10-07",
