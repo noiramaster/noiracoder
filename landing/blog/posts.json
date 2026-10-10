@@ -1,5 +1,25 @@
 [
   {
+    "slug": "git-flow-commits-atomicos",
+    "file": "2026-10-10-git-flow-commits-atomicos.html",
+    "date": "2026-10-10",
+    "category": "noiracoder",
+    "title_es": "NoiraCoder y los commits atómicos en Git Flow",
+    "title_en": "Atomic Git-Flow Commits with NoiraCoder",
+    "title_pt": "NoiraCoder e git‑flow: Como fazer commits atômicos no terminal",
+    "title_fr": "Git‑flow : des commits atomiques avec NoiraCoder",
+    "title_de": "Git‑Flow: Atomare Commits mit NoiraCoder",
+    "title_it": "NoiraCoder e i commit atomici in Git Flow: la guida definitiva",
+    "title_ar": "NoiraCoder وتطبيق Git Flow للـ Commits الذرية",
+    "excerpt_es": "Descubre cómo NoiraCoder simplifica la creación de commits atómicos dentro del flujo Git Flow.",
+    "excerpt_en": "Learn how NoiraCoder helps you enforce atomic commits in a Git‑Flow workflow.",
+    "excerpt_pt": "Descubra como usar o agente de código NoiraCoder para garantir commits atômicos dentro da estratégia git‑flow.",
+    "excerpt_fr": "Adoptez les commits atomiques grâce à NoiraCoder pour un flux Git fluide et fiable.",
+    "excerpt_de": "Mit NoiraCoder lassen sich im Git‑Flow atomare Commits effizient erstellen und verwalten.",
+    "excerpt_it": "Scopri come NoiraCoder semplifica l'adozione di commit atomici nel tuo workflow Git Flow.",
+    "excerpt_ar": "اكتشف كيف يبسط NoiraCoder تنفيذ Commits ذرية في تدفق Git Flow عبر سطر الأوامر."
+  },
+  {
     "slug": "docs-que-compilan",
     "file": "2026-10-09-docs-que-compilan.html",
     "date": "2026-10-09",
