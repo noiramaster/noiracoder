@@ -1,5 +1,25 @@
 [
   {
+    "slug": "debug-con-evidencia-real",
+    "file": "2026-10-11-debug-con-evidencia-real.html",
+    "date": "2026-10-11",
+    "category": "noiracoder",
+    "title_es": "Debug con evidencia real usando NoiraCoder",
+    "title_en": "Debugging with Real Evidence: How NoiraCoder Transforms Terminal Troubleshooting",
+    "title_pt": "Debug com Evidência Real usando NoiraCoder",
+    "title_fr": "Débogage avec NoiraCoder : preuves concrètes d’un agent de code en terminal",
+    "title_de": "Debuggen mit NoiraCoder: Beweise aus der Praxis",
+    "title_it": "Debug con evidenza reale: NoiraCoder al lavoro in terminale",
+    "title_ar": "NoiraCoder: تصحيح الأخطاء مع أدلة حقيقية",
+    "excerpt_es": "Descubre cómo NoiraCoder permite depurar código en la terminal con pruebas tangibles.",
+    "excerpt_en": "NoiraCoder lets developers capture concrete runtime evidence and turn it into actionable fixes directly from the terminal.",
+    "excerpt_pt": "Descubra como o agente de código NoiraCoder transforma o processo de depuração ao gerar evidências reais diretamente no terminal.",
+    "excerpt_fr": "Découvrez comment NoiraCoder transforme le débogage en terminal grâce à des preuves réelles.",
+    "excerpt_de": "NoiraCoder ermöglicht ein schnelles Debuggen, indem er echte Fehlermeldungen und Stacktraces direkt im Terminal analysiert.",
+    "excerpt_it": "Scopri come NoiraCoder trasforma il debugging in un processo documentato e verificabile.",
+    "excerpt_ar": "اكتشف كيف يساعد NoiraCoder في تصحيح الأخطاء باستخدام أدلة واقعية من البيئة الفعلية."
+  },
+  {
     "slug": "git-flow-commits-atomicos",
     "file": "2026-10-10-git-flow-commits-atomicos.html",
     "date": "2026-10-10",
