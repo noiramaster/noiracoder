@@ -1,5 +1,25 @@
 [
   {
+    "slug": "seguridad-secretos-fondos-infra",
+    "file": "2026-10-12-seguridad-secretos-fondos-infra.html",
+    "date": "2026-10-12",
+    "category": "noiracoder",
+    "title_es": "NoiraCoder: Seguridad y gestión de secretos en la infraestructura de fondos",
+    "title_en": "Securing Secrets and Foundations in Infrastructure with NoiraCoder",
+    "title_pt": "NoiraCoder: Segurança, Segredos e Fundos de Infraestrutura no Terminal",
+    "title_fr": "NoiraCoder : sécuriser les secrets, les fonds et l’infrastructure depuis le terminal",
+    "title_de": "Sichere Geheimnisse und Infrastruktur‑Finanzierung mit NoiraCoder",
+    "title_it": "NoiraCoder: Sicurezza dei Segreti e dei Fondi nell’Infra",
+    "title_ar": "NoiraCoder: تعزيز الأمن وإدارة الأسرار والبنية التحتية للتمويل",
+    "excerpt_es": "Cómo NoiraCoder protege tus secretos y refuerza la seguridad de la infraestructura de fondos.",
+    "excerpt_en": "NoiraCoder helps lock down secrets and harden infrastructure directly from the terminal.",
+    "excerpt_pt": "Descubra como o agente de código NoiraCoder protege segredos e otimiza a gestão de fundos de infraestrutura diretamente no terminal.",
+    "excerpt_fr": "NoiraCoder simplifie la gestion sécurisée des secrets, des budgets et de l’infrastructure directement depuis votre console.",
+    "excerpt_de": "NoiraCoder ermöglicht es, sensible Daten und Finanzinfrastruktur sicher direkt im Terminal zu verwalten.",
+    "excerpt_it": "NoiraCoder semplifica la gestione sicura di segreti e fondi nella tua infrastruttura.",
+    "excerpt_ar": "NoiraCoder يوفّر حلاً متكاملاً لتأمين الأسرار وحماية الأموال عبر سطر الأوامر في بيئات البنية التحتية الحديثة."
+  },
+  {
     "slug": "debug-con-evidencia-real",
     "file": "2026-10-11-debug-con-evidencia-real.html",
     "date": "2026-10-11",
