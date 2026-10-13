@@ -1,5 +1,25 @@
 [
   {
+    "slug": "lang-expert-idioms-typescript",
+    "file": "2026-10-13-lang-expert-idioms-typescript.html",
+    "date": "2026-10-13",
+    "category": "noiracoder",
+    "title_es": "Domina los modismos de TypeScript con NoiraCoder",
+    "title_en": "Mastering TypeScript Idioms with NoiraCoder: A Language Expert’s Guide",
+    "title_pt": "NoiraCoder: Dominando Expressões Idiomáticas do TypeScript",
+    "title_fr": "NoiraCoder : Maîtriser les idiomes TypeScript avec l'agent de code terminal",
+    "title_de": "NoiraCoder: Experten‑Idiome für TypeScript im Terminal",
+    "title_it": "NoiraCoder e gli idiomi di TypeScript per esperti",
+    "title_ar": "NoiraCoder: خبير العبارات في TypeScript",
+    "excerpt_es": "Descubre cómo NoiraCoder potencia tu terminal para escribir TypeScript idiomático y limpio en minutos.",
+    "excerpt_en": "Discover how NoiraCoder helps you write idiomatic TypeScript directly from your terminal.",
+    "excerpt_pt": "NoiraCoder traz ao terminal sugestões inteligentes que facilitam o uso de idiomatismos avançados do TypeScript.",
+    "excerpt_fr": "Découvrez comment NoiraCoder simplifie l'adoption des idiomes avancés de TypeScript directement depuis votre terminal.",
+    "excerpt_de": "Entdecke, wie NoiraCoder dir hilft, fortgeschrittene TypeScript‑Idiome direkt im Terminal zu nutzen.",
+    "excerpt_it": "Scopri come NoiraCoder sfrutta gli idiomi tipici di TypeScript per accelerare lo sviluppo nel terminale.",
+    "excerpt_ar": "NoiraCoder يسهّل كتابة تعبيرات TypeScript المتقدمة في سطر الأوامر."
+  },
+  {
     "slug": "seguridad-secretos-fondos-infra",
     "file": "2026-10-12-seguridad-secretos-fondos-infra.html",
     "date": "2026-10-12",
