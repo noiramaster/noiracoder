@@ -1,5 +1,25 @@
 [
   {
+    "slug": "agentes-orquestador-code-research",
+    "file": "2026-10-14-agentes-orquestador-code-research.html",
+    "date": "2026-10-14",
+    "category": "noiracoder",
+    "title_es": "NoiraCoder: el agente de código en terminal que revoluciona la orquestación y la investigación de código",
+    "title_en": "NoiraCoder: A Terminal Code Agent for Orchestrated Code Research",
+    "title_pt": "NoiraCoder: O agente de código em terminal que orquestra pesquisas de código",
+    "title_fr": "NoiraCoder : l’agent de code terminal qui orchestre la recherche de code",
+    "title_de": "NoiraCoder: Der Orchestrator‑Agent für Code‑Recherche im Terminal",
+    "title_it": "NoiraCoder: l'agente di codice in terminale per l'orchestrazione della ricerca di codice",
+    "title_ar": "NoiraCoder: وكيل الكود في الطرفية لتنسيق أبحاث الكود",
+    "excerpt_es": "NoiraCoder combina la potencia de los agentes orquestadores con un entorno de terminal para acelerar la investigación y generación de código.",
+    "excerpt_en": "NoiraCoder empowers developers to automate code discovery and synthesis through a terminal‑based orchestrator.",
+    "excerpt_pt": "NoiraCoder combina a potência do terminal com um orquestrador inteligente para acelerar a pesquisa e geração de código.",
+    "excerpt_fr": "NoiraCoder combine l’exécution en ligne de commande et l’orchestration d’agents pour accélérer la recherche et la génération de code.",
+    "excerpt_de": "NoiraCoder verbindet Terminal‑Komfort mit KI‑gestützter Code‑Recherche und automatisiert komplexe Entwicklungsaufgaben.",
+    "excerpt_it": "Scopri come NoiraCoder rivoluziona l’orchestrazione della ricerca di codice con un agente terminale intelligente.",
+    "excerpt_ar": "NoiraCoder يدمج قدرات البحث والتنفيذ لتسريع تطوير البرمجيات."
+  },
+  {
     "slug": "lang-expert-idioms-typescript",
     "file": "2026-10-13-lang-expert-idioms-typescript.html",
     "date": "2026-10-13",
