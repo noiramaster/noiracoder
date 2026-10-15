@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adaptive Ranker: cómo NoiraCoder aprende modelos para mejorar la clasificación de resultados | NOIRACODER</title>
+<meta name="description" content="NoiraCoder incorpora un Adaptive Ranker que entrena y actualiza modelos en tiempo real para ofrecer sugerencias de código más precisas.">
+<link rel="canonical" href="https://noiracoder.pages.dev/blog/2026-10-15-adaptive-ranker-aprende-modelos.html">
+<meta property="og:title" content="Adaptive Ranker: cómo NoiraCoder aprende modelos para mejorar la clasificación de resultados — NOIRACODER">
+<meta property="og:description" content="NoiraCoder incorpora un Adaptive Ranker que entrena y actualiza modelos en tiempo real para ofrecer sugerencias de código más precisas.">
+<meta property="og:site_name" content="NOIRACODER">
+<meta property="og:url" content="https://noiracoder.pages.dev/blog/2026-10-15-adaptive-ranker-aprende-modelos.html">
+<meta property="og:type" content="article">
+<meta name="robots" content="index, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<script src="/i18n.js" defer></script>
+<script src="/copy.js" defer></script>
+<script>var NOIRA_POST = {"date":"2026-10-15","title_es":"Adaptive Ranker: cómo NoiraCoder aprende modelos para mejorar la clasificación de resultados","excerpt_es":"NoiraCoder incorpora un Adaptive Ranker que entrena y actualiza modelos en tiempo real para ofrecer sugerencias de código más precisas.","body_es":"<p>NoiraCoder es un agente de código que opera directamente en la terminal, ofreciendo autocompletado, refactorizaciones y generación de snippets bajo demanda. Una de sus funcionalidades más innovadoras es el <strong>Adaptive Ranker</strong>, un componente que aprende continuamente de los patrones de uso y de los resultados de ejecución para ordenar las propuestas de forma óptima.</p><h2>¿Qué es el Adaptive Ranker?</h2><p>El Adaptive Ranker es un motor de clasificación que combina técnicas de aprendizaje supervisado y reforzado. Cada vez que el desarrollador acepta o rechaza una sugerencia, el ranker registra esa interacción como una señal de retroalimentación y actualiza sus pesos internos. De esta manera, el modelo se adapta al estilo y a las preferencias específicas del usuario, mejorando la relevancia de las respuestas en futuras consultas.</p><h2>Entrenamiento de modelos en NoiraCoder</h2><p>El proceso de entrenamiento es incremental y ocurre directamente en la máquina local, sin necesidad de enviar datos a la nube. NoiraCoder guarda un pequeño conjunto de características (tokens, contexto del archivo, métricas de complejidad) y las usa para entrenar un modelo ligero basado en <code>LightGBM</code> o <code>scikit‑learn</code>. Cada interacción genera un nuevo registro que se incorpora al dataset y se re‑entrena el modelo en segundo plano.</p><pre><code># Ejemplo de comando para iniciar el entrenamiento adaptativo\nnoiracoder --train-adaptive-ranker --data ~/.noiracoder/feedback.log\n</code></pre><p>Gracias a este enfoque, el Adaptive Ranker no solo acelera la escritura de código, sino que también reduce la fricción al presentar solo las opciones que realmente se ajustan al flujo de trabajo del desarrollador.</p>","title_en":"Adaptive Ranker: How NoiraCoder Learns Models on the Fly","excerpt_en":"NoiraCoder’s adaptive‑ranker continuously learns and refines models to deliver smarter code suggestions in the terminal.","body_en":"<p>NoiraCoder is a terminal‑based coding assistant that brings AI-powered suggestions directly to your command line. Its latest feature, the Adaptive Ranker, takes this a step further by dynamically learning from the code you write and the feedback you provide, constantly updating its internal models for more relevant completions.</p><h2>How the Adaptive Ranker Works</h2><p>The Adaptive Ranker operates as a lightweight reinforcement loop. Each time NoiraCoder proposes a snippet, it monitors your acceptance, rejection, or modification of that suggestion. These signals are fed into a ranking algorithm that re‑weights candidate outputs, promoting patterns that align with your coding style and project conventions.</p><h2>Learning Models on the Fly</h2><p>Unlike static models that require offline retraining, the Adaptive Ranker updates its parameters in‑process. It maintains a compact representation of recent interactions, allowing it to fine‑tune language embeddings without leaving the terminal. This on‑the‑fly learning ensures that the assistant adapts to new libraries, APIs, or even temporary scripts you’re working on.</p><pre><code># Example: invoking the adaptive ranker in a session\nnoiracoder --adaptive-rank \"def calculate(a, b):\"</code></pre><p>By integrating continuous feedback, NoiraCoder’s Adaptive Ranker not only improves suggestion relevance but also reduces the cognitive load of switching contexts. As you code, the assistant becomes a true partner, learning the nuances of your workflow and delivering smarter, context‑aware code snippets.</p>","title_pt":"NoiraCoder e o Adaptive Ranker: Aprendendo Modelos em Tempo Real","excerpt_pt":"Descubra como o Adaptive Ranker do NoiraCoder ajusta modelos dinamicamente para melhorar a qualidade do código gerado no terminal.","body_pt":"<p>NoiraCoder é um agente de código que opera diretamente no terminal, oferecendo sugestões, correções e geração de trechos de código com base em inteligência artificial. Uma das inovações mais recentes é o <strong>adaptive-ranker</strong>, que aprende continuamente a partir das interações do usuário, refinando os modelos de ranking que determinam quais sugestões são apresentadas.</p><h2>Como o Adaptive Ranker funciona?</h2><p>O adaptive-ranker coleta métricas de aceitação, tempo de edição e feedback explícito (como thumbs up/down) para cada sugestão gerada. Esses dados são usados para treinar um modelo de aprendizado online que reordena as opções futuras, priorizando as que têm maior probabilidade de serem úteis. O processo é incremental: a cada nova interação, o modelo ajusta seus pesos, permitindo que o NoiraCoder se adapte ao estilo e às preferências específicas do desenvolvedor.</p><h2>Exemplo prático no terminal</h2><p>Veja como ativar o adaptive-ranker e observar o aprendizado em ação:</p><pre><code># Ativar o adaptive-ranker\nnoiracoder --enable-adaptive-ranker\n\n# Gerar sugestão para uma função Python\nnoiracoder suggest \"def calcular_media\" --lang python\n\n# Dar feedback (aceitar ou rejeitar)\nnoiracoder feedback accept\n</code></pre><p>Após alguns ciclos de sugestão e feedback, você notará que as respostas do NoiraCoder se alinham cada vez mais ao seu estilo de codificação, reduzindo a necessidade de ajustes manuais e acelerando o fluxo de desenvolvimento.</p>","title_fr":"NoiraCoder et l’Adaptive Ranker : Apprendre des modèles","excerpt_fr":"Découvrez comment NoiraCoder exploite l’Adaptive Ranker pour affiner ses modèles en temps réel.","body_fr":"<p>NoiraCoder, l'agent de code fonctionnant directement dans le terminal, gagne en puissance grâce à l'intégration d'un système d'<em>adaptive ranking</em>. Ce mécanisme permet d'ajuster dynamiquement les priorités des suggestions de code en fonction du contexte d'utilisation et des retours de l'utilisateur.</p><h2>Qu'est‑ce que l'Adaptive Ranker ?</h2><p>L'Adaptive Ranker est un algorithme d'apprentissage en ligne qui classe les modèles de génération de code selon leur pertinence. Chaque fois que l'utilisateur accepte ou rejette une proposition, le ranker met à jour ses poids, favorisant les modèles qui produisent des résultats utiles et décourageant ceux qui génèrent du bruit.</p><h2>Comment NoiraCoder apprend grâce à ce système</h2><p>Dans NoiraCoder, chaque appel à <code>nc generate</code> renvoie plusieurs snippets. Le ranker attribue à chaque snippet un score, puis le terminal affiche d'abord les suggestions les mieux classées. Si l'utilisateur valide une suggestion, le feedback positif est enregistré ; sinon, le feedback négatif ajuste les paramètres du modèle.</p><pre><code># Exemple de boucle de feedback dans NoiraCoder\nwhile True:\n    suggestions = nc.generate(prompt)\n    best = ranker.select(suggestions)\n    print(best)\n    feedback = input('Accepter (y/n)? ')\n    ranker.update(best, feedback == 'y')\n</code></pre><p>Grâce à ce processus itératif, NoiraCoder devient de plus en plus précis, s'adaptant aux styles de codage spécifiques de chaque développeur et aux exigences du projet en cours.</p>","title_de":"Adaptive Ranker: Wie NoiraCoder lernt, Modelle zu ranken","excerpt_de":"Der Adaptive Ranker von NoiraCoder lernt dynamisch, die besten Modelle für jede Aufgabe zu priorisieren.","body_de":"<p>NoiraCoder ist ein Agent, der direkt im Terminal arbeitet und Entwicklern hilft, Code zu generieren, zu analysieren und zu optimieren. Mit dem neuen Modul <em>adaptive-ranker-aprende-modelos</em> kann er jetzt selbstständig lernen, welche Modelle für bestimmte Aufgaben am besten geeignet sind.</p><h2>Funktionsweise des Adaptive Rankers</h2><p>Der Ranker sammelt Metriken aus vorherigen Ausführungen, bewertet die Genauigkeit, Laufzeit und Ressourcennutzung und passt seine Prioritäten an. Durch kontinuierliches Feedback wird ein gewichteter Score erstellt, der die Modelle in einer Rangliste anordnet.</p><h2>Vorteile für Entwickler</h2><p>Durch die automatische Modellselektion spart NoiraCoder Zeit und reduziert Fehlversuche. Entwickler erhalten sofort die optimalen Vorschläge, ohne manuell verschiedene Modelle testen zu müssen.</p><pre><code># Beispielkonfiguration für den Adaptive Ranker\nadaptive_ranker:\n  aktiv: true\n  gewichtung:\n    genauigkeit: 0.5\n    laufzeit: 0.3\n    speicher: 0.2\n</code></pre><p>Mit diesem Ansatz wird NoiraCoder zu einem noch intelligenteren Begleiter im Entwicklungsprozess, der sich an die Bedürfnisse des Projekts anpasst.</p>","title_it":"Adaptive Ranker: Come NoiraCoder Impara Modelli in Tempo Reale","excerpt_it":"NoiraCoder utilizza un Adaptive Ranker per affinare costantemente i modelli di suggerimento direttamente dal terminale.","body_it":"<p>NoiraCoder è un agente di codice operante interamente da terminale, progettato per assistere sviluppatori nella scrittura, refactoring e ottimizzazione del codice. Una delle sue funzionalità più innovative è l'Adaptive Ranker, un meccanismo che apprende dinamicamente i modelli di ranking in base al feedback dell'utente.</p><h2>Cos&#39;è l&#39;Adaptive Ranker</h2><p>L'Adaptive Ranker è un algoritmo di apprendimento online che valuta le proposte di codice generate da NoiraCoder e le riordina secondo la loro rilevanza. Utilizza metriche di precisione, tempo di esecuzione e gradimento dell'utente per aggiornare i pesi dei diversi modelli di suggerimento.</p><h2>Il processo di apprendimento</h2><p>Ogni volta che l'utente accetta, modifica o rifiuta una proposta, il Ranker registra l'evento e aggiorna il modello. Questo avviene in tempo reale, senza richiedere riavvii o sessioni di training offline. Il risultato è un sistema che diventa più preciso man mano che lo si utilizza.</p><pre><code># Configurazione di base per l&#39;Adaptive Ranker in NoiraCoder\nnoiracoder config set adaptive_ranker.enabled true\nnoiracoder config set adaptive_ranker.learning_rate 0.05\nnoiracoder config set adaptive_ranker.feedback_window 100\n</code></pre><p>Grazie a questo approccio adattivo, NoiraCoder non è solo un assistente statico, ma un collaboratore che evolve con il progetto, offrendo suggerimenti sempre più allineati allo stile e alle esigenze del team.</p>","title_ar":"NoiraCoder وعامل الترتيب التكيّفي: تعلم النماذج","excerpt_ar":"يستكشف NoiraCoder طريقة تعلم النماذج باستخدام Adaptive Ranker داخل الطرفية.","body_ar":"<p>NoiraCoder هو وكيل برمجي يعمل داخل الطرفية، يتيح للمطورين كتابة، اختبار وتعديل الشيفرات بسرعة عبر أوامر نصية بسيطة. بفضل تكاملاته المتعددة، يمكنه التفاعل مع أدوات الذكاء الاصطناعي لتوفير اقتراحات ذكية وتحسينات تلقائية.</p><h2>ما هو Adaptive Ranker؟</h2><p>Adaptive Ranker هو آلية تصنيف ديناميكية تُستخدم لتقييم جودة النماذج المقترحة وتحديد الأنسب منها بناءً على معايير متعددة مثل الدقة، السرعة واستهلاك الموارد. يعمل على تعديل وزن كل معيار وفقًا لسياق المشروع، مما يضمن اختيار النموذج الأكثر ملاءمة لكل حالة.</p><h2>كيف يتعلم Adaptive Ranker النماذج داخل NoiraCoder؟</h2><p>عند تشغيل أمر <code>adaptive-ranker --train</code> داخل الطرفية، يبدأ NoiraCoder بجمع بيانات الأداء من النماذج السابقة، ثم يستخدم خوارزمية تحسين تدريجي لتحديث معايير التصنيف. بعد ذلك، يُظهر النتائج في شكل جدول يوضح ترتيب النماذج المقترحة.</p><pre><code># مثال على تشغيل Adaptive Ranker\nadaptive-ranker --train --data ./datasets/model_metrics.json\n# عرض النتائج\nadaptive-ranker --list\n</code></pre><p>بهذه الطريقة، يصبح NoiraCoder ليس مجرد محرّك شيفرة، بل شريكًا ذكيًا يساعد المطور على اتخاذ قرارات مستنيرة حول النماذج التي يستخدمها في مشروعه.</p>"};</script>
+</head>
+<body>
+<header class="site-header"><div class="wrap-head">
+  <a href="/" class="logo">&gt; NOIRACODER</a>
+  <nav class="main-nav">
+    <a class="navlink" href="/docs/skills.html" data-i18n="nav.skills">Skills</a>
+    <a class="navlink" href="/docs/tutoriales.html" data-i18n="nav.tutorials">Tutoriales</a>
+    <a class="navlink" href="/blog/" data-i18n="nav.blog">Blog</a>
+    <a class="navlink" href="/contacto.html" data-i18n="nav.contact">Contacto</a>
+    <a class="navlink" href="/docs/tutoriales.html#instalar" data-i18n="nav.login">Instalar</a>
+    <a class="btn-signup" href="/#instalar" data-i18n="nav.signup">Empezar</a>
+    <div class="langswitch"><button aria-label="language">[<span class="cur">EN</span> ▾]</button><div class="menu">
+      <button data-lang="en">EN</button><button data-lang="es">ES</button><button data-lang="pt">PT</button><button data-lang="fr">FR</button><button data-lang="de">DE</button><button data-lang="it">IT</button><button data-lang="ar">AR</button>
+    </div></div>
+  </nav>
+  <div class="mobile-only">
+    <div class="langswitch"><button aria-label="language">[<span class="cur">EN</span> ▾]</button><div class="menu">
+      <button data-lang="en">EN</button><button data-lang="es">ES</button><button data-lang="pt">PT</button><button data-lang="fr">FR</button><button data-lang="de">DE</button><button data-lang="it">IT</button><button data-lang="ar">AR</button>
+    </div></div>
+    <button class="menu-btn" data-menu-btn>[=]</button>
+  </div>
+</div>
+<div class="mobile-menu" data-mobile-menu>
+  <a href="/docs/skills.html" data-i18n="nav.skills">Skills</a>
+  <a href="/docs/tutoriales.html" data-i18n="nav.tutorials">Tutoriales</a>
+  <a href="/blog/" data-i18n="nav.blog">Blog</a>
+  <a href="/contacto.html" data-i18n="nav.contact">Contacto</a>
+  <a href="/docs/tutoriales.html#instalar" data-i18n="nav.login">Instalar</a>
+  <a href="/#instalar" data-i18n="nav.signup">Empezar</a>
+</div></header>
+<main class="wrap-page">
+  <div class="mono" style="font-size:.75rem;color:var(--muted)">Blog · 2026-10-15 · 4 min</div>
+  <h1 class="mono" style="font-size:1.875rem;font-weight:700;margin:.75rem 0 1rem" id="post-title"></h1>
+  <article class="post-body" id="post-body"></article>
+  <p style="margin-top:2rem"><a class="link-accent" href="/">← Volver</a> · <a class="link-accent" href="/blog/">Todos</a></p>
+</main>
+<footer class="site-footer">
+  <div class="cols">
+    <div><h4 class="brand">&gt; NOIRACODER</h4><p class="brandp" data-i18n="footer.brand">…</p></div>
+    <div><h4 data-i18n="footer.products">Ecosistema</h4><ul>
+      <li><a href="https://noiramaster.pages.dev/" target="_blank" rel="noopener">Noiramaster</a></li>
+    </ul></div>
+    <div><h4 data-i18n="footer.resources">Recursos</h4><ul>
+      <li><a href="/blog/" data-i18n="nav.blog">Blog</a></li>
+      <li><a href="/sobre.html" data-i18n="nav.about">Sobre NoiraCoder</a></li>
+      <li><a href="/legal.html" data-i18n="nav.legal">Legal</a></li>
+      <li><a href="/terminos.html" data-i18n="nav.terms">Términos</a></li>
+      <li><a href="/privacidad.html" data-i18n="nav.privacy">Privacidad</a></li>
+    </ul></div>
+    <div><h4 data-i18n="footer.community">Comunidad</h4><div class="social">
+      <a href="https://x.com/noiramaster" target="_blank" rel="noopener" aria-label="X"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+      <a href="https://www.instagram.com/noiramaster/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0z"/></svg></a>
+      <a href="https://www.reddit.com/user/AddendumIll3987/" target="_blank" rel="noopener" aria-label="Reddit"><svg viewBox="0 0 24 24"><path d="M12 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 01-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 01.042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 014.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 01.14-.197.35.35 0 01.238-.042l2.906.617a1.214 1.214 0 011.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249z"/></svg></a>
+    </div></div>
+    <div><h4 data-i18n="footer.languages">Idiomas</h4><div class="langrow">
+      <button data-lang="es">ES</button><button data-lang="en">EN</button><button data-lang="pt">PT</button><button data-lang="fr">FR</button><button data-lang="de">DE</button><button data-lang="it">IT</button><button data-lang="ar">AR</button>
+    </div></div>
+  </div>
+  <div class="bottombar"><p>&gt; Noira © <span class="year">2026</span> · <span data-i18n="footer.copyright">Todos los derechos reservados.</span></p></div>
+</footer>
+<script>
+document.querySelectorAll('.year').forEach(function (e) { e.textContent = new Date().getFullYear(); });
+document.addEventListener('DOMContentLoaded', function () {
+  renderPost();
+});
+document.addEventListener('noira-lang', function () {
+  renderPost();
+});
+function renderPost() {
+  var lang = (typeof noiraGetLang === 'function') ? noiraGetLang() : 'en';
+  var title = NOIRA_POST['title_' + lang] || NOIRA_POST.title_en || NOIRA_POST.title_es;
+  var body = NOIRA_POST['body_' + lang] || NOIRA_POST.body_en || NOIRA_POST.body_es;
+  document.getElementById('post-title').textContent = title;
+  document.getElementById('post-body').innerHTML = body;
+  document.title = (title + ' | NOIRACODER');
+}
+</script>
+</body>
+</html>

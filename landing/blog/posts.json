@@ -1,5 +1,25 @@
 [
   {
+    "slug": "adaptive-ranker-aprende-modelos",
+    "file": "2026-10-15-adaptive-ranker-aprende-modelos.html",
+    "date": "2026-10-15",
+    "category": "noiracoder",
+    "title_es": "Adaptive Ranker: cómo NoiraCoder aprende modelos para mejorar la clasificación de resultados",
+    "title_en": "Adaptive Ranker: How NoiraCoder Learns Models on the Fly",
+    "title_pt": "NoiraCoder e o Adaptive Ranker: Aprendendo Modelos em Tempo Real",
+    "title_fr": "NoiraCoder et l’Adaptive Ranker : Apprendre des modèles",
+    "title_de": "Adaptive Ranker: Wie NoiraCoder lernt, Modelle zu ranken",
+    "title_it": "Adaptive Ranker: Come NoiraCoder Impara Modelli in Tempo Reale",
+    "title_ar": "NoiraCoder وعامل الترتيب التكيّفي: تعلم النماذج",
+    "excerpt_es": "NoiraCoder incorpora un Adaptive Ranker que entrena y actualiza modelos en tiempo real para ofrecer sugerencias de código más precisas.",
+    "excerpt_en": "NoiraCoder’s adaptive‑ranker continuously learns and refines models to deliver smarter code suggestions in the terminal.",
+    "excerpt_pt": "Descubra como o Adaptive Ranker do NoiraCoder ajusta modelos dinamicamente para melhorar a qualidade do código gerado no terminal.",
+    "excerpt_fr": "Découvrez comment NoiraCoder exploite l’Adaptive Ranker pour affiner ses modèles en temps réel.",
+    "excerpt_de": "Der Adaptive Ranker von NoiraCoder lernt dynamisch, die besten Modelle für jede Aufgabe zu priorisieren.",
+    "excerpt_it": "NoiraCoder utilizza un Adaptive Ranker per affinare costantemente i modelli di suggerimento direttamente dal terminale.",
+    "excerpt_ar": "يستكشف NoiraCoder طريقة تعلم النماذج باستخدام Adaptive Ranker داخل الطرفية."
+  },
+  {
     "slug": "agentes-orquestador-code-research",
     "file": "2026-10-14-agentes-orquestador-code-research.html",
     "date": "2026-10-14",
