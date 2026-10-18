@@ -1,5 +1,25 @@
 [
   {
+    "slug": "memoria-de-3-niveles-como-recordar-proyectos",
+    "file": "2026-10-18-memoria-de-3-niveles-como-recordar-proyectos.html",
+    "date": "2026-10-18",
+    "category": "noiracoder",
+    "title_es": "Memoria de 3 niveles: cómo recordar proyectos con NoiraCoder",
+    "title_en": "Three‑Level Memory: How to Remember Projects with NoiraCoder",
+    "title_pt": "Memória de 3 Níveis: Como o NoiraCoder Ajuda a Recordar Projetos",
+    "title_fr": "Mémoire à trois niveaux : comment NoiraCoder vous aide à vous souvenir de vos projets",
+    "title_de": "NoiraCoder: Dreistufiges Gedächtnis für das Wiederauffinden von Projekten",
+    "title_it": "Memoria a 3 livelli: come ricordare i progetti con NoiraCoder",
+    "title_ar": "الذاكرة ذات الثلاث مستويات: كيفية تذكر المشاريع مع NoiraCoder",
+    "excerpt_es": "Descubre cómo la memoria jerárquica de NoiraCoder te ayuda a retener y recuperar información de tus proyectos en tres niveles.",
+    "excerpt_en": "Learn how NoiraCoder’s three‑level memory system helps you keep project context alive across sessions.",
+    "excerpt_pt": "Descubra como usar a abordagem de memória de três níveis do NoiraCoder para nunca perder detalhes dos seus projetos.",
+    "excerpt_fr": "Découvrez la technique de mémoire à trois niveaux pour garder vos projets de code toujours à portée de main avec NoiraCoder.",
+    "excerpt_de": "Erfahren Sie, wie NoiraCoder mit einem dreistufigen Gedächtnis Ihre Projekte mühelos wiederfindet.",
+    "excerpt_it": "Scopri come utilizzare la memoria a tre livelli di NoiraCoder per tenere sotto controllo i tuoi progetti direttamente dal terminale.",
+    "excerpt_ar": "تعلم كيف يستخدم NoiraCoder نظام الذاكرة الثلاثية لتسهيل استرجاع المشاريع بسرعة."
+  },
+  {
     "slug": "catalogo-free-cambia-a-diario",
     "file": "2026-10-17-catalogo-free-cambia-a-diario.html",
     "date": "2026-10-17",
@@ -548,15 +568,5 @@
     "title_en": "Free Model Rotation in NoiraCoder: Never Run Out of Quota",
     "excerpt_es": "Aprende a alternar modelos gratuitos en NoiraCoder para mantener tu productividad sin agotar la cuota.",
     "excerpt_en": "Learn how to rotate free models in NoiraCoder to keep your workflow alive without exhausting your quota."
-  },
-  {
-    "slug": "memoria-de-3-niveles-como-recordar-proyectos",
-    "file": "2026-09-16-memoria-de-3-niveles-como-recordar-proyectos.html",
-    "date": "2026-09-16",
-    "category": "noiracoder",
-    "title_es": "Memoria de 3 niveles: cómo NoiraCoder te ayuda a recordar tus proyectos",
-    "title_en": "3‑Level Memory: How NoiraCoder Helps You Recall Your Projects",
-    "excerpt_es": "Descubre el método de memoria de 3 niveles de NoiraCoder para nunca perder de vista tus proyectos.",
-    "excerpt_en": "Learn NoiraCoder's 3‑level memory method to never lose track of your projects."
   }
 ]
