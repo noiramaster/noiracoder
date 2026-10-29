@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memoria de 3 niveles: Cómo recordar proyectos con NoiraCoder | NOIRACODER</title>
+<meta name="description" content="Aprende a organizar y revivir tus proyectos usando la estrategia de memoria de tres niveles integrada en NoiraCoder.">
+<link rel="canonical" href="https://noiracoder.pages.dev/blog/2026-10-29-memoria-de-3-niveles-como-recordar-proyectos.html">
+<meta property="og:title" content="Memoria de 3 niveles: Cómo recordar proyectos con NoiraCoder — NOIRACODER">
+<meta property="og:description" content="Aprende a organizar y revivir tus proyectos usando la estrategia de memoria de tres niveles integrada en NoiraCoder.">
+<meta property="og:site_name" content="NOIRACODER">
+<meta property="og:url" content="https://noiracoder.pages.dev/blog/2026-10-29-memoria-de-3-niveles-como-recordar-proyectos.html">
+<meta property="og:type" content="article">
+<meta name="robots" content="index, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<script src="/i18n.js" defer></script>
+<script src="/copy.js" defer></script>
+<script>var NOIRA_POST = {"date":"2026-10-29","title_es":"Memoria de 3 niveles: Cómo recordar proyectos con NoiraCoder","excerpt_es":"Aprende a organizar y revivir tus proyectos usando la estrategia de memoria de tres niveles integrada en NoiraCoder.","body_es":"<p>NoiraCoder es el agente de código que vive en tu terminal y te ayuda a gestionar proyectos sin perder tiempo. Una de sus funciones más poderosas es la \"memoria de 3 niveles\", que permite almacenar y recuperar información de forma estructurada.</p><h2>¿Qué es la memoria de 3 niveles?</h2><p>La memoria de 3 niveles se basa en tres capas jerárquicas: <strong>contexto global</strong> (el objetivo del proyecto), <strong>contexto local</strong> (las tareas actuales) y <strong>contexto puntual</strong> (fragmentos de código o notas rápidas). Cada capa se guarda de forma independiente, lo que facilita la recuperación precisa sin sobrecargar la mente.</p><h2>Cómo implementarla con NoiraCoder</h2><p>Con unos simples comandos puedes crear, actualizar y consultar cada nivel. Por ejemplo, al iniciar un proyecto guardas el objetivo general; al cambiar de rama, actualizas el contexto local; y cada vez que escribes una función importante, la anotas en el contexto puntual.</p><pre><code># Guardar el objetivo del proyecto (nivel 1)\nnoiracoder --save \"Crear una API REST para gestión de usuarios\" --level 1\n\n# Guardar la tarea actual (nivel 2)\nnoiracoder --save \"Implementar endpoint de registro\" --level 2\n\n# Anotar un fragmento de código (nivel 3)\nnoiracoder --save \"function validarEmail(email) { /* ... */ }\" --level 3</code></pre><p>Al volver a trabajar, basta con consultar el nivel que necesites: <code>noiracoder --load --level 2</code> te mostrará la última tarea, mientras que <code>--level 1</code> te recordará la visión completa del proyecto. Así, NoiraCoder convierte la gestión de información en un proceso natural y sin fricción.</p>","title_en":"Three-Level Memory: How to Remember Projects with NoiraCoder","excerpt_en":"Discover NoiraCoder’s three‑level memory system to keep your projects organized and instantly accessible.","body_en":"<p>Developers often juggle multiple codebases, scripts, and experiments, and forgetting the context of a project can waste hours. NoiraCoder, the terminal‑based coding assistant, introduces a three‑level memory hierarchy that acts like a personal knowledge base, letting you retrieve past work with a single command.</p><h2>Level 1: Immediate Session Context</h2><p>The first level captures everything you do in the current terminal session—commands, file edits, and AI‑generated suggestions. NoiraCoder stores this data in a lightweight in‑memory cache, enabling you to recall recent snippets or variable names without leaving the prompt. Simply type <code>nc recall last</code> to view the most recent actions.</p><h2>Level 2: Project‑Specific Archive</h2><p>When you switch to a new project folder, NoiraCoder automatically creates a project‑specific archive. This second tier persists across sessions, indexing files, commit messages, and the AI’s explanations. By invoking <code>nc recall project</code>, you receive a concise summary of the project's purpose, key functions, and any outstanding TODOs, all generated from the stored metadata.</p><p>The third level, which you can explore in future updates, will aggregate knowledge across all projects, but even with just the first two tiers, NoiraCoder dramatically reduces context‑switching friction, letting you focus on writing code rather than remembering it.</p>","title_pt":"Memória de 3 Níveis: Como Recordar Projetos com NoiraCoder","excerpt_pt":"Descubra como a memória de três níveis do NoiraCoder ajuda a organizar e recuperar rapidamente seus projetos de código.","body_pt":"<p>NoiraCoder é um agente de código que opera diretamente no terminal, oferecendo uma estrutura de memória de três níveis para que desenvolvedores nunca percam o rastro de seus projetos.</p><h2>Nível 1: Memória de Curto Prazo</h2><p>Este nível armazena as ações recentes, como arquivos abertos ou comandos executados nas últimas minutos. Use <code>noiracoder status</code> para visualizar rapidamente o que está em foco.</p><pre><code>noiracoder status\n# Projeto atual: api-rest\n# Arquivo aberto: src/routes/user.js</code></pre><h2>Nível 2: Memória de Médio Prazo</h2><p>A memória de médio prazo consolida sessões de trabalho de algumas horas ou dias, permitindo recarregar um contexto completo com um único comando. Por exemplo, <code>noiracoder load --session 2023-09-15</code> restaura tudo que você fez naquele dia.</p><pre><code>noiracoder load --session 2023-09-15\n# Projeto: ecommerce\n# Branch: feature/payments\n# Último commit: 3a5f9c2</code></pre><p>Finalmente, o Nível 3 guarda informações permanentes, como descrições de projetos, dependências e configurações de build. Consultar <code>noiracoder info --project ecommerce</code> traz um resumo completo, facilitando a retomada mesmo após semanas ou meses.</p>","title_fr":"Mémoire à trois niveaux avec NoiraCoder : comment se souvenir de vos projets","excerpt_fr":"Apprenez à structurer votre souvenir des projets en trois niveaux grâce à NoiraCoder, l'agent de code en terminal.","body_fr":"<p>NoiraCoder n'est pas seulement un assistant qui exécute du code dans votre terminal, c'est aussi un compagnon qui vous aide à garder une trace claire de vos projets. En adoptant une stratégie de mémoire à trois niveaux, vous pouvez retrouver rapidement n'importe quel projet, même après plusieurs mois d'inactivité.</p><h2>Niveau 1 : Mémoire à court terme</h2><p>Utilisez la capacité de NoiraCoder à enregistrer les dernières commandes et contextes. En ajoutant des <code>#tags</code> à vos sessions, vous pouvez interroger l'agent pour retrouver les dernières modifications. Par exemple :</p><pre><code>noiracoder --search \"#frontend #bugfix\"</code></pre><p>Cette requête renvoie les dernières lignes de code où ces tags ont été employés, vous permettant de reprendre immédiatement où vous vous étiez arrêté.</p><h2>Niveau 2 : Mémoire à moyen terme</h2><p>Organisez chaque projet dans un répertoire dédié avec un fichier <code>README.md</code> contenant un sommaire des fonctionnalités, des dépendances et des scripts courants. NoiraCoder peut lire ces fichiers et vous fournir un aperçu en une seule commande :</p><pre><code>noiracoder --project \"my-app\" --summary</code></pre><p>Le résultat vous donne une vue d'ensemble du projet, idéale pour les revues hebdomadaires ou les réunions d'équipe.</p><h2>Niveau 3 : Mémoire à long terme</h2><p>Pour les projets archivés, combinez Git avec les métadonnées de NoiraCoder. En créant des tags Git annotés et en les liant à des tickets NoiraCoder, vous conservez une trace permanente. Une requête comme :</p><pre><code>noiracoder --history \"v1.2.0\"</code></pre><p>affiche l'historique complet, les décisions clés et les scripts de migration, garantissant que même après des années, vous pouvez réactiver le projet sans perdre d'informations cruciales.</p>","title_de":"Dreistufiges Gedächtnis: So erinnert sich NoiraCoder an deine Projekte","excerpt_de":"Entdecke, wie NoiraCoder mit einem dreistufigen Gedächtnis deine Projektinformationen zuverlässig speichert und wieder abruft.","body_de":"<p>NoiraCoder ist ein intelligenter Terminal‑Agent, der Entwicklern hilft, Code‑Snippets, Befehle und Projekt‑Kontexte zu verwalten. Durch das Konzept des <strong>dreistufigen Gedächtnisses</strong> kann er Informationen auf drei Ebenen organisieren: temporär, session‑basiert und dauerhaft.</p><h2>Was ist das dreistufige Gedächtnis?</h2><p>Die erste Ebene speichert sofortige Kontextdaten, die nur für die aktuelle Eingabe benötigt werden. Die zweite Ebene hält Informationen für die gesamte Terminal‑Session bereit, sodass NoiraCoder frühere Befehle und Dateien wiederverwenden kann. Die dritte Ebene ist ein persistenter Speicher, der langfristig Projekt‑Metadaten, Bibliotheken und Konfigurationen archiviert.</p><h2>Wie du das Gedächtnis in NoiraCoder nutzt</h2><p>Um das Gedächtnis zu aktivieren, fügst du in deiner <code>.noirarc</code>-Datei die folgenden Einstellungen ein:</p><pre><code>memory:\n  level1: true   # temporär\n  level2: true   # session‑basiert\n  level3: true   # persistent\n</code></pre><p>Jetzt kannst du NoiraCoder auffordern, sich an ein früheres Projekt zu erinnern, indem du einfach <code>remember project XYZ</code> eingibst. Der Agent durchsucht zuerst die temporäre Ebene, dann die Session‑Daten und schließlich den persistenten Speicher, um die relevantesten Informationen zu liefern.</p><p>Dank dieses mehrstufigen Ansatzes bleibt dein Workflow schlank und du verlierst nie den Überblick über wichtige Projektdetails – selbst wenn du mehrere Tage oder Wochen zwischen den Arbeitssitzungen pausierst.</p>","title_it":"NoiraCoder e la memoria a 3 livelli: come ricordare i progetti in terminale","excerpt_it":"Scopri come NoiraCoder utilizza una memoria a tre livelli per tenere traccia dei tuoi progetti senza sforzo.","body_it":"<p>NoiraCoder è un agente di codice che opera direttamente nel terminale, permettendo di gestire e richiamare rapidamente parti di codice, script e configurazioni. Una delle sue caratteristiche più potenti è la memoria a tre livelli, progettata per aiutarti a ricordare i progetti anche dopo ore o giorni di inattività.</p><h2>Livello 1: Memoria di sessione</h2><p>Durante la stessa sessione di terminale, NoiraCoder conserva in RAM tutti i comandi e gli snippet recenti. Basta usare il comando <code>nc recall</code> per visualizzare l'elenco delle ultime azioni, senza dover riscrivere nulla.</p><h2>Livello 2: Memoria persistente e condivisa</h2><p>Al termine della sessione, NoiraCoder salva automaticamente gli snippet in un file di archivio locale (<code>~/.noiracoder/history.json</code>) e, se configurato, li sincronizza con un repository remoto. In questo modo, puoi richiamare un progetto da qualsiasi macchina con <code>nc fetch &lt;nome_progetto&gt;</code>.</p><p>Grazie a questi due livelli, la memoria a tre livelli di NoiraCoder ti permette di passare fluidamente dal lavoro immediato a quello a lungo termine, garantendo che nessuna idea importante vada persa.</p>","title_ar":"ذاكرة ثلاثية المستويات: كيف يتذكر NoiraCoder مشاريعك بسهولة","excerpt_ar":"تعلم طريقة الذاكرة ذات الثلاث مستويات لتتبع وحفظ مشاريعك باستخدام NoiraCoder.","body_ar":"<p>يُعد NoiraCoder أداة قوية تعمل في سطر الأوامر وتساعد المطورين على تنظيم شيفراتهم ومشاريعهم بشكل فعال. واحدة من أقوى ميزاته هي نظام الذاكرة ثلاثية المستويات الذي يسمح لك بتخزين المعلومات بحسب أهميتها واستخدامها لاحقًا.</p><h2>المستوى الأول: الذاكرة الفورية</h2><p>في هذا المستوى، يحتفظ NoiraCoder بالبيانات التي تحتاجها خلال جلسة العمل الحالية فقط. يمكنك استدعاء الأوامر الأخيرة أو المتغيرات المؤقتة بسرعة دون الحاجة إلى حفظها يدويًا.</p><h2>المستوى الثاني: الذاكرة الدائمة</h2><p>هنا يتم حفظ المشاريع المهمة بشكل دائم في قاعدة بيانات محلية. يمكنك إضافة ملاحظات، روابط إلى المستودعات، وحتى إعدادات بيئة العمل لتستعيدها في أي وقت. مثال على حفظ مشروع:</p><pre><code>noiracoder save --project \"MyApp\" --level 3</code></pre><p>باستخدام هذا الأمر، يُخزن NoiraCoder مشروع \"MyApp\" في المستوى الثالث، وهو أعلى مستوى للذاكرة، مما يضمن أن جميع تفاصيل المشروع ستبقى محفوظة ومُتاحة لك في المستقبل.</p>"};</script>
+</head>
+<body>
+<header class="site-header"><div class="wrap-head">
+  <a href="/" class="logo">&gt; NOIRACODER</a>
+  <nav class="main-nav">
+    <a class="navlink" href="/docs/skills.html" data-i18n="nav.skills">Skills</a>
+    <a class="navlink" href="/docs/tutoriales.html" data-i18n="nav.tutorials">Tutoriales</a>
+    <a class="navlink" href="/blog/" data-i18n="nav.blog">Blog</a>
+    <a class="navlink" href="/contacto.html" data-i18n="nav.contact">Contacto</a>
+    <a class="navlink" href="/docs/tutoriales.html#instalar" data-i18n="nav.login">Instalar</a>
+    <a class="btn-signup" href="/#instalar" data-i18n="nav.signup">Empezar</a>
+    <div class="langswitch"><button aria-label="language">[<span class="cur">EN</span> ▾]</button><div class="menu">
+      <button data-lang="en">EN</button><button data-lang="es">ES</button><button data-lang="pt">PT</button><button data-lang="fr">FR</button><button data-lang="de">DE</button><button data-lang="it">IT</button><button data-lang="ar">AR</button>
+    </div></div>
+  </nav>
+  <div class="mobile-only">
+    <div class="langswitch"><button aria-label="language">[<span class="cur">EN</span> ▾]</button><div class="menu">
+      <button data-lang="en">EN</button><button data-lang="es">ES</button><button data-lang="pt">PT</button><button data-lang="fr">FR</button><button data-lang="de">DE</button><button data-lang="it">IT</button><button data-lang="ar">AR</button>
+    </div></div>
+    <button class="menu-btn" data-menu-btn>[=]</button>
+  </div>
+</div>
+<div class="mobile-menu" data-mobile-menu>
+  <a href="/docs/skills.html" data-i18n="nav.skills">Skills</a>
+  <a href="/docs/tutoriales.html" data-i18n="nav.tutorials">Tutoriales</a>
+  <a href="/blog/" data-i18n="nav.blog">Blog</a>
+  <a href="/contacto.html" data-i18n="nav.contact">Contacto</a>
+  <a href="/docs/tutoriales.html#instalar" data-i18n="nav.login">Instalar</a>
+  <a href="/#instalar" data-i18n="nav.signup">Empezar</a>
+</div></header>
+<main class="wrap-page">
+  <div class="mono" style="font-size:.75rem;color:var(--muted)">Blog · 2026-10-29 · 4 min</div>
+  <h1 class="mono" style="font-size:1.875rem;font-weight:700;margin:.75rem 0 1rem" id="post-title"></h1>
+  <article class="post-body" id="post-body"></article>
+  <p style="margin-top:2rem"><a class="link-accent" href="/">← Volver</a> · <a class="link-accent" href="/blog/">Todos</a></p>
+</main>
+<footer class="site-footer">
+  <div class="cols">
+    <div><h4 class="brand">&gt; NOIRACODER</h4><p class="brandp" data-i18n="footer.brand">…</p></div>
+    <div><h4 data-i18n="footer.products">Ecosistema</h4><ul>
+      <li><a href="https://noiramaster.pages.dev/" target="_blank" rel="noopener">Noiramaster</a></li>
+    </ul></div>
+    <div><h4 data-i18n="footer.resources">Recursos</h4><ul>
+      <li><a href="/blog/" data-i18n="nav.blog">Blog</a></li>
+      <li><a href="/sobre.html" data-i18n="nav.about">Sobre NoiraCoder</a></li>
+      <li><a href="/legal.html" data-i18n="nav.legal">Legal</a></li>
+      <li><a href="/terminos.html" data-i18n="nav.terms">Términos</a></li>
+      <li><a href="/privacidad.html" data-i18n="nav.privacy">Privacidad</a></li>
+    </ul></div>
+    <div><h4 data-i18n="footer.community">Comunidad</h4><div class="social">
+      <a href="https://x.com/noiramaster" target="_blank" rel="noopener" aria-label="X"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+      <a href="https://www.instagram.com/noiramaster/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0z"/></svg></a>
+      <a href="https://www.reddit.com/user/AddendumIll3987/" target="_blank" rel="noopener" aria-label="Reddit"><svg viewBox="0 0 24 24"><path d="M12 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 01-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 01.042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 014.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 01.14-.197.35.35 0 01.238-.042l2.906.617a1.214 1.214 0 011.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249z"/></svg></a>
+    </div></div>
+    <div><h4 data-i18n="footer.languages">Idiomas</h4><div class="langrow">
+      <button data-lang="es">ES</button><button data-lang="en">EN</button><button data-lang="pt">PT</button><button data-lang="fr">FR</button><button data-lang="de">DE</button><button data-lang="it">IT</button><button data-lang="ar">AR</button>
+    </div></div>
+  </div>
+  <div class="bottombar"><p>&gt; Noira © <span class="year">2026</span> · <span data-i18n="footer.copyright">Todos los derechos reservados.</span></p></div>
+</footer>
+<script>
+document.querySelectorAll('.year').forEach(function (e) { e.textContent = new Date().getFullYear(); });
+document.addEventListener('DOMContentLoaded', function () {
+  renderPost();
+});
+document.addEventListener('noira-lang', function () {
+  renderPost();
+});
+function renderPost() {
+  var lang = (typeof noiraGetLang === 'function') ? noiraGetLang() : 'en';
+  var title = NOIRA_POST['title_' + lang] || NOIRA_POST.title_en || NOIRA_POST.title_es;
+  var body = NOIRA_POST['body_' + lang] || NOIRA_POST.body_en || NOIRA_POST.body_es;
+  document.getElementById('post-title').textContent = title;
+  document.getElementById('post-body').innerHTML = body;
+  document.title = (title + ' | NOIRACODER');
+}
+</script>
+</body>
+</html>
